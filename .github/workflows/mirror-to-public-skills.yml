@@ -35,20 +35,41 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check the mirror token is configured
+      # A missing, expired or unapproved token otherwise surfaces as a bare
+      # "Not Found" from actions/checkout, which reads like the repo is gone.
+      - name: Check the token can reach the mirror
         env:
           TOKEN: ${{ secrets.MIRROR_SYNC_TOKEN }}
         run: |
           if [ -z "$TOKEN" ]; then
-            echo "MIRROR_SYNC_TOKEN is not set on this repository." >&2
-            echo "Create a fine-grained PAT scoped to owid/public-skills with" >&2
-            echo "Contents: read and write, and add it as a repository secret." >&2
+            echo "::error::MIRROR_SYNC_TOKEN is not set on this repository." \
+              "Create a fine-grained PAT owned by the owid org, scoped to" \
+              "owid/public-skills with Contents: read and write."
             exit 1
           fi
 
+          code=$(curl -sS -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/owid/public-skills)
+
+          case "$code" in
+            200) echo "MIRROR_SYNC_TOKEN can reach owid/public-skills." ;;
+            401) echo "::error::MIRROR_SYNC_TOKEN is invalid or expired. Mint a new one and update the secret."
+                 exit 1 ;;
+            403|404)
+                 echo "::error::MIRROR_SYNC_TOKEN cannot see owid/public-skills." \
+                   "Usual causes: the token expired, its resource owner is a personal" \
+                   "account rather than the owid org, org approval is still pending, or" \
+                   "public-skills is not among its selected repositories."
+                 exit 1 ;;
+            *)   echo "::error::Unexpected HTTP $code from the GitHub API."
+                 exit 1 ;;
+          esac
+
       # Full history: the sync is a real merge of this repo into the mirror.
       - name: Check out the mirror
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: owid/public-skills
           token: ${{ secrets.MIRROR_SYNC_TOKEN }}
