@@ -1,0 +1,86 @@
+name: Mirror to owid/public-skills
+
+# owid/public-skills is a private mirror of this repo. It exists because an
+# org-level plugin in Claude Desktop / Claude Web has to be installed from a
+# repository inside the owid organization, so this repo's content is
+# republished there.
+#
+# This job keeps the mirror current: it checks the mirror out and runs the
+# mirror's own sync-upstream.sh, which merges this repo's main, regenerates the
+# mirror's README (upstream README + a "this is a mirror" notice) and pushes.
+# All the sync logic lives in the mirror; this workflow only triggers it.
+#
+# Setup (one-time): a fine-grained PAT scoped to owid/public-skills with
+# "Contents: read and write", stored as the MIRROR_SYNC_TOKEN secret on this
+# repo. The default GITHUB_TOKEN cannot reach another repository.
+
+on:
+  push:
+    branches: [main]
+  # Safety net: if a push-triggered run ever fails, this repairs the drift
+  # without anyone noticing it. The sync is idempotent, so a no-op run is free.
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+# Two syncs pushing to the mirror at once would race; queue them instead.
+concurrency:
+  group: mirror-to-public-skills
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # A missing, expired or unapproved token otherwise surfaces as a bare
+      # "Not Found" from actions/checkout, which reads like the repo is gone.
+      - name: Check the token can reach the mirror
+        env:
+          TOKEN: ${{ secrets.MIRROR_SYNC_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::MIRROR_SYNC_TOKEN is not set on this repository." \
+              "Create a fine-grained PAT owned by the owid org, scoped to" \
+              "owid/public-skills with Contents: read and write."
+            exit 1
+          fi
+
+          code=$(curl -sS -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/owid/public-skills)
+
+          case "$code" in
+            200) echo "MIRROR_SYNC_TOKEN can reach owid/public-skills." ;;
+            401) echo "::error::MIRROR_SYNC_TOKEN is invalid or expired. Mint a new one and update the secret."
+                 exit 1 ;;
+            403|404)
+                 echo "::error::MIRROR_SYNC_TOKEN cannot see owid/public-skills." \
+                   "Usual causes: the token expired, its resource owner is a personal" \
+                   "account rather than the owid org, org approval is still pending, or" \
+                   "public-skills is not among its selected repositories."
+                 exit 1 ;;
+            *)   echo "::error::Unexpected HTTP $code from the GitHub API."
+                 exit 1 ;;
+          esac
+
+      # Full history: the sync is a real merge of this repo into the mirror.
+      - name: Check out the mirror
+        uses: actions/checkout@v5
+        with:
+          repository: owid/public-skills
+          token: ${{ secrets.MIRROR_SYNC_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # Fails loudly on any conflict outside the mirror's README, which is the
+      # only file the mirror is allowed to diverge in.
+      - name: Sync the mirror with this repo
+        run: ./sync-upstream.sh
