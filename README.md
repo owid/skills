@@ -43,7 +43,7 @@ Install as a plugin from the marketplace:
 
 ### Other agents (Codex, Gemini CLI, Cursor, Copilot, …)
 
-These are standard [Agent Skills](https://agentskills.io), read as-is by Codex, Gemini CLI, Cursor, GitHub Copilot, and many other tools — no Claude-specific setup required. The [`skills`](https://github.com/vercel-labs/skills) CLI detects which of your installed agents support skills (75+ supported) and copies them into each one's directory:
+These are standard [Agent Skills](https://agentskills.io), read as-is by Codex, Gemini CLI, Cursor, GitHub Copilot, and many other tools — no Claude-specific setup required. The [`skills`](https://github.com/vercel-labs/skills) CLI detects which of your installed agents support skills (75+ supported) and installs them into each one's directory:
 
 ```bash
 npx skills add owid/skills            # into the current project
@@ -64,6 +64,29 @@ Then put `owid-skills/skills/*` where your agent looks for skills:
 
 - **Per project** — `./.agents/skills/` (the shared convention read by Codex, Cursor, OpenCode, …)
 - **Per user** — your agent's own skills directory, e.g. `~/.codex/skills/`, `~/.gemini/skills/`, or `~/.claude/skills/`
+
+### Keeping the skills up to date
+
+Every route above installs a snapshot of `main` as it was that day. Nothing refreshes on its own unless you turn it on, so use the step that matches how you installed:
+
+- **Claude Code plugin.** Auto-update is off by default for marketplaces other than Anthropic's own. Turn it on once: run `/plugin`, open the **Marketplaces** tab, select `owid-skills` and choose **Enable auto-update**. Claude Code then checks shortly after each session starts and tells you to `/reload-plugins` when something changed. To update by hand instead:
+
+  ```bash
+  claude plugin marketplace update owid-skills   # refresh the catalog
+  claude plugin update owid@owid-skills          # then restart, or /reload-plugins
+  ```
+
+  Refreshing the marketplace on its own does not update the installed plugin; the second command does.
+
+- **`skills` CLI.** `npx skills add` installs one copy per scope, symlinks each agent's directory to it, and records what it installed in `skills-lock.json`. Update everything in that scope with:
+
+  ```bash
+  npx skills update            # -g for the user-level install, -p for the project one
+  ```
+
+- **Manual.** A copied directory is frozen; copy it again to update. A symlink into your clone follows the clone, so `git pull` in `owid-skills` is enough.
+
+There are no version numbers to bump: every commit to `main` is a release, and each of these steps picks up the latest one.
 
 ### Not working?
 
