@@ -1,0 +1,41 @@
+{
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+    "name": "owid",
+    "description": "Skills for working with Our World in Data: search published charts, fetch chart data and metadata via the web API, join OWID data with external sources (e.g. per-capita metrics), and access the full data catalog with the owid-catalog Python library.",
+    "author": {
+        "name": "Our World in Data",
+        "email": "tech@ourworldindata.org",
+        "url": "https://ourworldindata.org"
+    },
+    "homepage": "https://github.com/owid/skills",
+    "repository": "https://github.com/owid/skills",
+    "license": "Apache-2.0",
+    "keywords": [
+        "data",
+        "charts",
+        "statistics",
+        "research",
+        "our-world-in-data"
+    ],
+    "extensions": {
+        "com.openai": {
+            "interface": {
+                "displayName": "Our World in Data",
+                "shortDescription": "Find, fetch and analyse Our World in Data's charts and data.",
+                "longDescription": "Search Our World in Data's published charts across population, energy, climate, poverty, health, education and more; fetch the data and metadata behind any chart; join it with other sources; and load the full catalog as pandas DataFrames that carry their own units, sources and citations. Read-only, and uses only OWID's public endpoints.",
+                "developerName": "Our World in Data",
+                "category": "Productivity",
+                "capabilities": [
+                    "Read"
+                ],
+                "websiteURL": "https://ourworldindata.org",
+                "privacyPolicyURL": "https://ourworldindata.org/privacy-policy",
+                "defaultPrompt": [
+                    "Which Our World in Data chart shows global life expectancy over time?",
+                    "Get the data behind Our World in Data's CO2 emissions per capita chart.",
+                    "Compare electricity generation per person across the EU using Our World in Data."
+                ]
+            }
+        }
+    }
+}

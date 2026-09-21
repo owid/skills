@@ -1,0 +1,20 @@
+{
+    "name": "owid-skills",
+    "interface": {
+        "displayName": "Our World in Data"
+    },
+    "plugins": [
+        {
+            "name": "owid",
+            "source": {
+                "source": "local",
+                "path": "./"
+            },
+            "policy": {
+                "installation": "AVAILABLE",
+                "authentication": "ON_INSTALL"
+            },
+            "category": "Productivity"
+        }
+    ]
+}

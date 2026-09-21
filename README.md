@@ -41,7 +41,23 @@ Install as a plugin from the marketplace:
 /plugin install owid@owid-skills
 ```
 
-### Other agents (Codex, Gemini CLI, Cursor, Copilot, …)
+### ChatGPT and Codex
+
+This repo is also an [Agent Plugins](https://agent-plugins.org) package, the
+vendor-neutral plugin format ChatGPT and Codex share. It is not (yet) in
+OpenAI's public Plugin Directory, so install it from the repo:
+
+```bash
+codex plugin marketplace add owid/skills   # register this repo as a source
+codex plugin add owid@owid-skills          # install it for Codex
+```
+
+The first command registers the source for the ChatGPT desktop app too, where
+it then shows up as **Our World in Data** in the Plugins Directory and you
+install it from there. Turn on **Settings → Security and login → Developer
+mode** first, and restart the app after adding the source.
+
+### Other agents (Gemini CLI, Cursor, Copilot, …)
 
 These are standard [Agent Skills](https://agentskills.io), read as-is by Codex, Gemini CLI, Cursor, GitHub Copilot, and many other tools — no Claude-specific setup required. The [`skills`](https://github.com/vercel-labs/skills) CLI detects which of your installed agents support skills (75+ supported) and installs them into each one's directory:
 
@@ -78,6 +94,15 @@ Every route above installs a snapshot of `main` as it was that day. Nothing refr
 
   Refreshing the marketplace on its own does not update the installed plugin; the second command does.
 
+- **ChatGPT / Codex plugin.** Refresh the source, then reinstall:
+
+  ```bash
+  codex plugin marketplace upgrade owid-skills
+  codex plugin add owid@owid-skills
+  ```
+
+  Restart the ChatGPT desktop app afterwards so it picks up the new files.
+
 - **`skills` CLI.** `npx skills add` installs one copy per scope, symlinks each agent's directory to it, and records what it installed in `skills-lock.json`. Update everything in that scope with:
 
   ```bash
@@ -113,7 +138,7 @@ Want to add or improve a skill? See [AGENTS.md](AGENTS.md) for repo conventions,
 
 ```bash
 make            # list targets
-make validate   # spec conformance, plugin manifest and marketplace registration
+make validate   # spec conformance, both plugin manifests and marketplace registration
 make test       # contract tests: do the OWID endpoints still match what the skills document?
 make triggers   # trigger evals: does the right skill fire? (needs the claude CLI, costs tokens)
 ```
