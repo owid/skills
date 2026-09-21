@@ -307,28 +307,50 @@ csv_header() {
     fi
 }
 
-# skill_md_contains <name> <pattern> — the SKILL.md matches this grep -E pattern.
+# --- documentation drift ---------------------------------------------------
+#
+# A skill is SKILL.md plus, optionally, the files under references/ that it
+# tells the agent to read. Claims about the API live in both, so the drift
+# checks take the file to inspect. Paths are relative to the skill directory
+# ("SKILL.md", "references/search-api.md") or absolute.
+
+_doc_path() {
+    case "$1" in
+        /*) printf '%s' "$1" ;;
+        *) printf '%s/%s' "$SKILL_DIR" "$1" ;;
+    esac
+}
+
+# doc_contains <name> <file> <pattern> — the file matches this grep -E pattern.
 # Use to catch documentation drifting away from the API, in either direction.
-skill_md_contains() {
-    local name="$1" pattern="$2"
-    if grep -qE "$pattern" "$SKILL_MD"; then
+doc_contains() {
+    local name="$1" file pattern="$3"
+    file=$(_doc_path "$2")
+    if [[ ! -f "$file" ]]; then
+        _fail "$name" "$2 does not exist"
+    elif grep -qE "$pattern" "$file"; then
         _pass "$name"
     else
-        _fail "$name" "SKILL.md has no match for /$pattern/"
+        _fail "$name" "$2 has no match for /$pattern/"
     fi
 }
 
-# skill_md_table_covers <name> <observed-values> — every value in the
+# doc_table_covers <name> <file> <observed-values> — every value in the
 # newline-separated list appears in the first column of a two-column mapping
-# table in SKILL.md, i.e. a row of the form:
+# table in the file, i.e. a row of the form:
 #
 #     | `Value` | `mapped-to` | description |
 #
 # This catches doc drift in the direction that actually hurts: a value the API
 # returns that an agent has no documented mapping for.
-skill_md_table_covers() {
-    local name="$1" observed="$2" documented missing
-    documented=$(sed -n 's/^| *`\([A-Za-z][A-Za-z]*\)` *| *`[a-z-][a-z-]*` *|.*/\1/p' "$SKILL_MD" | sort -u)
+doc_table_covers() {
+    local name="$1" file observed="$3" documented missing
+    file=$(_doc_path "$2")
+    if [[ ! -f "$file" ]]; then
+        _fail "$name" "$2 does not exist"
+        return
+    fi
+    documented=$(sed -n 's/^| *`\([A-Za-z][A-Za-z]*\)` *| *`[a-z-][a-z-]*` *|.*/\1/p' "$file" | sort -u)
     if [[ -z "$observed" ]]; then
         skip "$name" "no observed values to compare against"
         return
@@ -337,7 +359,46 @@ skill_md_table_covers() {
     if [[ -z "$missing" ]]; then
         _pass "$name"
     else
-        _fail "$name" "missing from the table: $(printf '%s' "$missing" | tr '\n' ' ')"
+        _fail "$name" "missing from the table in $2: $(printf '%s' "$missing" | tr '\n' ' ')"
+    fi
+}
+
+# skill_md_contains <name> <pattern> — shorthand for doc_contains on SKILL.md.
+skill_md_contains() {
+    doc_contains "$1" "$SKILL_MD" "$2"
+}
+
+# skill_md_table_covers <name> <observed-values> — shorthand for
+# doc_table_covers on SKILL.md.
+skill_md_table_covers() {
+    doc_table_covers "$1" "$SKILL_MD" "$2"
+}
+
+# http_status <name> <url> <expected-code> [outfile] — the url returns exactly
+# this HTTP status. For the cases fetch cannot express: an endpoint that must
+# reject bad input, or a success whose body you do not need.
+http_status() {
+    local name="$1" url="$2" expected="$3" out="${4:-/dev/null}" code
+    code=$(curl -sS -L --retry 3 --retry-delay 2 --max-time 90 \
+        -H 'User-Agent: owid-skills contract tests (tech@ourworldindata.org)' \
+        -o "$out" -w '%{http_code}' "$url" 2>/dev/null) || code="000"
+    if [[ "$code" == "$expected" ]]; then
+        _pass "$name"
+    else
+        _fail "$name" "GET $url → HTTP $code, expected $expected"
+    fi
+}
+
+# content_type <name> <url> <ere> — the response's Content-Type header matches.
+content_type() {
+    local name="$1" url="$2" pattern="$3" ctype
+    ctype=$(curl -sS -L --retry 3 --retry-delay 2 --max-time 90 \
+        -H 'User-Agent: owid-skills contract tests (tech@ourworldindata.org)' \
+        -o /dev/null -w '%{content_type}' "$url" 2>/dev/null) || ctype="<request failed>"
+    if [[ "$ctype" =~ $pattern ]]; then
+        _pass "$name"
+    else
+        _fail "$name" "Content-Type is '$ctype', expected /$pattern/"
     fi
 }
 

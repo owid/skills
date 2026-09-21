@@ -2,32 +2,69 @@
 
 This repository publishes **agent skills for working with Our World in Data** (see [README.md](README.md)). It doubles as a Claude Code plugin marketplace: `.claude-plugin/marketplace.json` defines a single plugin, `owid`, that bundles all skills under `skills/`.
 
+Today there is one skill, `owid`, structured as a short `SKILL.md` plus a
+`references/` directory the agent reads on demand. That is deliberate: the
+tasks people bring to OWID (find a chart, get its data, check a number, embed
+it) share one workflow and two endpoints, and one skill with a broad trigger
+routes better than several narrow ones competing for the same prompt.
+
 ## Structure
 
 ```
-FAQ.md                          # common user and contributor questions
-Makefile                        # entry points: make validate / test / triggers
-skills/<skill-name>/SKILL.md    # one directory per skill, and nothing else
-.claude-plugin/marketplace.json # marketplace + plugin definition
-evals/skills/<skill-name>/      # that skill's test cases and fixtures
-evals/                          # shared eval harness + playbook (evals/README.md)
-install-prerequisites-macos.sh  # helper to install CLI tools skills rely on
+FAQ.md                            # common user and contributor questions
+Makefile                          # entry points: make validate / lint / test / triggers
+skills/owid/SKILL.md              # the workflow and the rules (~150 lines, always loaded)
+skills/owid/references/*.md       # one file per endpoint or topic, read when needed
+.claude-plugin/marketplace.json   # marketplace + plugin definition
+evals/skills/<skill-name>/        # that skill's test cases and fixtures
+evals/                            # shared eval harness + playbook (evals/README.md)
+install-prerequisites-macos.sh    # installs jq; curl ships with macOS
 ```
 
-**Keep `skills/<skill-name>/` to just `SKILL.md`** unless a skill genuinely needs
-bundled `scripts/`, `references/` or `assets/`. A skill directory is copied
-recursively into users' projects by the cross-agent installer, which has no
-ignore mechanism — anything you put there ships to everyone. Evals live in a
-sibling `evals/skills/<skill-name>/` for exactly this reason; see
+**Everything under `skills/<skill-name>/` ships to every user.** A skill
+directory is copied recursively into users' projects by the cross-agent
+installer, which has no ignore mechanism. Put only `SKILL.md` and the
+`references/`, `scripts/` or `assets/` the skill genuinely needs there. Evals
+live in a sibling `evals/skills/<skill-name>/` for exactly this reason; see
 [evals/README.md](evals/README.md).
 
-## Adding or changing a skill
+## Changing the skill
 
-1. Create `skills/<skill-name>/SKILL.md` with YAML frontmatter. The `name` field **must** match the directory name; the `description` field determines when agents trigger the skill, so make it precise about *what it does and when to use it*.
-2. **Register the skill** in the `skills` array of the `owid` plugin in `.claude-plugin/marketplace.json`. Without this, the skill will not be installable via the marketplace.
-3. Keep skills self-contained and token-efficient: prefer instructing agents to filter/aggregate with `jq`/`duckdb` rather than pulling large responses into context.
-4. Skills must only rely on public OWID endpoints and common CLI tools (`curl`, `jq`, `duckdb`, `uv`). If a new tool is genuinely needed, add it to `install-prerequisites-macos.sh`.
-5. Do **not** add skills that require OWID-internal infrastructure or credentials — this repository is public.
+- **`SKILL.md` is the context budget.** It is loaded whole whenever the skill
+  triggers, so it holds the workflow, the hard rules, the quick reference and
+  the traps, and nothing an agent only needs sometimes. Aim to keep it near its
+  current length; move detail into a reference.
+- **References are the documentation.** Each file under `references/` covers
+  one endpoint or topic exhaustively: every parameter, the response shape,
+  recipes, traps. `SKILL.md` names the reference to read for each kind of task.
+  Link between references with relative links; `make validate` checks they
+  resolve.
+- **The `description` field decides when the skill fires.** It is the only
+  thing an agent sees before choosing to load the skill. Keep it about *what
+  the skill does and when to use it*, under 1024 characters. After changing it,
+  re-run the trigger eval (`make triggers`).
+- **Every claim about the API should have a contract test.** The skill is
+  documentation over live endpoints, and it rots when the API changes, not when
+  the prose gets worse. Add a check to `evals/skills/owid/contract.sh` when you
+  document a new parameter, endpoint or behaviour, and use the `doc_contains`
+  helper to pin the documentation to it.
+- **Only public endpoints and common tools.** Skills must rely on public OWID
+  endpoints and on `curl` and `jq`. If a new tool is genuinely needed, add it to
+  `install-prerequisites-macos.sh` and justify it in the PR. Do **not** add
+  anything that requires OWID-internal infrastructure or credentials; this
+  repository is public.
+- **Keep responses out of context.** Instruct agents to save responses to
+  files and filter with `jq` rather than reading large payloads.
+
+## Adding a skill
+
+Prefer extending `owid` with a reference over adding a sibling skill: two
+skills with overlapping triggers steal each other's traffic. If a genuinely
+separate skill is warranted:
+
+1. Create `skills/<skill-name>/SKILL.md` with YAML frontmatter. The `name` field **must** match the directory name.
+2. **Register it** in the `skills` array of the `owid` plugin in `.claude-plugin/marketplace.json`. Without this it is not installable via the marketplace.
+3. Add `evals/skills/<skill-name>/` with at least a `contract.sh` and a `triggers.json`, and add `expected_skill` negatives to the sibling's `triggers.json` so misrouting is measured.
 
 ## Versioning
 
@@ -37,17 +74,17 @@ Plugins here are intentionally **versionless**: `.claude-plugin/marketplace.json
 
 Run `make` for the full list. The two you need most:
 
-- `make validate` — three checks with distinct jobs: spec conformance via
+- `make validate` — four checks with distinct jobs: spec conformance via
   `skills-ref`, the reference validator the [Agent Skills
   spec](https://agentskills.io/specification) recommends (agent-agnostic, so it
   covers Codex/Gemini/Cursor users too); the marketplace manifest via
-  `claude plugin validate`; and that every skill is registered in
-  `.claude-plugin/marketplace.json`, which neither validator knows about. Run the
-  make target rather than any single CLI — none of the three subsumes another.
+  `claude plugin validate`; that every skill is registered in
+  `.claude-plugin/marketplace.json` and that no skill file references eval
+  files, which neither validator knows about; and that every relative link
+  inside `skills/` resolves. Run the make target rather than any single CLI.
 - `make test` — the contract tests. These check that the OWID endpoints and
-  response shapes each `SKILL.md` documents still match what the API returns —
-  the way these skills are most likely to break. Add `SKILL=<name>` for one
-  skill. This is what CI runs.
+  response shapes the skill documents still match what the API returns, which
+  is the way this skill is most likely to break. This is what CI runs.
 
 For end-to-end testing, load the plugin directly in a live session:
 `claude --debug --plugin-dir .`
@@ -60,11 +97,10 @@ rules, both enforced by `make validate`:
 
 - **Commit inputs, not outputs.** Test cases and fixtures are source. Everything
   a run produces goes to `evals/results/`, which is gitignored.
-- **Never reference eval files from a `SKILL.md`.** Skills that route to their
-  own evals spend the user's context budget on test prose. This is the only path
-  by which eval content could reach an agent's context, so it is a hard check
-  rather than a convention.
+- **Never reference eval files from a skill.** Skills that route to their own
+  evals spend the user's context budget on test prose. This is the only path by
+  which eval content could reach an agent's context, so it is a hard check
+  rather than a convention, and it covers `references/` as well as `SKILL.md`.
 
-When you change a skill's `description`, re-run its trigger eval
-(`make triggers SKILL=<name>`) — the four skills cover adjacent ground, so a
-description change can quietly steal a sibling's traffic.
+When you change the skill's `description`, re-run its trigger eval
+(`make triggers`).

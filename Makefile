@@ -33,13 +33,28 @@ validate: ## Check spec conformance, the plugin manifest and marketplace registr
 	@# The marketplace manifest is Claude-specific and outside the spec.
 	@if command -v claude >/dev/null 2>&1; then claude plugin validate .; \
 	else echo "  ~ claude CLI not found - skipping manifest validation"; fi
-	@# Eval files must never be referenced from a SKILL.md. A reference would pull
-	@# test prose into the context budget of every user who triggers the skill, and
-	@# it is the one way the evals could leak into an agent's context at all.
-	@if grep -rnE '(^|[^a-z-])evals?/|triggers\.json|evals\.json|contract\.sh' skills/*/SKILL.md; then \
-	  echo "  x a SKILL.md references eval files - drop the reference or inline the content"; \
+	@# Eval files must never be referenced from a skill (SKILL.md or anything under
+	@# references/). A reference would pull test prose into the context budget of
+	@# every user who triggers the skill, and it is the one way the evals could
+	@# leak into an agent's context at all.
+	@if grep -rnE '(^|[^a-z-])evals?/|triggers\.json|evals\.json|contract\.sh' skills/ --include='*.md'; then \
+	  echo "  x a skill file references eval files - drop the reference or inline the content"; \
 	  exit 1; \
-	else echo "  ok  no SKILL.md references eval files"; fi
+	else echo "  ok  no skill file references eval files"; fi
+	@# Every markdown link inside a skill must resolve to a file that ships with it,
+	@# otherwise the agent is told to read a reference that does not exist.
+	@fail=0; \
+	for dir in skills/*/; do \
+	  for f in $$(find "$$dir" -name '*.md'); do \
+	    for link in $$(grep -oE '\]\(([^)#:]+)(#[^)]*)?\)' "$$f" | sed -E 's/^\]\(([^)#]+).*$$/\1/'); do \
+	      case "$$link" in http*|mailto*) continue ;; esac; \
+	      if [ ! -e "$$(dirname "$$f")/$$link" ]; then \
+	        echo "  x $$f links to $$link, which does not exist"; fail=1; \
+	      fi; \
+	    done; \
+	  done; \
+	done; \
+	if [ $$fail -eq 0 ]; then echo "  ok  every relative link inside skills/ resolves"; else exit 1; fi
 	@# Eval JSON is hand-authored and hand-reviewed, so it must stay readable. A
 	@# python json.dumps without ensure_ascii=False silently rewrites every em dash
 	@# and accent as a \uXXXX escape, which is unreviewable prose.
@@ -67,7 +82,7 @@ lint: ## Lint the harness: shellcheck for shell, ruff for Python
 	    --external-sources --source-path=evals/lib \
 	    evals/lib/assert.sh evals/skills/*/contract.sh evals/run-contract-tests.sh && \
 	  uvx --quiet ruff check --select E,F,W,UP --line-length 130 \
-	    evals/run-trigger-eval.py evals/skills/owid-catalog/contract_check.py && \
+	    evals/run-trigger-eval.py && \
 	  echo "  ok  shell and python lint clean"; \
 	else echo "  ~ uv not found - skipping lint"; fi
 

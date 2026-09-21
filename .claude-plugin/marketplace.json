@@ -1,7 +1,7 @@
 {
     "name": "owid-skills",
     "metadata": {
-        "description": "Agent skills for working with Our World in Data — search our charts, fetch the data behind them, and analyze it."
+        "description": "Agent skills for working with Our World in Data — search our charts and articles, fetch the data behind them, and cite it correctly."
     },
     "owner": {
         "name": "Our World In Data",
@@ -10,15 +10,12 @@
     "plugins": [
         {
             "name": "owid",
-            "description": "Skills for working with Our World in Data: search published charts, fetch chart data and metadata via the web API, join OWID data with external sources (e.g. per-capita metrics), and access the full data catalog with the owid-catalog Python library.",
+            "description": "Work with Our World in Data: search published charts, explorers and articles, fetch chart data and metadata via the public web API, join OWID data with your own, embed charts, and cite the original sources. Needs only curl and jq.",
             "source": "./",
             "strict": false,
             "license": "Apache-2.0",
             "skills": [
-                "./skills/search-charts",
-                "./skills/fetch-chart-data",
-                "./skills/joining-data",
-                "./skills/owid-catalog"
+                "./skills/owid"
             ]
         }
     ]

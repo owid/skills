@@ -40,14 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install duckdb
-        run: |
-          curl -fsSL https://install.duckdb.org | sh
-          echo "$HOME/.duckdb/cli/latest" >> "$GITHUB_PATH"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-
+      # The contract tests need only curl and jq, both present on the runner.
       - name: Run contract tests
         run: make test
 

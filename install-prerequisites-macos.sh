@@ -2,6 +2,8 @@
 # This script installs prerequisite tools for skills in this repository.
 # Run it from a terminal like this:
 #   curl -sSL https://raw.githubusercontent.com/owid/skills/main/install-prerequisites-macos.sh | bash
+#
+# The skills need only curl (which ships with macOS) and jq.
 set -e
 
 echo "=== OWID Skills prerequisites installer (macOS) ==="
@@ -22,9 +24,7 @@ fi
 
 # Define packages: "package_name:command_name" (command defaults to package name)
 packages=(
-    "uv"
     "jq"
-    "duckdb"
 )
 
 # Build list of missing packages

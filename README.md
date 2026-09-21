@@ -1,8 +1,8 @@
 # OWID Skills
 
-**Agent skills for working with [Our World in Data](https://ourworldindata.org).** Teach your AI coding agent — Claude Code, OpenAI Codex, Gemini CLI, Cursor, GitHub Copilot, and others — to search our charts, download the data behind them, and analyze it correctly.
+**An agent skill for working with [Our World in Data](https://ourworldindata.org).** Teach your AI agent — Claude Code, OpenAI Codex, Gemini CLI, Cursor, GitHub Copilot, and others — to find our charts and articles, download the data behind them, and cite it correctly.
 
-Our World in Data publishes thousands of charts and datasets on global problems: poverty, health, energy, climate, education, and more. These skills give agents the knowledge to use that data well — the right APIs, the right query parameters, and the caveats that matter (country harmonization, citations, metadata).
+Our World in Data publishes thousands of charts and hundreds of articles on global problems: poverty, health, energy, climate, education, and more. This skill gives agents the knowledge to use that content well — the right endpoints, the right query parameters, and the caveats that matter (which entity codes to join on, what `csvType=filtered` really returns, why "Our World in Data" alone is not a citation).
 
 > **Status:** early and experimental. Interfaces may change. Feedback and issues are welcome!
 
@@ -10,25 +10,29 @@ Our World in Data publishes thousands of charts and datasets on global problems:
 
 Once installed, you can ask your agent things like:
 
+- *"Find the OWID chart on child mortality and give me the URL with the map open."*
 - *"Get life expectancy data for the US and UK since 1950 and plot the trend."*
-- *"Find OWID charts about renewable energy adoption."*
-- *"Download CO₂ emissions per country and compute per-capita values using OWID population data."*
-- *"Make a scatter plot of child mortality against GDP per capita."*
+- *"Someone claims 5 million children under five die every year. Is that consistent with Our World in Data?"*
+- *"Convert my CSV of forest area per country into forest area per person using OWID population."*
+- *"What has Hannah Ritchie written on OWID recently?"*
+- *"Embed the CO₂ per capita chart in this HTML page, or give me a PNG for the slides."*
+- *"Where does the data in this chart come from and how was it processed?"*
 
-The skills trigger automatically when relevant — you don't need to invoke them by name.
+The skill triggers automatically when relevant — you don't need to invoke it by name.
 
-## Skills
+## The skill
 
-Skills follow the open [Agent Skills](https://agentskills.io) format (`SKILL.md`), so they work with any agent that supports the standard.
+Skills follow the open [Agent Skills](https://agentskills.io) format (`SKILL.md`), so they work with any agent that supports the standard. There is one skill, `owid`, built as a short `SKILL.md` that holds the workflow and the rules, plus reference files the agent reads only when it needs them:
 
-| Skill | What it does | Requires |
-|---|---|---|
-| [`search-charts`](skills/search-charts/SKILL.md) | Search OWID's published charts by keyword | `curl`, `jq` |
-| [`fetch-chart-data`](skills/fetch-chart-data/SKILL.md) | Download the data and metadata behind any chart | `curl`, `jq` |
-| [`joining-data`](skills/joining-data/SKILL.md) | Join OWID data with external sources (per-capita metrics, scatter plots vs GDP, …) | `duckdb` |
-| [`owid-catalog`](skills/owid-catalog/SKILL.md) | Python-native access to the full OWID catalog (charts, tables, indicators) via the [`owid-catalog`](https://pypi.org/project/owid-catalog/) library | `uv` (or `pip`) |
+| File | What it covers |
+|---|---|
+| [`SKILL.md`](skills/owid/SKILL.md) | When to use it, the five-step workflow (identify, metadata first, fetch, do the task, cite), the hard rules and the traps |
+| [`references/search-api.md`](skills/owid/references/search-api.md) | Every parameter of `/api/search` for charts, explorers, articles and data insights; response shapes; the `?tab=` mapping |
+| [`references/chart-data-api.md`](skills/owid/references/chart-data-api.md) | `.csv`, `.metadata.json`, `.readme.md`, `.zip`, `.png`, `.svg` for any chart; the filtering parameters; the metadata schema |
+| [`references/data-format.md`](skills/owid/references/data-format.md) | Entity, code and year conventions; regions and historical countries; joining OWID data with your own; reference population and GDP series |
+| [`references/embedding.md`](skills/owid/references/embedding.md) | The iframe snippet, when to use a PNG instead, image sizes, attribution |
 
-The HTTP-based skills are lightweight and language-agnostic. `owid-catalog` is the richer option when Python is available — it returns metadata-aware DataFrames and covers the full data catalog beyond published charts.
+It uses only public endpoints and needs only `curl` and `jq`. No API key.
 
 ## Installation
 
@@ -43,29 +47,31 @@ Install as a plugin from the marketplace:
 
 ### Other agents (Codex, Gemini CLI, Cursor, Copilot, …)
 
-These are standard [Agent Skills](https://agentskills.io), read as-is by Codex, Gemini CLI, Cursor, GitHub Copilot, and many other tools — no Claude-specific setup required. The [`skills`](https://github.com/vercel-labs/skills) CLI detects which of your installed agents support skills (75+ supported) and installs them into each one's directory:
+This is a standard [Agent Skill](https://agentskills.io), read as-is by Codex, Gemini CLI, Cursor, GitHub Copilot, and many other tools — no Claude-specific setup required. The [`skills`](https://github.com/vercel-labs/skills) CLI detects which of your installed agents support skills (75+ supported) and installs it into each one's directory:
 
 ```bash
 npx skills add owid/skills            # into the current project
 npx skills add owid/skills --global   # user-level, across all your projects
 ```
 
-Add `--agent '*'` to install to every supported agent, or `--list` to preview the skills first.
+Add `--agent '*'` to install to every supported agent, or `--list` to preview first.
 
 ### Manual
 
-The skills are plain [Agent Skills](https://agentskills.io) folders, so you can also copy or symlink them into whatever directory your agent reads. Clone the repo:
+The skill is a plain [Agent Skills](https://agentskills.io) folder, so you can also copy or symlink it into whatever directory your agent reads. Clone the repo:
 
 ```bash
 git clone https://github.com/owid/skills owid-skills
 ```
 
-Then put `owid-skills/skills/*` where your agent looks for skills:
+Then put `owid-skills/skills/owid` where your agent looks for skills:
 
 - **Per project** — `./.agents/skills/` (the shared convention read by Codex, Cursor, OpenCode, …)
 - **Per user** — your agent's own skills directory, e.g. `~/.codex/skills/`, `~/.gemini/skills/`, or `~/.claude/skills/`
 
-### Keeping the skills up to date
+Copy the whole `owid/` directory, not just `SKILL.md`: the references live next to it.
+
+### Keeping the skill up to date
 
 Every route above installs a snapshot of `main` as it was that day. Nothing refreshes on its own unless you turn it on, so use the step that matches how you installed:
 
@@ -88,16 +94,18 @@ Every route above installs a snapshot of `main` as it was that day. Nothing refr
 
 There are no version numbers to bump: every commit to `main` is a release, and each of these steps picks up the latest one.
 
+> **Upgrading from the earlier four skills?** This repository used to ship `search-charts`, `fetch-chart-data`, `joining-data` and `owid-catalog`. They are folded into `owid` now. Plugin updates replace them automatically; if you installed by copying, delete the four old directories so they do not compete with the new skill. For Python-native access to OWID's full catalog, the [`owid-catalog`](https://docs.owid.io/projects/etl/api/) library still exists, it just no longer ships as a skill here.
+
 ### Not working?
 
-If your agent doesn't seem to be using the skills, see the
-[FAQ](FAQ.md#my-agent-isnt-using-the-skills-at-all). The two usual causes are the
+If your agent doesn't seem to be using the skill, see the
+[FAQ](FAQ.md#my-agent-isnt-using-the-skill-at-all). The two usual causes are the
 files being in a directory your agent doesn't read, and your agent's reasoning
 effort being turned down far enough that it stops making tool calls.
 
 ### Prerequisites
 
-The skills use a few common command-line tools: `curl`, `jq`, `duckdb`, and `uv`. Install them with your package manager (e.g. `brew install jq duckdb uv`), or on macOS run:
+The skill uses two common command-line tools: `curl` and `jq`. `curl` ships with macOS and most Linux distributions; install `jq` with your package manager (e.g. `brew install jq`), or on macOS run:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/owid/skills/main/install-prerequisites-macos.sh | bash
@@ -105,20 +113,22 @@ curl -sSL https://raw.githubusercontent.com/owid/skills/main/install-prerequisit
 
 ## Using the data
 
-Data published by Our World in Data is open: it is available under the [Creative Commons BY license](https://ourworldindata.org/faqs#can-i-use-or-reproduce-your-data), and it builds on the work of the original data providers. The skills instruct agents to surface proper citations — please keep them when you publish results.
+Data published by Our World in Data is open: it is available under the [Creative Commons BY license](https://ourworldindata.org/faqs#can-i-use-or-reproduce-your-data), and it builds on the work of the original data providers. The skill instructs agents to name those providers in every output — please keep the citations when you publish results.
+
+Requests made through the skill carry the User-Agent `owid-skills/1.0 (+https://github.com/owid/skills)`. That is how we can see the skill being used and keep the endpoints it relies on supported; please leave it in place.
 
 ## Development
 
-Want to add or improve a skill? See [AGENTS.md](AGENTS.md) for repo conventions, [evals/README.md](evals/README.md) for how the skills are evaluated, and the [FAQ](FAQ.md) for questions that come up often.
+Want to improve the skill? See [AGENTS.md](AGENTS.md) for repo conventions, [evals/README.md](evals/README.md) for how it is evaluated, and the [FAQ](FAQ.md) for questions that come up often.
 
 ```bash
 make            # list targets
-make validate   # spec conformance, plugin manifest and marketplace registration
-make test       # contract tests: do the OWID endpoints still match what the skills document?
-make triggers   # trigger evals: does the right skill fire? (needs the claude CLI, costs tokens)
+make validate   # spec conformance, plugin manifest, registration, internal links
+make test       # contract tests: do the OWID endpoints still match what the skill documents?
+make triggers   # trigger evals: does the skill fire when it should? (needs the claude CLI, costs tokens)
 ```
 
-Add `SKILL=<name>` to `test` or `triggers` to run a single skill. To try the skills in a live session, load the plugin directly with `claude --debug --plugin-dir .`
+To try the skill in a live session, load the plugin directly with `claude --debug --plugin-dir .`
 
 Plugins here are versionless on purpose: every commit to `main` is a release.
 

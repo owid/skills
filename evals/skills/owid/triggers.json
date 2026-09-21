@@ -1,0 +1,52 @@
+[
+  {
+    "query": "im writing a blog post about whether malaria deaths have actually gone down since 2000 and i need a chart from our world in data to embed — can you find the best one and give me the url with the map tab open",
+    "should_trigger": true,
+    "note": "discovery plus embed: topic in hand, no url, wants a ?tab= url"
+  },
+  {
+    "query": "grab the csv behind https://ourworldindata.org/grapher/life-expectancy for the USA and the UK from 2000 to 2020 and save it to data/le.csv",
+    "should_trigger": true,
+    "note": "url already known: the data-fetching path, with the filtered-csv parameters"
+  },
+  {
+    "query": "Someone on LinkedIn claims that 'more than 5 million children under five still die every year'. Is that consistent with Our World in Data's numbers? Give me the latest figure and where it comes from.",
+    "should_trigger": true,
+    "note": "fact-check against OWID: needs search, metadata, filtered csv and a citation"
+  },
+  {
+    "query": "i have a csv of national forest area in km2 keyed by iso3 code and i want to turn it into forest area per person using owid population numbers",
+    "should_trigger": true,
+    "note": "per-capita join: the data-format reference and the population series"
+  },
+  {
+    "query": "What has Hannah Ritchie published on ourworldindata.org in the last few months? Titles and links please.",
+    "should_trigger": true,
+    "note": "page search rather than chart search: type=pages plus a jq filter on authors"
+  },
+  {
+    "query": "I'm looking at https://ourworldindata.org/grapher/gdp-per-capita-worldbank — what exactly does 'constant international-$' mean here, and which organisation produced the underlying data?",
+    "should_trigger": true,
+    "note": "explain a chart: the answer lives in .metadata.json and .readme.md, not in the agent's memory"
+  },
+  {
+    "query": "our search page on ourworldindata.org is returning 500s for queries with accented characters — can you look at how the algolia index is configured in the grapher repo?",
+    "should_trigger": false,
+    "note": "near-miss: mentions OWID search and Algolia, but it's a codebase bug in owid-grapher"
+  },
+  {
+    "query": "make me a bar chart of our team's sprint velocity from this jira export (jira-q2.csv) — story points per sprint across the last 6 sprints",
+    "should_trigger": false,
+    "note": "near-miss: 'chart' plus a data file, nothing to do with OWID"
+  },
+  {
+    "query": "Translate this paragraph about the history of malaria eradication campaigns into Spanish, keeping the tone formal.",
+    "should_trigger": false,
+    "note": "near-miss: shares a topic with OWID content but needs no data, chart or article lookup"
+  },
+  {
+    "query": "set up a python virtualenv in this repo and install pandas and matplotlib, then add a Makefile target that runs the tests",
+    "should_trigger": false,
+    "note": "near-miss: the tooling the skill's Python section mentions, with no OWID content involved"
+  }
+]
