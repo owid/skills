@@ -24,7 +24,7 @@
                 "shortDescription": "Find, fetch and analyse Our World in Data's charts and data.",
                 "longDescription": "Search Our World in Data's published charts across population, energy, climate, poverty, health, education and more; fetch the data and metadata behind any chart; join it with other sources; and load the full catalog as pandas DataFrames that carry their own units, sources and citations. Read-only, and uses only OWID's public endpoints.",
                 "developerName": "Our World in Data",
-                "category": "Productivity",
+                "category": "Education & Research",
                 "capabilities": [
                     "Read"
                 ],
