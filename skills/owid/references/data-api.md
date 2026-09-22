@@ -78,7 +78,7 @@ match on the long name, and never on column position.
 | `columns.*.citationShort`, `citationLong` | The source lines. See below. |
 | `columns.*.fullMetadata` | A URL with the complete indicator metadata: every origin, licence and processing step. On a helper column it is built from a null id and 404s. |
 | `columns.*.owidVariableId` | OWID's internal id for the indicator. |
-| `activeFilters` | On a multi-dimensional chart, the dimensions actually applied. Compare it with what you asked for: it is the direct check that you got the view you wanted. |
+| `activeFilters` | Present whenever you passed filters, on any chart: the `country`, `time` and dimensions actually applied. Compare it with what you asked for — it is the direct check that you got the view you wanted. |
 | `dateDownloaded` | The day you fetched it. |
 
 It is a few kilobytes for most charts. On one with many columns, read `chart`
@@ -138,7 +138,7 @@ The query string decides which part of the data comes back:
 | Parameter | Values | Default | What it does |
 |---|---|---|---|
 | `csvType` | `full`, `filtered` | `full` | `full` gives every entity and every year in the chart. `filtered` gives what the chart itself shows. A misspelt value is ignored, so `csvType=fitlered` quietly gives you everything. |
-| `country` | codes joined by `~`, e.g. `USA~GBR~OWID_WRL` | the chart's own selection | Which entities to include. **Only works with `csvType=filtered`**, and many charts ignore it even then — see below. Names work too, but codes are safer. Case matters: `usa` returns nothing. |
+| `country` | codes joined by `~`, e.g. `USA~GBR~OWID_WRL` | depends on the view | Which entities to include. **Only works with `csvType=filtered`**, and many charts ignore it even then — see below. Names work too, but codes are safer. Case matters: `usa` returns nothing. |
 | `time` | `2015`, `2000..2020`, `earliest..2020`, `2000..latest`, `earliest..latest`, `latest`, `earliest` | the chart's own range | Which years. On `Month` and `Day` charts use full dates instead. **Only works with `csvType=filtered`**, and is ignored entirely when the chart's config says `hideTimeline`. |
 | `useColumnShortNames` | `true`, `false` | `false` | `true` gives you `entity,code,year,life_expectancy_0`. `false` gives you `Entity,Code,Year,Life expectancy`. Use `true`: it is the only reliable way to match a CSV column to its metadata. Only lowercase `true` counts — `TRUE` is silently ignored. |
 | `tab` | `chart`, `line`, `map`, `table`, `discrete-bar`, `scatter`, `slope`, `marimekko`, `dumbbell`, `stacked-area`, `stacked-bar`, `stacked-discrete-bar` | the chart's own tab | Which view `filtered` should copy. **Only works with `csvType=filtered`.** An unrecognised value does not error: you get the line view, which may not be the chart's own default. |
@@ -277,8 +277,8 @@ When it is there it takes three shapes, and it is often empty:
   of countries, and entities that are not places at all: individual wars,
   projects, even calendar months where a chart uses those as its entities.
 
-A join on `Code` will look like it worked while quietly dropping those rows, so
-count what you lost rather than assume.
+A join on `Code` will look like it worked while quietly mishandling those rows, so
+check the row count rather than assume.
 
 Within OWID, names and codes are consistent: a name always maps to the same
 code, and a code to the same name, in every chart. So you can line up two OWID
@@ -303,10 +303,11 @@ twelve-month average side by side on the same `Month` axis, both filled in every
 month. Read `titleLong` before you assume what a second column is.
 
 - **`earliest` and `latest` are one year for the entities you selected**, not one
-  per country and not fixed for the chart. Ask for two countries whose data ends in
-  different years and you get the earlier one, with the other silently dropped. For
-  each country's own most recent value, fetch the range and take the last non-empty
-  row per country yourself.
+  per country and not fixed for the chart. `latest` resolves to the most recent year
+  *any* selected entity has, so ask for two countries whose data ends in different
+  years and you get the later one — the entity that stopped earlier is silently
+  dropped. For each country's own most recent value, fetch the range and take the
+  last non-empty row per country yourself.
 - **`timespan` is empty on sub-annual charts** — an empty string, not a missing
   field. Take the coverage from the first and last rows instead.
 - **Filtering needs full dates on those charts.** `time=2021-01` is ignored and
@@ -349,9 +350,9 @@ Join on `Code` and `Year`, never on names.
 
 Two things will bite you:
 
-- **Rows with an empty `Code` drop out silently.** Count your rows before and
-  after, and decide what to do with the ones you lost rather than not noticing
-  them.
+- **Rows with an empty `Code` do not join the way you expect.** Count your rows
+  before and after, and decide what to do about the difference rather than not
+  noticing it.
 - **A region name does not mean the same thing in two places.** `Sub-Saharan
   Africa` from OWID and `Sub-Saharan Africa` from another source can be different
   country lists. If you join regions by name, you may get numbers that look right
@@ -390,4 +391,6 @@ what came back is not what you asked for.
   filtering and hands back the whole dataset, but on some charts it keeps the
   filter and on others it returns an empty file. Use `csvType=full`.
 - **A large `.csv` can fail with 503** and a Cloudflare body rather than a CSV.
-  Retry once, then fall back to `csvType=filtered`.
+  Retry once. Falling back to `csvType=filtered` gets you something, but not the
+  same file — name the countries and years you want, and tell the user you did
+  not get the whole dataset.
