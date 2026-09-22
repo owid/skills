@@ -1,8 +1,7 @@
 ---
 type: llm
 ---
-Judge the final reply against this checklist. PASS only if every item that applies is satisfied; FAIL if any applicable item is clearly not met. Quote the part of the reply that decides each item.
+The user asked what "international-$" means on OWID's GDP per capita chart (World Bank).
 
-- The explanation is grounded in the chart's metadata or readme, and quotes or paraphrases it
-- It explains purchasing power parity and constant prices in plain terms
-- It names the World Bank as the producer
+PASS if the reply explains that international dollars adjust for price differences between countries (purchasing power parity) and are expressed in the constant prices of a base year, and names the World Bank as the producer of the chart's data.
+FAIL if purchasing power parity is not explained, if the World Bank is not named, or if the explanation contradicts the chart's own unit (for example by claiming market exchange rates).

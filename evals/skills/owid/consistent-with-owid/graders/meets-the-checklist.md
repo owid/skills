@@ -1,8 +1,7 @@
 ---
 type: llm
 ---
-Judge the final reply against this checklist. PASS only if every item that applies is satisfied; FAIL if any applicable item is clearly not met. Quote the part of the reply that decides each item.
+The user asked whether "global life expectancy in 2023 was 73.3 years" is consistent with Our World in Data.
 
-- The World value for 2023 is fetched and quoted
-- The comparison accounts for rounding and says whether the numbers agree
-- The original producer is named
+PASS if the reply quotes OWID's World life expectancy value for 2023, says whether 73.3 is consistent with it allowing for rounding, and names the original producer of the data.
+FAIL if no OWID value is quoted, if there is no verdict, or if no producer is named.

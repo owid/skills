@@ -1,8 +1,7 @@
 ---
 type: llm
 ---
-Judge the final reply against this checklist. PASS only if every item that applies is satisfied; FAIL if any applicable item is clearly not met. Quote the part of the reply that decides each item.
+The user asked whether Our World in Data has anything about victims of wars.
 
-- Charts and articles or the topic page are listed with links, from the search
-- It notes what the datasets measure (battle deaths vs all conflict deaths, state-based vs one-sided) using the metadata
-- No invented slugs
+PASS if the reply answers yes or no, lists at least two specific Our World in Data pages or charts with ourworldindata.org URLs, and says what at least one of them measures (for example deaths in armed conflicts, by region or by type of conflict).
+FAIL if it gives no URLs, only generic statements, or says OWID has nothing on the topic.

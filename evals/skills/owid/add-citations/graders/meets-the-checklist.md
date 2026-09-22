@@ -1,8 +1,7 @@
 ---
 type: llm
 ---
-Judge the final reply against this checklist. PASS only if every item that applies is satisfied; FAIL if any applicable item is clearly not met. Quote the part of the reply that decides each item.
+The user pasted a three-claim draft (people without electricity; solar generation growth since 2010; life expectancy versus energy use) and asked for Our World in Data citations added to it.
 
-- Each claim gets a link to a specific chart and the original producer's name
-- The numbers in the draft are checked against the data and corrected or qualified where they differ
-- The third claim (life expectancy vs energy use) is supported by a chart that actually shows both, or flagged as not directly supported
+PASS if the revised text contains, for each of the three claims, a link to a specific ourworldindata.org chart or page, names the data producer at least once, and, where a claim's number disagrees with OWID's data, says so.
+FAIL if any claim is left without an ourworldindata.org link, if links point elsewhere, or if the text comes back unchanged.

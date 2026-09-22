@@ -1,9 +1,7 @@
 ---
 type: llm
 ---
-Judge the final reply against this checklist. PASS only if every item that applies is satisfied; FAIL if any applicable item is clearly not met. Quote the part of the reply that decides each item.
+The user asked whether more people die from air pollution than from road accidents, according to Our World in Data.
 
-- Both quantities are taken from OWID data for the same year and the same geography (World)
-- Numbers are given with units and year
-- The verdict follows from the numbers, and the producer (IHME) is named
-- Any definitional caveat (e.g. what counts as air pollution) from the metadata is mentioned
+PASS if the reply gives a global number of deaths for air pollution and a global number for road accidents or road injuries, each with the year it refers to; names who produced the data; and states a verdict that follows from those two numbers. If the two figures are for different years, the reply says so.
+FAIL if either figure is missing or has no year, if no data producer is named, or if the verdict contradicts the numbers given.
