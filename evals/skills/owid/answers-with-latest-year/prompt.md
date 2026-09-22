@@ -4,7 +4,7 @@ description: >-
   data, name the original producer and link the chart, rather than answer
   from memory.
 tags: [behaviour]
-allowed_tools: [WebFetch, Skill]
+allowed_tools: [WebFetch, Skill, Read, Glob, Grep]
 expected_outcome: >-
   A number of under-five deaths in Somalia for 2024 if the data has it, else
   for the latest year with that stated, credited to UN IGME with a chart link.

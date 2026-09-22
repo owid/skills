@@ -4,7 +4,7 @@ description: >-
   slug needs the search API, and turning availableTabs into ?tab=map needs the
   mapping the skill documents.
 tags: [behaviour]
-allowed_tools: [WebFetch, Skill]
+allowed_tools: [WebFetch, Skill, Read, Glob, Grep]
 expected_outcome: >-
   The reply links ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita
   with ?tab=map.

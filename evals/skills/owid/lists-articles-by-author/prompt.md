@@ -4,7 +4,7 @@ description: >-
   and a filter on the authors field; without it the model scrapes the team
   page or answers from memory.
 tags: [behaviour]
-allowed_tools: [WebFetch, Skill]
+allowed_tools: [WebFetch, Skill, Read, Glob, Grep]
 expected_outcome: >-
   A dated list of recent ourworldindata.org articles by Hannah Ritchie, newest
   first, with links.
