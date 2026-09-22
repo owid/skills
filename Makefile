@@ -18,11 +18,17 @@ SKILLS_REF := uvx --quiet --from 'skills-ref>=0.1.1,<0.2' agentskills
 CHECK_SCHEMA := uvx --quiet --from 'check-jsonschema>=0.33,<0.40' check-jsonschema
 PLUGIN_SCHEMA := https://agent-plugins.org/schemas/1.0.0/plugin.schema.json
 
+# The ref `make install` resolves from GitHub. It defaults to the branch you are
+# on, because installing main while working on a branch silently installs code
+# you are not testing. BRANCH=main installs the released version. Recursive on
+# purpose: the git call only runs when install does.
+BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
+
 help: ## List the available targets
 	@grep -hE '^[a-z][a-z-]*:.*## ' $(MAKEFILE_LIST) \
 	  | awk -F':.*## ' '{printf "  \033[1m%-9s\033[0m %s\n", $$1, $$2}'
 	@echo
-	@echo "  test/triggers take SKILL=<name>, behaviour CASE=<name>, install BRANCH=<name>."
+	@echo "  test/triggers take SKILL=<name>, behaviour CASE=<name>, install BRANCH=<ref>."
 	@echo "  triggers also takes RUNS/MODEL/EFFORT and behaviour RUNS - that is the cost."
 
 validate: ## Check spec conformance, both plugin manifests and marketplace registration
@@ -116,17 +122,23 @@ behaviour: ## Behaviour evals: what does the plugin change about what Claude doe
 	  $(if $(CASE),--case $(CASE),) $(if $(RUNS),--runs $(RUNS),) \
 	  --allow-tools "WebFetch(domain:ourworldindata.org)" --no-publish
 
-install: ## Install this repo as a plugin for Codex and the ChatGPT app (BRANCH=<name> to try a branch)
+install: ## Install this repo as a plugin for Codex and the ChatGPT app (defaults to the current branch)
 	@command -v codex >/dev/null 2>&1 || { \
 	  echo "  x codex CLI not found - install it from https://developers.openai.com/codex"; exit 1; }
+	@# codex installs from GitHub, not from this working tree, so a branch that was
+	@# never pushed - or a typo in BRANCH - would otherwise install a different ref
+	@# without saying so.
+	@git ls-remote --exit-code --heads origin $(BRANCH) >/dev/null 2>&1 || { \
+	  echo "  x origin has no branch $(BRANCH) - push it first, or pass BRANCH=<ref>"; exit 1; }
 	@# `marketplace add` refuses to re-point an existing marketplace at a different
 	@# source, which is what a second run with a different BRANCH is. Clearing ours
 	@# first makes the target idempotent; both removes are no-ops on a clean machine.
 	@codex plugin remove owid@owid-skills >/dev/null 2>&1 || true
 	@codex plugin marketplace remove owid-skills >/dev/null 2>&1 || true
-	@codex plugin marketplace add owid/skills $(if $(BRANCH),--ref $(BRANCH),)
+	@codex plugin marketplace add owid/skills --ref $(BRANCH)
 	@codex plugin add owid@owid-skills
 	@echo
+	@echo "  Installed from branch $(BRANCH)."
 	@echo "  Codex is ready - run /plugins in a session to see it."
 	@echo "  For the ChatGPT app: turn on Settings > Security and login > Developer mode,"
 	@echo "  restart the desktop app, then install Our World in Data from Plugins."

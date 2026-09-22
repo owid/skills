@@ -207,11 +207,12 @@ To try the skill in a live session, load the plugin directly with `claude --debu
 ### Trying a branch
 
 `make install` registers this repo as a plugin source for the Codex CLI, which
-is also where the ChatGPT desktop app looks. Add `BRANCH=` to point it at a
-branch instead of `main`:
+is also where the ChatGPT desktop app looks. It installs the branch you have
+checked out, resolved from GitHub — so push it first. `BRANCH=` installs a
+different ref:
 
 ```bash
-make install BRANCH=my-feature
+make install BRANCH=main
 ```
 
 Re-running it repoints an existing install, so you can switch branches freely.
