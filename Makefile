@@ -18,10 +18,11 @@ SKILLS_REF := uvx --quiet --from 'skills-ref>=0.1.1,<0.2' agentskills
 CHECK_SCHEMA := uvx --quiet --from 'check-jsonschema>=0.33,<0.40' check-jsonschema
 PLUGIN_SCHEMA := https://agent-plugins.org/schemas/1.0.0/plugin.schema.json
 
-# The ref `make install` resolves from GitHub. It defaults to the branch you are
-# on, because installing main while working on a branch silently installs code
-# you are not testing. BRANCH=main installs the released version. Recursive on
-# purpose: the git call only runs when install does.
+# The ref `make install` resolves from GitHub for its Codex half; the Claude Code
+# half reads this worktree instead. It defaults to the branch you are on, because
+# installing main while working on a branch silently installs code you are not
+# testing. BRANCH=main installs the released version. Recursive on purpose: the
+# git call only runs when install does.
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 
 help: ## List the available targets
