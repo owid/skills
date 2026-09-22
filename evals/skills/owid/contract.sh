@@ -329,7 +329,7 @@ fi
 section "Chart data API: documentation drift"
 doc_contains "the reference documents the .metadata.json suffix" "$DATA_REF" '\.metadata\.json'
 doc_contains "the reference documents the recommended base parameters" "$DATA_REF" 'csvType=filtered&useColumnShortNames=true'
-doc_contains "the embedding reference documents the image parameters" "$EMBED_REF" '`imType=og`'
+doc_contains "the embedding reference documents the image parameters" "$EMBED_REF" 'imType=og'
 doc_contains "the reference documents the map-default trap" "$DATA_REF" 'tab=chart'
 skill_md_contains "SKILL.md documents the recommended base parameters" 'csvType=filtered&useColumnShortNames=true'
 skill_md_contains "SKILL.md requires the User-Agent header" 'owid-skills/1\.0 \(\+https://github\.com/owid/skills\)'
