@@ -28,8 +28,7 @@ Skills follow the open [Agent Skills](https://agentskills.io) format (`SKILL.md`
 |---|---|
 | [`SKILL.md`](skills/owid/SKILL.md) | When to use it, the five-step workflow (identify, metadata first, fetch, do the task, cite), the hard rules and the traps |
 | [`references/search-api.md`](skills/owid/references/search-api.md) | Every parameter of `/api/search` for charts, explorers, articles and data insights; response shapes; the `?tab=` mapping |
-| [`references/chart-data-api.md`](skills/owid/references/chart-data-api.md) | `.csv`, `.metadata.json`, `.readme.md`, `.zip`, `.png`, `.svg` for any chart; the filtering parameters; the metadata schema |
-| [`references/data-format.md`](skills/owid/references/data-format.md) | Entity, code and year conventions; regions and historical countries; joining OWID data with your own; reference population and GDP series |
+| [`references/data-api.md`](skills/owid/references/data-api.md) | `.csv`, `.metadata.json`, `.readme.md`, `.zip`, `.png`, `.svg` for any chart; the filtering parameters; the metadata fields and how to cite; entity, code and year conventions |
 | [`references/embedding.md`](skills/owid/references/embedding.md) | The iframe snippet, when to use a PNG instead, image sizes, attribution |
 
 It uses only public endpoints and needs only `curl` and `jq`. No API key.

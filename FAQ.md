@@ -126,10 +126,9 @@ bug. Three known traps worth ruling out first, all documented in the skill:
 They were the first version of this repository. The four covered adjacent
 ground and competed for the same prompts, and two of them pulled in
 dependencies (DuckDB, a Python library) that most users do not have. Their
-content is now in the single `owid` skill: search and fetch as the two
-references on the endpoints, joining as part of `data-format.md`. Python users
-can still use the [`owid-catalog`](https://docs.owid.io/projects/etl/api/)
-library directly.
+content is now in the single `owid` skill: one reference on the search endpoint
+and one on the data endpoints. Python users can still use the
+[`owid-catalog`](https://docs.owid.io/projects/etl/api/) library directly.
 
 If you installed the old skills by copying, delete those four directories:
 plugin and `skills`-CLI installs replace them on update.

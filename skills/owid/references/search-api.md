@@ -167,4 +167,4 @@ this mapping (a value not in the table is not embeddable that way):
 
 Other view parameters (`country=USA~GBR`, `time=2000..2020`, `time=2015`) can be
 appended too and are honoured by the data, image and embed endpoints alike; see
-[chart-data-api.md](chart-data-api.md).
+[data-api.md](data-api.md).

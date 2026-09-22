@@ -12,11 +12,11 @@ questions, and only the third one needs a model in the loop grading output.
 Layer 1 catches the failure mode that will actually bite this repo: the skill
 is thin documentation over live public OWID endpoints, so it rots when the API
 changes, not when the prose gets worse. Layer 2 matters because the skill's
-`description` is broad on purpose (one skill covers search, data, joins and
+`description` is broad on purpose (one skill covers search, data and
 embedding), so the question is whether it fires on OWID work and stays quiet on
 near-misses that merely share vocabulary. Layer 3 is the expensive one; it
-earns its keep for the tasks where the agent does real reasoning: fact-checks
-and per-capita joins.
+earns its keep for the tasks where the agent does real reasoning, such as
+fact-checks.
 
 ## Layout
 
@@ -203,9 +203,9 @@ the repo `misroute` and `expected_skill` are dormant, but the runner keeps them
 so that a second skill, if one is ever added, is measured against the first
 from day one.
 
-The set currently holds 10 queries: 6 positives spanning the skill's use cases
-(discovery, fetch by URL, fact-check, per-capita join, article search,
-explaining a chart) and 4 near-misses. The negatives that earn their keep are
+The set currently holds 9 queries: 5 positives spanning the skill's use cases
+(discovery, fetch by URL, fact-check, article search, explaining a chart) and
+4 near-misses. The negatives that earn their keep are
 the near-misses — a query that shares vocabulary with the skill but needs
 something else: an OWID codebase bug, a chart of non-OWID data, a translation
 about an OWID topic, Python tooling. `"write a fibonacci function"` tests
@@ -219,10 +219,10 @@ skill run `curl` for real.
 
 Not automated yet. `evals.json` holds the case definitions in the format
 described at <https://agentskills.io/skill-creation/evaluating-skills> — `prompt`,
-`expected_output`, optional `files`, and draft `assertions`. The skill has three
-cases: a happy path (search, fetch, plot, cite), a case that tests a specific
+`expected_output`, optional `files`, and draft `assertions`. The skill has two
+cases: a happy path (search, fetch, plot, cite) and a case that tests a specific
 piece of guidance (a fact-check where the claim's unit does not match the
-chart's), and the per-capita join with a fixture.
+chart's).
 
 To run one by hand, spawn a subagent with a clean context for each configuration
 and give it the skill path, the prompt, any fixtures, and an output directory
@@ -256,5 +256,5 @@ ended up referenced from the skill.
   hand, and check the `stream-json` against `skills_in_line()`.
 - Layer 1 hits the live public API, so a network outage looks like a failure.
   That is deliberate — a red nightly run because OWID is down is information.
-- Layer 2 costs real tokens: 10 queries × 3 runs is 30 `claude -p` invocations.
+- Layer 2 costs real tokens: 9 queries × 3 runs is 27 `claude -p` invocations.
   Run it when the description changes, not on every PR.

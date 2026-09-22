@@ -10,7 +10,7 @@
     "plugins": [
         {
             "name": "owid",
-            "description": "Work with Our World in Data: search published charts, explorers and articles, fetch chart data and metadata via the public web API, join OWID data with your own, embed charts, and cite the original sources. Needs only curl and jq.",
+            "description": "Work with Our World in Data: search published charts, explorers and articles, fetch chart data and metadata via the public web API, embed charts, and cite the original sources. Needs only curl and jq.",
             "source": "./",
             "strict": false,
             "license": "Apache-2.0",

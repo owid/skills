@@ -15,11 +15,6 @@
     "note": "fact-check against OWID: needs search, metadata, filtered csv and a citation"
   },
   {
-    "query": "i have a csv of national forest area in km2 keyed by iso3 code and i want to turn it into forest area per person using owid population numbers",
-    "should_trigger": true,
-    "note": "per-capita join: the data-format reference and the population series"
-  },
-  {
     "query": "What has Hannah Ritchie published on ourworldindata.org in the last few months? Titles and links please.",
     "should_trigger": true,
     "note": "page search rather than chart search: type=pages plus a jq filter on authors"

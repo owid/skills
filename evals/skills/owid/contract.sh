@@ -12,8 +12,7 @@ GRAPHER="https://ourworldindata.org/grapher"
 EXPLORER="https://ourworldindata.org/explorers"
 
 SEARCH_REF="references/search-api.md"
-DATA_REF="references/chart-data-api.md"
-FORMAT_REF="references/data-format.md"
+DATA_REF="references/data-api.md"
 EMBED_REF="references/embedding.md"
 
 # ---------------------------------------------------------------------------
@@ -270,63 +269,106 @@ if fetch "$CHART.config.json" "$WORK/config.json"; then
     has_keys ".config.json is a grapher config with slug and title" "$WORK/config.json" "." slug title
 fi
 
+section "Chart data API: filters are silently ignored without csvType=filtered"
+# data-api.md's first trap: country= and time= are not rejected without
+# csvType=filtered, they are ignored. If the API ever starts honouring them,
+# or starts rejecting them, the trap is wrong either way.
+if fetch "$CHART.csv?country=USA~GBR" "$WORK/unfiltered.csv"; then
+    csv_min_rows "country= without csvType=filtered returns far more than two countries" \
+        "$WORK/unfiltered.csv" 1000
+fi
+if fetch "$CHART.csv?csvType=filtered&country=USA~GBR" "$WORK/filtered.csv"; then
+    csv_column_set "country= with csvType=filtered returns exactly those two" \
+        "$WORK/filtered.csv" Code "USA GBR"
+fi
+if fetch "$CHART.csv?csvType=filtered&country=USA~GBR&tab=table" "$WORK/tabtable.csv"; then
+    csv_min_rows "tab=table undoes the country filter" "$WORK/tabtable.csv" 1000
+fi
+
+section "Chart data API: multi-dimensional chart dimensions"
+# data-api.md tells agents to copy dimension parameters from the chart URL
+# and warns how each way of getting them wrong behaves.
+MDIM="$GRAPHER/religious-composition"
+MDIM_VIEW="csvType=filtered&tab=chart&country=USA&time=2020"
+if fetch "$MDIM.csv?$MDIM_VIEW&religion=christians&indicator=share&useColumnShortNames=true" "$WORK/mdim.csv"; then
+    csv_has_columns "a complete dimension set selects that view" \
+        "$WORK/mdim.csv" entity code year share__religion_christians
+fi
+http_status "a partial dimension set fails" "$MDIM.csv?$MDIM_VIEW&religion=christians" 500
+http_status "an unknown dimension value fails" \
+    "$MDIM.csv?$MDIM_VIEW&religion=not_a_religion&indicator=share" 500
+if fetch "$MDIM.csv?$MDIM_VIEW&metric=share" "$WORK/mdim-badname.csv"; then
+    # The dangerous case: an unknown parameter NAME is ignored, so you get 200
+    # and the default view rather than an error.
+    csv_header "an unknown dimension name is ignored and returns the default view" \
+        "$WORK/mdim-badname.csv" 'Entity,Code,Year,Share of the population who are religious'
+fi
+http_status "multi-dimensional charts have no .config.json" "$MDIM.config.json" 404
+
+section "Chart data API: explorer dimensions change the numbers"
+EXPLORER_DIMS="indicator=Population&Age=Total&Projection+scenario=None"
+EXPLORER_WHERE="csvType=filtered&country=USA&time=2020"
+if fetch "$EXPLORER/population-and-demography.csv?$EXPLORER_DIMS&Sex=Male&$EXPLORER_WHERE" "$WORK/exp-male.csv" \
+   && fetch "$EXPLORER/population-and-demography.csv?$EXPLORER_DIMS&Sex=Female&$EXPLORER_WHERE" "$WORK/exp-female.csv"; then
+    ok "explorer dimension parameters change the data" \
+        test "$(tail -1 "$WORK/exp-male.csv")" != "$(tail -1 "$WORK/exp-female.csv")"
+fi
+
 section "Chart data API: documentation drift"
 doc_contains "the reference documents the .metadata.json suffix" "$DATA_REF" '\.metadata\.json'
 doc_contains "the reference documents the recommended base parameters" "$DATA_REF" 'csvType=filtered&useColumnShortNames=true'
-doc_contains "the reference documents the image parameters" "$DATA_REF" '`imType=og`'
+doc_contains "the embedding reference documents the image parameters" "$EMBED_REF" '`imType=og`'
 doc_contains "the reference documents the map-default trap" "$DATA_REF" 'tab=chart'
 skill_md_contains "SKILL.md documents the recommended base parameters" 'csvType=filtered&useColumnShortNames=true'
 skill_md_contains "SKILL.md requires the User-Agent header" 'owid-skills/1\.0 \(\+https://github\.com/owid/skills\)'
-for ref in "$SEARCH_REF" "$DATA_REF" "$FORMAT_REF" "$EMBED_REF"; do
+for ref in "$SEARCH_REF" "$DATA_REF" "$EMBED_REF"; do
     doc_contains "$ref uses the same User-Agent string" "$ref" 'owid-skills/1\.0 \(\+https://github\.com/owid/skills\)'
 done
 doc_contains "the embedding reference carries the iframe snippet" "$EMBED_REF" '<iframe src="https://ourworldindata\.org/grapher/'
 
 # ---------------------------------------------------------------------------
-section "Data format: reference series for joins"
-# data-format.md hardcodes four chart slugs and claims about their coverage.
-# slug|claim|earliest-year-must-be-at-most|latest-year-must-be-at-least
-CHARTS=(
-    "population|long-run population, 10,000 BCE to present|-10000|2020"
-    "population-with-un-projections|UN population, 1950 with projections to 2100|1950|2100"
-    "gdp-per-capita-maddison-project-database|long-run GDP per capita from 1820|1820|2018"
-    "gdp-per-capita-worldbank|World Bank GDP per capita from 1990|1990|2022"
-)
-TIMESPANS='
-  [ .columns[]
-    | select(has("timespan"))
-    | .timespan
-    | capture("^(?<s>-?[0-9]+)-(?<e>[0-9]+)$")
-    | { start: (.s | tonumber), end: (.e | tonumber) } ]
-'
-for entry in "${CHARTS[@]}"; do
-    IFS='|' read -r slug claim min_start min_end <<<"$entry"
-    meta="$WORK/$slug.metadata.json"
-    if ! fetch "$GRAPHER/$slug.metadata.json" "$meta"; then
-        continue
-    fi
-    starts=$(jq -r "$TIMESPANS | map(.start) | min" "$meta" 2>/dev/null)
-    ends=$(jq -r "$TIMESPANS | map(.end) | max" "$meta" 2>/dev/null)
-    if [[ -n "$starts" && -n "$ends" && "$starts" != "null" && "$ends" != "null" ]]; then
-        note "$slug covers $starts to $ends"
-        ok "$slug: coverage starts at or before $min_start ($claim)" test "$starts" -le "$min_start"
-        ok "$slug: coverage extends to at least $min_end" test "$ends" -ge "$min_end"
-    else
-        _fail "$slug: timespans are parseable" "could not parse timespans"
-    fi
-    doc_contains "data-format.md still references $slug" "$FORMAT_REF" "grapher/$slug"
-done
-
-section "Data format: entity codes are joinable"
-CO2="$WORK/co2.csv"
-POP="$WORK/pop.csv"
-JOIN_PARAMS="csvType=filtered&useColumnShortNames=true&country=USA~GBR~CHN&time=2020"
-if fetch "$GRAPHER/annual-co2-emissions-per-country.csv?$JOIN_PARAMS" "$CO2" &&
-    fetch "$GRAPHER/population.csv?$JOIN_PARAMS" "$POP"; then
-    csv_column_set "the emissions file holds the three ISO codes" "$CO2" code "CHN GBR USA"
-    csv_column_set "the population file holds the same three ISO codes" "$POP" code "CHN GBR USA"
-    csv_column_matches "every code is ISO alpha-3 or an OWID_ code" "$POP" code '^([A-Z]{3}|OWID_[A-Z_0-9]+)$'
+section "Data format: the shapes the Code column comes in"
+# data-api.md tells agents that Code is ISO alpha-3 for countries, that regions
+# use OWID_, UN_ or WB_ codes, and that a large minority of entities have no
+# code at all. Each of those claims is checked against a chart that carries it.
+if fetch "$GRAPHER/share-of-population-in-extreme-poverty.csv?csvType=full" "$WORK/codes.csv"; then
+    csv_column_matches "every Code is ISO alpha-3, an OWID_/UN_/WB_ code, or empty" \
+        "$WORK/codes.csv" Code '^([A-Z]{3}|(OWID|UN|WB)_[A-Z0-9_]+)?$'
+    for prefix in OWID_ UN_ WB_; do
+        ok "the Code column carries $prefix codes" \
+            grep -q ",$prefix" "$WORK/codes.csv"
+    done
+    ok "some entities have an empty Code" \
+        grep -qE '^[^,]+,,' "$WORK/codes.csv"
 fi
-doc_contains "data-format.md tells agents to join on Code and Year" "$FORMAT_REF" 'Join on \*\*`Code` and `Year`\*\*'
+doc_contains "data-api.md documents the OWID_ code family" "$DATA_REF" 'OWID_WRL'
+doc_contains "data-api.md documents the UN_ and WB_ code family" "$DATA_REF" 'WB_SSA'
+doc_contains "data-api.md warns that codes can be empty" "$DATA_REF" 'Roughly a quarter of the entities'
+
+section "Data format: entity names and codes line up across charts"
+# data-api.md promises a name always maps to the same code in every chart, which
+# is what makes joining two OWID charts on Code safe.
+JOIN_PARAMS="csvType=filtered&country=USA~GBR~CHN&time=2020"
+if fetch "$GRAPHER/annual-co2-emissions-per-country.csv?$JOIN_PARAMS" "$WORK/co2.csv" &&
+    fetch "$GRAPHER/population.csv?$JOIN_PARAMS" "$WORK/pop.csv"; then
+    csv_column_set "the emissions file holds the three ISO codes" "$WORK/co2.csv" Code "CHN GBR USA"
+    csv_column_set "the population file holds the same three ISO codes" "$WORK/pop.csv" Code "CHN GBR USA"
+    ok "the same codes carry the same entity names in both charts" \
+        test "$(cut -d, -f1,2 "$WORK/co2.csv" | sort -u)" = "$(cut -d, -f1,2 "$WORK/pop.csv" | sort -u)"
+fi
+doc_contains "data-api.md tells agents to join on Code and Year" "$DATA_REF" 'Join on `Code` and `Year`'
+
+section "Data format: text encoding"
+# data-api.md says the metadata carries real non-ASCII but CSV entity names do not.
+if fetch "$GRAPHER/child-mortality.metadata.json" "$WORK/encoding.json"; then
+    ok "the metadata contains non-ASCII characters" \
+        test "$(LC_ALL=C tr -d '\0-\177' < "$WORK/encoding.json" | wc -c | tr -d ' ')" -gt 0
+fi
+if fetch "$GRAPHER/life-expectancy.csv?csvType=filtered&country=CIV~CUW&time=2020" "$WORK/accents.csv"; then
+    ok "the CSV holds no non-ASCII bytes at all" \
+        test "$(LC_ALL=C tr -d '\0-\177' < "$WORK/accents.csv" | wc -c | tr -d ' ')" = "0"
+    ok "Cote d'Ivoire comes back unaccented" grep -q "Cote d" "$WORK/accents.csv"
+    ok "Curacao comes back unaccented" grep -q "Curacao" "$WORK/accents.csv"
+fi
 
 finish

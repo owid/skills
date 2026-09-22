@@ -1,6 +1,6 @@
 ---
 name: "owid"
-description: "Work with Our World in Data (OWID) content: search its published charts, explorers and articles, download the data and metadata behind any chart, and cite it correctly. Use whenever a task mentions Our World in Data, OWID, ourworldindata.org or a grapher URL, or asks for cross-country data on global problems (population, health and causes of death, energy, CO2 and climate, poverty and GDP, education, democracy, war, food, and more): finding a chart or article, fetching or plotting the data behind a chart, fact-checking a claim or answering a factual question against OWID data, computing per-capita figures or joining OWID data with your own, embedding a chart or its PNG in HTML, slides or an artifact, or explaining what a chart shows and where its data comes from. Needs only curl and jq; no API key."
+description: "Work with Our World in Data (OWID) content: search its published charts, explorers and articles, download the data and metadata behind any chart, and cite it correctly. Use whenever a task mentions Our World in Data, OWID, ourworldindata.org or a grapher URL, or asks for cross-country data on global problems (population, health and causes of death, energy, CO2 and climate, poverty and GDP, education, democracy, war, food, and more): finding a chart or article, fetching or plotting the data behind a chart, fact-checking a claim or answering a factual question against OWID data, embedding a chart or its PNG in HTML, slides or an artifact, or explaining what a chart shows and where its data comes from. Needs only curl and jq; no API key."
 allowed-tools:
 - "Bash(curl:*)"
 - "Bash(jq:*)"
@@ -15,8 +15,7 @@ reachable through two public HTTP endpoints, with no API key:
 | You need | Endpoint | Read first |
 |---|---|---|
 | To find charts, explorers or articles | `https://ourworldindata.org/api/search` | [references/search-api.md](references/search-api.md) |
-| The data, metadata or image behind a chart | `https://ourworldindata.org/grapher/<slug>.{csv,metadata.json,png,...}` | [references/chart-data-api.md](references/chart-data-api.md) |
-| To interpret columns, entities and years, or join with other data | | [references/data-format.md](references/data-format.md) |
+| The data, metadata or image behind a chart, and how to read it | `https://ourworldindata.org/grapher/<slug>.{csv,metadata.json,png,...}` | [references/data-api.md](references/data-api.md) |
 | To show a chart inside HTML, slides or an artifact | | [references/embedding.md](references/embedding.md) |
 
 This file holds the workflow and the rules. Read the relevant reference before
@@ -46,10 +45,11 @@ every parameter, the response shape, and the traps.
    process it with `jq`, `awk` or a script rather than reading it into context.
 4. **Do the task** (analyse, plot, fact-check, join, embed). Use the CSV for
    numbers, never values read off an image.
-5. **Cite.** Every output that uses OWID numbers names the *original* data
-   producer, taken from `columns.*.citationShort`, plus a link to the chart.
-   "Our World in Data" alone is not a sufficient citation: OWID processes and
-   republishes data collected by others, and the producer must be credited.
+5. **Cite.** Tell the user where the numbers came from at least once in the
+   session, even when they did not ask. Use `columns.*.citationShort`: it is one
+   line of prose that names the original producer first, which is the part that
+   matters. "Our World in Data" alone is not a citation, because OWID
+   republishes data collected by others. Add a link to the chart.
    Where a caveat from `descriptionKey` bears on the user's question, say so.
 
 ## Rules
@@ -62,9 +62,10 @@ every parameter, the response shape, and the traps.
 - **Keep responses out of context.** Search hits are large (`availableEntities`
   lists every country) and CSVs can run to hundreds of thousands of rows. Save
   to a file, then extract with `jq` or filter with `country=` and `time=`.
-- **Preserve user-facing details.** Data is UTF-8 (`Côte d'Ivoire`, `Curaçao`);
-  keep it that way. `conversionFactor` in the metadata is already applied to the
-  CSV values; do not apply it again.
+- **Preserve user-facing details.** Responses are UTF-8. The citation lines in
+  the metadata contain en dashes and curly quotes: pass them through unchanged.
+  Entity names in the CSV have no accents (`Cote d'Ivoire`), so do not try to
+  match against the accented spelling.
 - **Only public endpoints.** Everything here works without credentials. If a
   request needs a login, you are on the wrong URL.
 
@@ -107,8 +108,10 @@ curl -sA "$UA" "$G/child-mortality.readme.md"
 - `hitsPerPage` is capped at 100. Page search defaults to
   `pageTypes=article,about-page`, so data insights and topic pages need an
   explicit `pageTypes=`.
-- The `Entity` column holds names and `Code` holds ISO alpha-3 codes; regions
-  and historical countries have `OWID_` codes. Join on `Code`, never on names.
+- `Entity` holds names, `Code` holds ISO alpha-3 codes for countries. Regions and
+  historical states use `OWID_`, `UN_` or `WB_` codes, and about a quarter of the
+  entities in a big chart have no code at all. Join on `Code`, never on names, and
+  check what you lost.
 
 ## Answering factual questions and fact-checking
 

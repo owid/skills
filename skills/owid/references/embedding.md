@@ -55,7 +55,8 @@ curl -sA "$UA" -o square.png "$URL.png?imType=square&imSquareSize=1200"
 curl -sA "$UA" -o chart.svg "$URL.svg?tab=map&time=2020"
 ```
 
-Image parameters are listed in [chart-data-api.md](chart-data-api.md#images-png-and-svg).
+The image endpoints take the same view parameters as the data endpoints; see
+[data-api.md](data-api.md).
 In Markdown or HTML you can also reference the PNG URL directly instead of
 downloading it: `![Life expectancy](https://ourworldindata.org/grapher/life-expectancy.png?country=USA~GBR)`.
 Downloading is better when the output must not change if the chart is updated.
@@ -74,7 +75,7 @@ OWID logo. Still, in the surrounding text or caption:
 
 ## Reproducing the chart yourself
 
-Fetch the CSV (see [chart-data-api.md](chart-data-api.md)) and plot it. Mirror
+Fetch the CSV (see [data-api.md](data-api.md)) and plot it. Mirror
 OWID's practices where it helps the reader: title says what is measured,
 subtitle says the unit and definition, source line names the producer, and the
 axis starts at zero for counts and rates. Never read values off the PNG; use
