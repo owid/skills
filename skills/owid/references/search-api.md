@@ -7,7 +7,8 @@ that powers the search box on ourworldindata.org. It covers **charts**
 No authentication. Responses are JSON. Full reference:
 <https://docs.owid.io/projects/etl/api/search-api/>.
 
-Always send `-A "owid-skills/1.0 (+https://github.com/owid/skills)"`.
+Always send the header
+`User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)`.
 
 ## Parameters
 
@@ -90,33 +91,42 @@ interface PageSearchResponse {
 
 ## Recipes
 
-```bash
-UA="owid-skills/1.0 (+https://github.com/owid/skills)"
-S="https://ourworldindata.org/api/search"
+Top 5 charts. Each result has `title`, `subtitle`, `url` and `availableTabs`:
 
-# Top 5 charts: title, subtitle, url and the views each supports
-curl -sA "$UA" "$S?q=life+expectancy&hitsPerPage=5" \
-  | jq '.results[] | {title, subtitle, url, availableTabs}'
+```
+https://ourworldindata.org/api/search?q=life+expectancy&hitsPerPage=5
+```
 
-# Only charts with data for two given countries
-curl -sA "$UA" "$S?q=electricity+access&countries=Nigeria~Ghana&requireAllCountries=true&hitsPerPage=5" \
-  | jq -r '.results[] | "\(.title) — \(.url)"'
+Only charts with data for two given countries:
 
-# Articles and data insights on a topic, newest first
-curl -sA "$UA" "$S?q=malaria&type=pages&pageTypes=article,data-insight&hitsPerPage=20" \
-  | jq -r '.results | sort_by(.date) | reverse | .[] | "\(.date[:10])  \(.type)  \(.title)  \(.url)"'
+```
+https://ourworldindata.org/api/search?q=electricity+access&countries=Nigeria~Ghana&requireAllCountries=true&hitsPerPage=5
+```
 
-# Recent writing by one author (author names are indexed as text)
-curl -sA "$UA" "$S?q=Hannah+Ritchie&type=pages&hitsPerPage=50" \
-  | jq -r '.results[] | select(.authors // [] | index("Hannah Ritchie")) | "\(.date[:10])  \(.title)  \(.url)"'
+Articles and data insights on a topic. Sort the results by `date` yourself for
+newest first:
 
-# The topic page for a subject
-curl -sA "$UA" "$S?q=malaria&type=pages&pageTypes=topic-page,linear-topic-page&hitsPerPage=3" \
-  | jq -r '.results[] | "\(.title) — \(.url)"'
+```
+https://ourworldindata.org/api/search?q=malaria&type=pages&pageTypes=article,data-insight&hitsPerPage=20
+```
 
-# The list of topic names accepted by `topics=`
-curl -sA "$UA" 'https://datasette-public.owid.io/owid/tags.json?slug__notnull=1&_size=max&_shape=array' \
-  | jq -r '.[].name' | sort
+Recent writing by one author. Author names are indexed as text, so search for
+the name and then keep the results whose `authors` array contains it:
+
+```
+https://ourworldindata.org/api/search?q=Hannah+Ritchie&type=pages&hitsPerPage=50
+```
+
+The topic page for a subject:
+
+```
+https://ourworldindata.org/api/search?q=malaria&type=pages&pageTypes=topic-page,linear-topic-page&hitsPerPage=3
+```
+
+The list of topic names accepted by `topics=`, in each row's `name`:
+
+```
+https://datasette-public.owid.io/owid/tags.json?slug__notnull=1&_size=max&_shape=array
 ```
 
 ## Given the URL of an article
