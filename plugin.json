@@ -33,7 +33,10 @@
                     "Which Our World in Data chart shows global life expectancy over time?",
                     "Get the data behind Our World in Data's CO2 emissions per capita chart.",
                     "Compare electricity generation per person across the EU using Our World in Data."
-                ]
+                ],
+                "brandColor": "#002147",
+                "composerIcon": "./assets/icon.png",
+                "logo": "./assets/logo.png"
             }
         }
     }

@@ -21,6 +21,7 @@ skills/owid/references/*.md       # one file per endpoint or topic, read when ne
 .claude-plugin/marketplace.json   # Claude Code marketplace + plugin definition
 .claude-plugin/plugin.json        # the plugin's own Claude manifest; `claude plugin eval` needs it
 plugin.json                       # Agent Plugins manifest (ChatGPT, Codex)
+assets/                           # the icon and logo the ChatGPT/Codex listing shows
 .agents/plugins/                  # repo-scoped catalog: lets ChatGPT/Codex install the repo as-is
 evals/skills/<skill-name>/        # that skill's test cases and fixtures
 evals/                            # shared eval harness + playbook (evals/README.md)

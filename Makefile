@@ -72,6 +72,13 @@ validate: ## Check spec conformance, both plugin manifests and marketplace regis
 	  done; \
 	done; \
 	if [ $$fail -eq 0 ]; then echo "  ok  every relative link inside skills/ resolves"; else exit 1; fi
+	@# The ChatGPT and Codex listing falls back to a generic icon when an interface
+	@# asset path does not resolve, which looks exactly like never having set one.
+	@fail=0; \
+	for path in $$(grep -oE '"\./assets/[^"]+"' plugin.json | tr -d '"'); do \
+	  if [ ! -e "$$path" ]; then echo "  x plugin.json references $$path, which does not exist"; fail=1; fi; \
+	done; \
+	if [ $$fail -eq 0 ]; then echo "  ok  plugin.json asset paths resolve"; else exit 1; fi
 	@# Eval JSON is hand-authored and hand-reviewed, so it must stay readable. A
 	@# python json.dumps without ensure_ascii=False silently rewrites every em dash
 	@# and accent as a \uXXXX escape, which is unreviewable prose.
