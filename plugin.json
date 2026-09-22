@@ -1,0 +1,41 @@
+{
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+    "name": "owid",
+    "description": "Work with Our World in Data: search published charts, explorers and articles, fetch chart data and metadata via the public web API, embed charts, and cite the original sources. Needs only curl and jq.",
+    "author": {
+        "name": "Our World in Data",
+        "email": "tech@ourworldindata.org",
+        "url": "https://ourworldindata.org"
+    },
+    "homepage": "https://github.com/owid/skills",
+    "repository": "https://github.com/owid/skills",
+    "license": "Apache-2.0",
+    "keywords": [
+        "data",
+        "charts",
+        "statistics",
+        "research",
+        "our-world-in-data"
+    ],
+    "extensions": {
+        "com.openai": {
+            "interface": {
+                "displayName": "Our World in Data",
+                "shortDescription": "Find, fetch and cite Our World in Data's charts, data and articles.",
+                "longDescription": "Search Our World in Data's published charts, explorers and articles across population, energy, climate, poverty, health, education and more; fetch the data and metadata behind any chart, with the definitions and caveats OWID's editors attach; embed charts; and cite the original data producers. Read-only, and uses only OWID's public endpoints.",
+                "developerName": "Our World in Data",
+                "category": "Education & Research",
+                "capabilities": [
+                    "Read"
+                ],
+                "websiteURL": "https://ourworldindata.org",
+                "privacyPolicyURL": "https://ourworldindata.org/privacy-policy",
+                "defaultPrompt": [
+                    "Which Our World in Data chart shows global life expectancy over time?",
+                    "Get the data behind Our World in Data's CO2 emissions per capita chart.",
+                    "Compare electricity generation per person across the EU using Our World in Data."
+                ]
+            }
+        }
+    }
+}

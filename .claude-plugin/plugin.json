@@ -1,0 +1,10 @@
+{
+    "name": "owid",
+    "description": "Work with Our World in Data: search published charts, explorers and articles, fetch chart data and metadata via the public web API, embed charts, and cite the original sources. Needs only curl and jq.",
+    "author": {
+        "name": "Our World In Data",
+        "email": "tech@ourworldindata.org"
+    },
+    "homepage": "https://github.com/owid/skills",
+    "license": "Apache-2.0"
+}
