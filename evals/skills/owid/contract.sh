@@ -168,6 +168,11 @@ if fetch "$CHART.metadata.json?$PARAMS" "$META"; then
         '.timespan | test("^-?[0-9]+-[0-9]+$")'
     all_match "descriptionKey is a markdown bulleted string, as documented" "$META" \
         '.columns[] | select(has("descriptionKey"))' '(.descriptionKey | type == "string") and (.descriptionKey | test("^- "))'
+    # data-api.md lists the values `type` takes. A sample of 163 charts produced
+    # only these; a new one appearing means the documented list has gone stale.
+    all_match "column type is one of the documented values" "$META" \
+        '.columns[] | select(has("type"))' \
+        '.type as $t | ["Numeric","Integer","String","NumberOrString","Ordinal","Continent","SeriesAnnotation"] | index($t) != null'
     note "columns: $(jq -r '.columns | keys | join(", ")' "$META")"
 fi
 

@@ -4,7 +4,7 @@ Every chart on Our World in Data has a URL. Add a suffix to that URL and you get
 a file instead of a web page. Add parameters and you choose which part of the
 data you get. No API key, no sign-up.
 
-## The URL
+## How a request is built
 
 Here is one request, taken apart:
 
@@ -35,7 +35,7 @@ used:
 UA="owid-skills/1.0 (+https://github.com/owid/skills)"
 ```
 
-## Always get the metadata
+## Start with the metadata
 
 Fetch `<chart-url>.metadata.json` before you do anything else, every time, even
 when the user only asked for numbers. Read it into your context and keep it
@@ -48,29 +48,25 @@ and you cannot do the job well without it, so it belongs in your context.
 It tells you:
 
 - **What the numbers are.** The unit, and what the indicator actually measures.
-  "Deaths" and "deaths per 100,000 people" are different columns.
 - **Where they come from.** The original producer, which you must name when you
   report a figure. "Our World in Data" on its own is not a source.
 - **What the limits are.** `descriptionKey` holds the caveats our editors wrote
   by hand: what is estimated, what is not comparable across countries, what a
-  break in the series means.
+  break in the series means, etc.
 - **How far the data goes.** `timespan` per column. If it stops before the year
   the user asked about, say so instead of guessing.
-- **How it was processed**, if OWID changed anything.
 
 Without this you can answer a question but you cannot tell the user what the
 answer means, and you cannot warn them when the number does not say what they
 think it says. That is most of the value you add during a chat or a coding
 session.
 
-The response also echoes any filters you sent, under `activeFilters`.
-
 ```bash
 curl -sA "$UA" -o meta.json \
-  "https://ourworldindata.org/grapher/life-expectancy.metadata.json?country=USA~GBR&time=2000..2020"
+  "https://ourworldindata.org/grapher/life-expectancy.metadata.json"
 ```
 
-### What is in it
+### The metadata fields
 
 Two things at the top level: `chart`, describing the chart as a whole, and
 `columns`, with one entry per data column, keyed by the column name.
@@ -84,10 +80,10 @@ Two things at the top level: `chart`, describing the chart as a whole, and
 | `columns.*.titleShort`, `titleLong` | The column's name, short and long. |
 | `columns.*.unit`, `shortUnit` | `"years"`, `"deaths per 100,000 people"`, `"%"`. Read this before you report any number. |
 | `columns.*.descriptionShort` | A one-sentence definition of the indicator. |
-| `columns.*.descriptionKey` | The caveats, written by OWID editors, as a bulleted list. What is estimated, what is not comparable, where a series breaks. Repeat the ones that bear on the user's question. |
-| `columns.*.descriptionProcessing` | What OWID changed, if anything. |
+| `columns.*.descriptionKey` | The caveats, written by OWID editors, as a bulleted list. Repeat the ones that bear on the user's question. |
+| `columns.*.descriptionProcessing` | Notes on OWID's processing step for this indicator. |
 | `columns.*.timespan` | The years the column covers, e.g. `1543-2023`. |
-| `columns.*.type` | `Numeric`, `Integer`, `Categorical`, `Ordinal`. |
+| `columns.*.type` | Almost always `Numeric` or `Integer`. Also `String`, `NumberOrString`, `Ordinal`, `Continent` and `SeriesAnnotation`. Sometimes missing. |
 | `columns.*.shortName` | The column name you get with `useColumnShortNames=true`. |
 | `columns.*.lastUpdated`, `nextUpdate` | Dates, `YYYY-MM-DD`. |
 | `columns.*.citationShort`, `citationLong` | The source lines. See below. |
@@ -102,7 +98,7 @@ jq '{chart: (.chart | {title, subtitle, note}),
      columns: (.columns | map_values({unit, timespan, descriptionShort, descriptionKey, citationShort}))}' meta.json
 ```
 
-### Always cite the original producer
+### Citing the source
 
 OWID almost never collects the data. It republishes work done by other people,
 and those people need the credit to keep doing the work. So "Our World in Data"
@@ -112,8 +108,6 @@ on its own is not a citation. Name the producer.
 for a citation, tell the user where the numbers came from the first time you use
 them. `citationShort` is written for exactly this: it is one line, it reads as
 prose, and it names the producers before it names OWID.
-
-Use it wherever space is short, such as a sentence in chat or a chart subtitle:
 
 ```
 Gapminder (2015); UN Inter-agency Group for Child Mortality Estimation (2025) – processed by Our World in Data
@@ -139,7 +133,7 @@ you may use, change and republish it, as long as you credit the source and the
 authors. The data itself stays under whatever terms its original producer set,
 which is another reason the producer has to be named.
 
-## What you can ask for
+## Suffixes and parameters
 
 The suffix decides which file comes back:
 
@@ -165,7 +159,7 @@ The query string decides which part of the data comes back:
 | dimension parameters | chart-specific | the chart's default view | On multi-dimensional charts, these choose the indicator. See below. |
 | `nocache` | flag | | Skip the cache. Only useful right after a chart was updated. |
 
-### All the data, or part of it
+### How much data to ask for
 
 Start from what the user gave you:
 
@@ -233,7 +227,7 @@ Four things to know:
 With `useColumnShortNames=true` the column name records the view you got
 (`share__religion_christians`), which is the easiest way to confirm it.
 
-## What comes back
+## Reading the CSV
 
 The CSV is long, or "tidy": **one row per entity and time point**, one column
 per indicator. There are only two dimensions, entity and time. Anything else a
@@ -264,7 +258,7 @@ missing altogether has no data in that chart at all. Neither is a zero.
 - **Some entities are not places**: income groups like `Low-income countries`,
   and splits like `China (urban)` or `Ethiopia (rural)`.
 
-### Codes
+### The Code column
 
 The `Code` column comes in three shapes, and it is often empty:
 
@@ -282,7 +276,7 @@ Within OWID, names and codes are consistent: a name always maps to the same
 code, and a code to the same name, in every chart. So you can line up two OWID
 charts on `Code` safely, as long as you handle the entities that have none.
 
-### Time
+### Years and days
 
 - Annual data is the norm. Check `timespan` on the column before you promise a
   year; if the data stops earlier, say so.
@@ -297,7 +291,7 @@ charts on `Code` safely, as long as you handle the entities that have none.
   what money buys in each country ("international-$"). Do not compare across
   those without saying that you did.
 
-### Text encoding
+### Text and accents
 
 Everything comes back as UTF-8. Two things follow:
 
@@ -322,7 +316,10 @@ Two things will bite you:
   country lists. Join regions by name and you get numbers that look right and are
   not. Match countries, and build the region yourself if you need one.
 
-## Traps
+## Silent failures
+
+Each of these returns a 200 and a plausible-looking file. Nothing tells you that
+what came back is not what you asked for.
 
 - **`country=` and `time=` do nothing without `csvType=filtered`.** They are not
   rejected, they are ignored, and you get every country back. If a "filtered"
@@ -341,5 +338,3 @@ Two things will bite you:
 - **Estimates and projections can share a chart**, as separate columns covering
   different years. There is no parameter to drop the projection. Check `timespan`
   per column and drop it yourself.
-- **Multi-dimensional charts have no title** in their metadata. Use the column
-  names or `.readme.md` instead.

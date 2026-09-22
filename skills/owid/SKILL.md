@@ -20,7 +20,7 @@ reachable through two public HTTP endpoints, with no API key:
 
 This file holds the workflow and the rules. Read the relevant reference before
 making a kind of call you have not made yet in this session; each one lists
-every parameter, the response shape, and the traps.
+every parameter, the response shape, and what fails silently.
 
 ## Workflow
 
@@ -85,7 +85,7 @@ curl -sA "$UA" "$S?q=malaria&type=pages&pageTypes=article,data-insight&hitsPerPa
   | jq -r '.results[] | "\(.date[:10]) \(.type): \(.title) — \(.url)"'
 
 # Metadata, then data, for two countries since 2000
-curl -sA "$UA" -o meta.json "$G/child-mortality.metadata.json?country=KEN~IND&time=2000..2023"
+curl -sA "$UA" -o meta.json "$G/child-mortality.metadata.json"
 jq '{title: .chart.title, columns: (.columns | map_values({unit, descriptionShort, citationShort}))}' meta.json
 curl -sA "$UA" -o data.csv "$G/child-mortality.csv?csvType=filtered&useColumnShortNames=true&country=KEN~IND&time=2000..2023"
 
