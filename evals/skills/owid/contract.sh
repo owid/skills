@@ -142,8 +142,8 @@ doc_table_covers "every observed availableTabs value is in the tab mapping table
 note "observed tabs: $(printf '%s' "$observed_tabs" | tr '\n' ' ')"
 doc_contains "the reference lists every documented parameter" "$SEARCH_REF" '`pageTypes`'
 doc_contains "the reference warns that resultType is not a parameter" "$SEARCH_REF" 'resultType'
-skill_md_contains "SKILL.md points at /api/search" 'ourworldindata\.org/api/search'
-skill_md_contains "SKILL.md mentions the closestMatches fallback" 'closestMatches'
+doc_contains "the search reference points at /api/search" "$SEARCH_REF" 'ourworldindata\.org/api/search'
+doc_contains "the search reference documents the closestMatches fallback" "$SEARCH_REF" 'closestMatches'
 
 # ---------------------------------------------------------------------------
 section "Chart data API: metadata"
@@ -267,6 +267,15 @@ http_status "explorer views have metadata too" "$EXPLORER_VIEW.metadata.json?$EX
 section "Chart data API: the other suffixes"
 content_type ".png returns an image" "$CHART.png?country=USA~GBR&time=2000..2020" '^image/png'
 content_type ".png honours imType=square" "$CHART.png?imType=square&country=USA" '^image/png'
+# embedding.md says a PNG is 850x600 by default, that one dimension implies the
+# other, and that giving both returns exactly that box.
+if fetch "$CHART.png" "$WORK/img-default.png" &&
+    fetch "$CHART.png?imWidth=1600&imHeight=900" "$WORK/img-box.png"; then
+    ok "a PNG is 850x600 by default" \
+        sh -c 'file -b "$1" | grep -q "850 x 600"' _ "$WORK/img-default.png"
+    ok "imWidth and imHeight together give that exact box" \
+        sh -c 'file -b "$1" | grep -qE "160[0-9] x 90[0-9]"' _ "$WORK/img-box.png"
+fi
 content_type ".svg returns an svg" "$CHART.svg?tab=map&time=2020" '^image/svg'
 content_type ".readme.md returns markdown" "$CHART.readme.md" '^text/markdown'
 content_type ".zip returns an archive" "$CHART.zip?csvType=filtered&country=USA" '^application/zip'
@@ -329,10 +338,14 @@ fi
 section "Chart data API: documentation drift"
 doc_contains "the reference documents the .metadata.json suffix" "$DATA_REF" '\.metadata\.json'
 doc_contains "the reference documents the recommended base parameters" "$DATA_REF" 'csvType=filtered&useColumnShortNames=true'
-doc_contains "the embedding reference documents the image parameters" "$EMBED_REF" 'imType=og'
+doc_contains "the embedding reference documents image sizing" "$EMBED_REF" '`imWidth`'
+doc_contains "the embedding reference documents the square size" "$EMBED_REF" '`imSquareSize`'
 doc_contains "the reference documents the map-default trap" "$DATA_REF" 'tab=chart'
-skill_md_contains "SKILL.md documents the recommended base parameters" 'csvType=filtered&useColumnShortNames=true'
-skill_md_contains "SKILL.md requires the User-Agent header" 'owid-skills/1\.0 \(\+https://github\.com/owid/skills\)'
+doc_contains "the data reference documents the recommended base parameters" "$DATA_REF" 'csvType=filtered&useColumnShortNames=true'
+# SKILL.md is a routing file now: its whole job is to link the three references.
+for ref in search-api data-api embedding; do
+    skill_md_contains "SKILL.md links references/$ref.md" "references/$ref\.md"
+done
 for ref in "$SEARCH_REF" "$DATA_REF" "$EMBED_REF"; do
     doc_contains "$ref uses the same User-Agent string" "$ref" 'owid-skills/1\.0 \(\+https://github\.com/owid/skills\)'
 done

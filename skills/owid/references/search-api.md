@@ -4,11 +4,28 @@
 that powers the search box on ourworldindata.org. It covers **charts**
 (including individual explorer views and multi-dimensional chart views) and
 **pages** (articles, data insights, topic pages, and a few other page types).
-No authentication. Responses are JSON. Full reference:
-<https://docs.owid.io/projects/etl/api/search-api/>.
+No authentication. Responses are JSON.
 
-Always send the header
-`User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)`.
+## How a request is built
+
+Everything is a query string on that one URL. `type` chooses which of the two
+searches you get, and the two return different shapes, so decide that first.
+
+Send this header on every request:
+
+```
+User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)
+```
+
+OWID phrases things the way the field does, so search its vocabulary rather than
+the user's: "death rate from malaria" rather than "people who died from malaria",
+"literacy" rather than "people who can read", "GDP per capita" rather than
+"average income". Results come back by relevance and the right chart is almost
+always on the first page; if the top hits are wrong, change a term rather than
+paging deeper.
+
+The endpoint's own specification, which is what it is built against, is
+[search-api.openapi.yaml](https://github.com/owid/owid-grapher/blob/master/docs/search-api.openapi.yaml).
 
 ## Parameters
 
@@ -20,74 +37,51 @@ Always send the header
 | `hitsPerPage` | both | 1..100 | `20` | Over 100 is a 400. |
 | `countries` | charts | entity names joined with `~` | | Prefer charts that have data for these countries, e.g. `countries=Kenya~Chad`. Names, not ISO codes. |
 | `requireAllCountries` | charts | `true`, `false` | `false` | With `countries`, keep only charts that have data for **all** of them. |
-| `topics` | charts | one topic name | | Restrict to a topic tag, e.g. `topics=Malaria`. Tag names are listed at <https://datasette-public.owid.io/owid/tags?slug__notnull=1>. |
+| `topics` | charts | one topic name | | Restrict to a topic, e.g. `topics=Malaria`. One topic only: a comma or `~` separated list is a 400. An unknown topic is also a 400, and the error message lists every valid topic, which is the quickest way to get that list. |
 | `pageTypes` | pages | comma-separated list | `article,about-page` | Valid: `article`, `data-insight`, `topic-page`, `linear-topic-page`, `about-page`, `author`, `announcement`, `profile`, `fragment`, `homepage`, `featured-viz`. An unknown value is a 400 whose message lists the valid ones. |
 
 Encode spaces as `+` or `%20`. The `~` in `countries` can be sent literally.
 
-## Chart search response (`type=charts`)
+## What a chart search returns
 
-```typescript
-type GrapherTabName =
-  | "LineChart" | "ScatterPlot" | "StackedArea" | "DiscreteBar" | "StackedDiscreteBar"
-  | "SlopeChart" | "StackedBar" | "Marimekko" | "Dumbbell" | "Table" | "WorldMap"
+The envelope holds `query`, `results`, `nbHits`, `page`, `nbPages` and
+`hitsPerPage`, plus `closestMatches` when the query had to be relaxed.
 
-interface BaseChartHit {
-  type: "chart" | "explorerView" | "multiDimView"
-  title: string
-  slug: string
-  url: string                        // absolute; for explorer and multi-dim views it already includes the query string that selects this view
-  subtitle?: string
-  variantName?: string               // e.g. "World Bank, constant international-$"
-  availableEntities: string[]        // every country/region the chart has data for; long
-  originalAvailableEntities?: string[]
-  availableTabs: GrapherTabName[]    // which views the chart supports
-  publishedAt: string                // ISO 8601
-  updatedAt: string                  // ISO 8601
-}
+Each hit:
 
-// explorerView and multiDimView hits additionally carry:
-interface ViewHitExtras {
-  queryParams: string                // the query string that selects this view
-  containerTitle: string             // the explorer / multi-dim chart it belongs to
-}
+| Field | Holds |
+|---|---|
+| `type` | `chart`, `explorerView` or `multiDimView`. The last two are single views inside a larger thing, and they are ordinary hits you can use directly. |
+| `title` | The chart's title. |
+| `slug` | The chart's slug. |
+| `url` | Absolute. On an explorer or multi-dim view it already carries the query string that selects that view, so use it as it is. |
+| `subtitle` | The chart's subtitle. |
+| `variantName` | Which version of an indicator this chart uses, e.g. `World Bank, constant international-$`. Absent on charts with only one version. |
+| `availableEntities` | Every country and region the chart has data for. This is long — hundreds of strings per hit — and it is the reason a search response is large. |
+| `availableTabs` | Which views the chart supports, as `LineChart`, `WorldMap`, `Table`, `DiscreteBar`, `SlopeChart`, `Marimekko`, `ScatterPlot`, `StackedArea`, `StackedBar`, `StackedDiscreteBar`, `Dumbbell`. See [Choosing a chart view](#choosing-a-chart-view). |
+| `publishedAt`, `updatedAt` | ISO 8601 timestamps. |
+| `queryParams` | The query string that selects this view. Only on `explorerView` and `multiDimView`. |
+| `containerTitle` | The explorer or multi-dimensional chart the view belongs to. Only on `explorerView` and `multiDimView`, and worth showing the user when several views of one explorer come back together. |
 
-interface ChartSearchResponse {
-  query: string
-  results: BaseChartHit[]
-  nbHits: number
-  page: number
-  nbPages: number
-  hitsPerPage: number
-  closestMatches?: boolean           // true when nothing matched exactly and these are relaxed matches
-}
-```
+## What a page search returns
 
-## Page search response (`type=pages`)
+A different envelope: `query`, `results`, `nbHits`, and then `offset` and
+`length` where the chart search has `page` and `nbPages`. `closestMatches`
+appears here too.
 
-```typescript
-interface PageHit {
-  type: "article" | "data-insight" | "topic-page" | "linear-topic-page" | "about-page"
-      | "author" | "announcement" | "profile" | "fragment" | "homepage" | "featured-viz"
-  title: string
-  slug: string
-  url: string                        // absolute
-  content?: string                   // excerpt of the body text; a few hundred words
-  authors?: string[]
-  date?: string                      // publication date, ISO 8601
-  modifiedDate?: string              // ISO 8601
-  thumbnailUrl?: string
-}
+Each hit:
 
-interface PageSearchResponse {
-  query: string
-  results: PageHit[]
-  nbHits: number
-  offset: number                     // note: pages use offset/length, not page/nbPages
-  length: number
-  closestMatches?: boolean
-}
-```
+| Field | Holds |
+|---|---|
+| `type` | One of the `pageTypes` values: `article`, `data-insight`, `topic-page`, `linear-topic-page`, `about-page`, `author`, `announcement`, `profile`, `fragment`, `homepage`, `featured-viz`. |
+| `title` | The page title. |
+| `slug` | The page slug. |
+| `url` | Absolute. |
+| `content` | An excerpt of the body, a few hundred words. Not the full text; fetch the page itself for that. |
+| `authors` | Names, as written on the page. |
+| `date` | Publication date, ISO 8601. Results are not sorted by it, so sort them yourself if you want newest first. |
+| `modifiedDate` | ISO 8601. |
+| `thumbnailUrl` | The page's image. |
 
 ## Recipes
 
@@ -123,13 +117,14 @@ The topic page for a subject:
 https://ourworldindata.org/api/search?q=malaria&type=pages&pageTypes=topic-page,linear-topic-page&hitsPerPage=3
 ```
 
-The list of topic names accepted by `topics=`, in each row's `name`:
+The list of topic names accepted by `topics=`. Ask for one that does not exist
+and the 400 lists every valid topic:
 
 ```
-https://datasette-public.owid.io/owid/tags.json?slug__notnull=1&_size=max&_shape=array
+https://ourworldindata.org/api/search?topics=list-them-please
 ```
 
-## Given the URL of an article
+## Finding a page you already have
 
 There is no per-article JSON endpoint. To get an article's title, authors,
 date and an excerpt, search for it: `q=<words from the slug or title>&type=pages`
@@ -137,26 +132,7 @@ and match on `.url` (drop the `pageTypes` default if it might be a data insight
 or topic page). For the full text, fetch the HTML page itself. Articles embed
 charts as `/grapher/<slug>` links, which you can then treat as charts.
 
-## Search tips
-
-- **Vocabulary.** OWID follows the terminology of the field: "death rate from
-  malaria" not "people who died from malaria", "literacy" not "people who can
-  read", "GDP per capita" not "average income".
-- **Relevance, not recall.** Results come ordered by relevance and the first
-  page usually contains the right chart. If the top hits are off, add a term or
-  swap a synonym; do not page deep.
-- **There is no empty result.** With no real match the API relaxes the query
-  and returns loosely related hits with `closestMatches: true`, as a single
-  page whose `nbHits` is just the number returned. Treat a nonsense query as
-  "nothing found" by looking at the titles, never at `nbHits`.
-- **Tell the user what you found.** When several charts fit, name the top few
-  titles and subtitles and either pick one with a stated reason or ask.
-- **Explorer and multi-dim views are first-class hits.** Their `url` already
-  encodes the view; use it verbatim for the data endpoints. `containerTitle`
-  tells you which explorer they belong to, which helps when several views of
-  one explorer show up.
-
-## Building a chart URL for a specific view
+## Choosing a chart view
 
 `availableTabs` says which views a chart supports. Append `?tab=<value>` using
 this mapping (a value not in the table is not embeddable that way):
@@ -178,3 +154,20 @@ this mapping (a value not in the table is not embeddable that way):
 Other view parameters (`country=USA~GBR`, `time=2000..2020`, `time=2015`) can be
 appended too and are honoured by the data, image and embed endpoints alike; see
 [data-api.md](data-api.md).
+
+## Silent failures
+
+- **A search can return nothing, and it can also quietly return something else.**
+  A query that matches nothing comes back empty. A query where some of the words
+  match something comes back with a few loosely related hits and
+  `closestMatches: true`. So a non-empty response is not the same as a match:
+  read `closestMatches`, and judge the titles rather than `nbHits`.
+- **`resultType` is not a parameter.** It is accepted and ignored, so you get a
+  chart search back while believing you asked for something else. The parameter
+  is `type`.
+- **Page search does not return data insights or topic pages by default.** It
+  defaults to `pageTypes=article,about-page`, so a search for a data insight
+  finds nothing until you ask for that type.
+
+When several charts fit, tell the user the top few titles and subtitles, and
+either pick one and say why, or ask which they meant.
