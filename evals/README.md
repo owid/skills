@@ -217,7 +217,7 @@ nothing.
 
 Only the `Skill` tool is permitted during a run, and the run is killed the
 moment a skill fires: we are measuring the routing decision, not letting the
-skill run `curl` for real.
+skill make requests for real.
 
 ## Layer 3 — behaviour evals
 
@@ -329,9 +329,9 @@ and use the defaults only for a number you intend to record.
 is deliberate in both directions: the cases need it, and the no-plugin arm gets
 it too, so a positive Δ is the skill's doing rather than the tool grant's.
 
-Granting `Bash` instead would be closer to how the skills really run — they
-document `curl` and `jq` — but it puts every command under Claude Code's OS
-sandbox, whose preconditions are machine-dependent. On a Mac with Docker Desktop
+Granting `Bash` instead would let the agent fetch the URLs the way a shell user
+would, with `curl`, but it puts every command under Claude Code's OS sandbox,
+whose preconditions are machine-dependent. On a Mac with Docker Desktop
 installed it refuses outright, because `~/.docker` contains symlinks it cannot
 reliably exclude, and the case fails with a run error rather than a score. If
 you want a Bash-granting case, expect to debug the sandbox first.

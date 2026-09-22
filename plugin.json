@@ -1,7 +1,7 @@
 {
     "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
     "name": "owid",
-    "description": "Work with Our World in Data: search published charts, explorers and articles, fetch chart data and metadata via the public web API, embed charts, and cite the original sources. Needs only curl and jq.",
+    "description": "Work with Our World in Data: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. No API key.",
     "author": {
         "name": "Our World in Data",
         "email": "tech@ourworldindata.org",
@@ -22,7 +22,7 @@
             "interface": {
                 "displayName": "Our World in Data",
                 "shortDescription": "Find, fetch and cite Our World in Data's charts, data and articles.",
-                "longDescription": "Search Our World in Data's published charts, explorers and articles across population, energy, climate, poverty, health, education and more; fetch the data and metadata behind any chart, with the definitions and caveats OWID's editors attach; embed charts; and cite the original data producers. Read-only, and uses only OWID's public endpoints.",
+                "longDescription": "Search Our World in Data's published charts, explorers and articles across population, energy, climate, poverty, health, education and more; fetch the data and metadata behind any chart, with the definitions and caveats OWID's editors attach; embed charts; and cite the original data producers. Read-only, uses only OWID's public endpoints, and needs no API key.",
                 "developerName": "Our World in Data",
                 "category": "Education & Research",
                 "capabilities": [

@@ -24,7 +24,6 @@ plugin.json                       # Agent Plugins manifest (ChatGPT, Codex)
 .agents/plugins/                  # repo-scoped catalog: lets ChatGPT/Codex install the repo as-is
 evals/skills/<skill-name>/        # that skill's test cases and fixtures
 evals/                            # shared eval harness + playbook (evals/README.md)
-install-prerequisites-macos.sh    # installs jq; curl ships with macOS
 ```
 
 **Everything under `skills/<skill-name>/` ships to every user.** A skill
@@ -54,13 +53,17 @@ live in a sibling `evals/skills/<skill-name>/` for exactly this reason; see
   the prose gets worse. Add a check to `evals/skills/owid/contract.sh` when you
   document a new parameter, endpoint or behaviour, and use the `doc_contains`
   helper to pin the documentation to it.
-- **Only public endpoints and common tools.** Skills must rely on public OWID
-  endpoints and on `curl` and `jq`. If a new tool is genuinely needed, add it to
-  `install-prerequisites-macos.sh` and justify it in the PR. Do **not** add
+- **Public endpoints, and no prescribed tools.** Skills must rely on public OWID
+  endpoints, and must document them as URLs rather than as commands. Naming a
+  tool assumes something about the reader's environment that we have no business
+  assuming: people reach this API from a shell, from Python, from R, from a
+  notebook, on machines where `jq` was never installed. The repository's own
+  tests may use whatever they like; the shipped skill may not. Do **not** add
   anything that requires OWID-internal infrastructure or credentials; this
   repository is public.
-- **Keep responses out of context.** Instruct agents to save responses to
-  files and filter with `jq` rather than reading large payloads.
+- **Keep responses out of context.** Instruct agents to narrow a request with
+  `country=` and `time=` and read only the fields they need, rather than pulling
+  a large payload into context. Do not tell them which tool to do that with.
 
 ## Adding a skill
 

@@ -1,11 +1,6 @@
 ---
 name: "owid"
-description: "Work with Our World in Data (OWID) content: search its published charts, explorers and articles, download the data and metadata behind any chart, and cite it correctly. Use whenever a task mentions Our World in Data, OWID, ourworldindata.org or a grapher URL, or asks for cross-country data on global problems (population, health and causes of death, energy, CO2 and climate, poverty and GDP, education, democracy, war, food, and more): finding a chart or article, fetching or plotting the data behind a chart, fact-checking a claim or answering a factual question against OWID data, embedding a chart or its PNG in HTML, slides or an artifact, or explaining what a chart shows and where its data comes from. Needs only curl and jq; no API key."
-allowed-tools:
-- "Bash(curl:*)"
-- "Bash(jq:*)"
-- "Bash(cat:*)"
-- "Read"
+description: "Work with Our World in Data (OWID) content: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. Use whenever a task mentions Our World in Data, OWID, ourworldindata.org or a grapher URL, or asks for cross-country data on global problems (population, health and causes of death, energy, CO2 and climate, poverty and GDP, education, democracy, war, food, and more): finding a chart or article, fetching or plotting the data behind a chart, fact-checking a claim or answering a factual question against OWID data, embedding a chart or its PNG in HTML, slides or an artifact, or explaining what a chart shows and where its data comes from. No API key."
 ---
 
 Our World in Data (OWID) publishes thousands of interactive charts and hundreds
@@ -41,8 +36,8 @@ every parameter, the response shape, and what fails silently.
 3. **Fetch the data**: `<chart-url>.csv?csvType=filtered&useColumnShortNames=true`
    plus `country=` and `time=` filters. If the URL carried no filters, download
    the full data (`csvType=full`); if it did, decide with the user whether they
-   want the filtered view or everything. Save the response to a file and
-   process it with `jq`, `awk` or a script rather than reading it into context.
+   want the filtered view or everything. Keep the response out of your context
+   and process it however you normally process data.
 4. **Do the task** (analyse, plot, fact-check, join, embed). Use the CSV for
    numbers, never values read off an image.
 5. **Cite.** Tell the user where the numbers came from at least once in the
@@ -60,8 +55,8 @@ every parameter, the response shape, and what fails silently.
 - **Never invent a slug.** Confirm a chart exists through search or a 200
   response before building on it.
 - **Keep responses out of context.** Search hits are large (`availableEntities`
-  lists every country) and CSVs can run to hundreds of thousands of rows. Save
-  to a file, then extract with `jq` or filter with `country=` and `time=`.
+  lists every country) and CSVs can run to hundreds of thousands of rows. Narrow
+  the request with `country=` and `time=`, and pull out only the fields you need.
 - **Preserve user-facing details.** Responses are UTF-8. The citation lines in
   the metadata contain en dashes and curly quotes: pass them through unchanged.
   Entity names in the CSV have no accents (`Cote d'Ivoire`), so do not try to
@@ -71,27 +66,23 @@ every parameter, the response shape, and what fails silently.
 
 ## Quick reference
 
-```bash
-UA="owid-skills/1.0 (+https://github.com/owid/skills)"
-S="https://ourworldindata.org/api/search"
-G="https://ourworldindata.org/grapher"
+Send `User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)` on every
+request. Fetch these however suits the project you are in.
 
+```
 # Charts (also explorer and multi-dim views), top 5 by relevance
-curl -sA "$UA" "$S?q=child+mortality&hitsPerPage=5" \
-  | jq -r '.results[] | "\(.title) — \(.url)"'
+https://ourworldindata.org/api/search?q=child+mortality&hitsPerPage=5
 
 # Articles and data insights
-curl -sA "$UA" "$S?q=malaria&type=pages&pageTypes=article,data-insight&hitsPerPage=5" \
-  | jq -r '.results[] | "\(.date[:10]) \(.type): \(.title) — \(.url)"'
+https://ourworldindata.org/api/search?q=malaria&type=pages&pageTypes=article,data-insight&hitsPerPage=5
 
-# Metadata, then data, for two countries since 2000
-curl -sA "$UA" -o meta.json "$G/child-mortality.metadata.json"
-jq '{title: .chart.title, columns: (.columns | map_values({unit, descriptionShort, citationShort}))}' meta.json
-curl -sA "$UA" -o data.csv "$G/child-mortality.csv?csvType=filtered&useColumnShortNames=true&country=KEN~IND&time=2000..2023"
+# Metadata first, then the data, for two countries since 2000
+https://ourworldindata.org/grapher/child-mortality.metadata.json
+https://ourworldindata.org/grapher/child-mortality.csv?csvType=filtered&useColumnShortNames=true&country=KEN~IND&time=2000..2023
 
-# A PNG of the same view, and a human-readable description of the data's sources
-curl -sA "$UA" -o chart.png "$G/child-mortality.png?country=KEN~IND&time=2000..2023"
-curl -sA "$UA" "$G/child-mortality.readme.md"
+# A PNG of the same view, and a written description of the data's sources
+https://ourworldindata.org/grapher/child-mortality.png?country=KEN~IND&time=2000..2023
+https://ourworldindata.org/grapher/child-mortality.readme.md
 ```
 
 ## Traps
@@ -123,11 +114,3 @@ projections versus estimates), state the difference rather than forcing a match.
 If the metadata `timespan` does not reach the year asked about, say the data
 ends earlier instead of extrapolating.
 
-## Working in Python
-
-The same URLs load directly: `pd.read_csv(f"{url}.csv?csvType=filtered&...")`
-and `requests.get(f"{url}.metadata.json").json()`, with the User-Agent header
-set. For richer needs (indicator-level metadata, dimensions that published
-charts flatten away, semantic search across OWID's whole catalog) the
-[owid-catalog](https://docs.owid.io/projects/etl/api/) Python library exists,
-but nothing in this skill requires it.

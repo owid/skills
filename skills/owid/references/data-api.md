@@ -28,11 +28,11 @@ If the user gave you a URL, keep its query string. On explorers and
 multi-dimensional charts the query string chooses the indicator, so dropping it
 gives you different numbers.
 
-Send this header on every request. OWID uses it to see that the skill is being
-used:
+Send this header on every request, whatever you fetch with. OWID uses it to see
+that the skill is being used:
 
-```bash
-UA="owid-skills/1.0 (+https://github.com/owid/skills)"
+```
+User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)
 ```
 
 ## Start with the metadata
@@ -42,8 +42,9 @@ when the user only asked for numbers. Read it into your context and keep it
 there.
 
 Treat it differently from the data. A CSV can be hundreds of thousands of rows,
-so you save it to a file and work on it there. The metadata is a few kilobytes,
-and you cannot do the job well without it, so it belongs in your context.
+so keep it out of your context and process it wherever you process data. The
+metadata is a few kilobytes, and you cannot do the job well without it, so it
+belongs in your context.
 
 It tells you:
 
@@ -61,9 +62,8 @@ answer means, and you cannot warn them when the number does not say what they
 think it says. That is most of the value you add during a chat or a coding
 session.
 
-```bash
-curl -sA "$UA" -o meta.json \
-  "https://ourworldindata.org/grapher/life-expectancy.metadata.json"
+```
+https://ourworldindata.org/grapher/life-expectancy.metadata.json
 ```
 
 ### The metadata fields
@@ -91,12 +91,9 @@ Two things at the top level: `chart`, describing the chart as a whole, and
 | `columns.*.owidVariableId` | OWID's internal id for the indicator. |
 | `dateDownloaded` | The day you fetched it. |
 
-Pull out what you need rather than reading the whole file:
-
-```bash
-jq '{chart: (.chart | {title, subtitle, note}),
-     columns: (.columns | map_values({unit, timespan, descriptionShort, descriptionKey, citationShort}))}' meta.json
-```
+It is a few kilobytes for most charts. On one with many columns, read `chart`
+and then, per column, `unit`, `timespan`, `descriptionShort`, `descriptionKey`
+and `citationShort`.
 
 ### Citing the source
 
@@ -168,17 +165,18 @@ Start from what the user gave you:
   chart. Ask them whether they want that view or the whole dataset, rather than
   deciding for them.
 - **You are answering one question** — filter on the server. Ask for exactly the
-  countries and years you need, so you never handle a large file.
+  countries and years you need, so you never handle more data than you need.
 
-```bash
-G="https://ourworldindata.org/grapher/life-expectancy"
+Everything the chart has:
 
-# Everything the chart has
-curl -sA "$UA" -o full.csv "$G.csv?csvType=full&useColumnShortNames=true"
+```
+https://ourworldindata.org/grapher/life-expectancy.csv?csvType=full&useColumnShortNames=true
+```
 
-# Two countries, two decades
-curl -sA "$UA" -o part.csv \
-  "$G.csv?csvType=filtered&useColumnShortNames=true&country=USA~GBR&time=2000..2020"
+Two countries, two decades:
+
+```
+https://ourworldindata.org/grapher/life-expectancy.csv?csvType=filtered&useColumnShortNames=true&country=USA~GBR&time=2000..2020
 ```
 
 ## Explorers and multi-dimensional charts
@@ -190,11 +188,8 @@ decoration. Drop it and you get different numbers.
 **Explorers** sit at `https://ourworldindata.org/explorers/<slug>` and take the
 same suffixes and the same parameters, plus one parameter per dropdown:
 
-```bash
-E="https://ourworldindata.org/explorers/population-and-demography"
-P="indicator=Population&Sex=Male&Age=Total&Projection+scenario=None"
-
-curl -sA "$UA" -o pop.csv "$E.csv?$P&csvType=filtered&country=USA&time=2020"
+```
+https://ourworldindata.org/explorers/population-and-demography.csv?indicator=Population&Sex=Male&Age=Total&Projection+scenario=None&csvType=filtered&country=USA&time=2020
 ```
 
 Change `Sex=Male` to `Sex=Female` and you get a different number, from the same
@@ -204,11 +199,8 @@ URL. Spaces in these values are written as `+`.
 also take one parameter per dimension. On `religious-composition` the dimensions
 are `religion` and `indicator`:
 
-```bash
-M="https://ourworldindata.org/grapher/religious-composition"
-
-curl -sA "$UA" -o rel.csv \
-  "$M.csv?csvType=filtered&tab=chart&country=USA&time=2020&religion=christians&indicator=share"
+```
+https://ourworldindata.org/grapher/religious-composition.csv?csvType=filtered&tab=chart&country=USA&time=2020&religion=christians&indicator=share
 ```
 
 Four things to know:
