@@ -379,9 +379,13 @@ skill_md_table_covers() {
 # reject bad input, or a success whose body you do not need.
 http_status() {
     local name="$1" url="$2" expected="$3" out="${4:-/dev/null}" code
-    code=$(curl -sS -L --retry 3 --retry-delay 2 --max-time 90 \
+    # No --retry here: curl counts a 5xx as a transient failure and retries it,
+    # and on some curl versions exhausting the retries exits non-zero, which
+    # hid the status behind a 000. A check that expects a 500 must see the 500.
+    code=$(curl -sS -L --max-time 90 \
         -H 'User-Agent: owid-skills contract tests (tech@ourworldindata.org)' \
-        -o "$out" -w '%{http_code}' "$url" 2>/dev/null) || code="000"
+        -o "$out" -w '%{http_code}' "$url" 2>/dev/null)
+    [[ "$code" =~ ^[0-9]{3}$ ]] || code="000"
     if [[ "$code" == "$expected" ]]; then
         _pass "$name"
     else
