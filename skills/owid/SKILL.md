@@ -4,13 +4,14 @@ description: "Agent skills for working with Our World in Data: search published 
 ---
 
 Our World in Data (OWID) publishes thousands of interactive charts and hundreds
-of articles on global problems. Everything is free to reuse under CC BY, and
-everything this skill does is an ordinary URL over HTTPS with no API key.
+of articles on global problems. Everything this skill does is an ordinary URL
+over HTTPS with no API key. OWID's own work is free to reuse under CC BY, but
+the data keeps whatever licence its original producer set, and a few charts
+cannot be downloaded at all.
 
-This file only says which reference to read. Each one documents its endpoint in
-full: every parameter, what comes back, and what fails silently. Read the one
-you need before making a kind of request you have not made yet in this session,
-rather than guessing from the table below.
+This file only says which reference to read. Each one is complete on its
+subject: every parameter, what comes back, and what fails silently. Read the one
+you need before making a kind of request you have not made yet in this session.
 
 | What you are doing | Read |
 |---|---|

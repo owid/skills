@@ -53,9 +53,12 @@ particular space:
 
 | Parameter | Effect |
 |---|---|
-| `imWidth` | Width in pixels. Give it alone and the height follows the default proportions. |
+| `imWidth` | Width in pixels. Give it alone and the height follows the default proportions; give both and you get that box, portrait included. |
 | `imHeight` | Height in pixels, likewise. |
 | `imSquareSize` | Side length for a square image, with `imType=square`. |
+
+Sizes are capped. Ask for more than 4250×3000 and you silently get 4250×3000
+back; an `imSquareSize` above about 4000 returns a 500 instead of clamping.
 
 ```
 # Sized for a 16:9 slide
@@ -65,9 +68,7 @@ https://ourworldindata.org/grapher/life-expectancy.png?tab=line&country=USA~GBR&
 https://ourworldindata.org/grapher/life-expectancy.png?imType=square&imSquareSize=1200
 ```
 
-Give one and the other follows the default proportions; give both and you get
-that exact box, with the chart re-laid out to fit it, portrait included. The
-image endpoints take the view parameters too — `tab`, `country`, `time` and the
+The image endpoints take the view parameters too — `tab`, `country`, `time` and the
 dimension parameters of an explorer or multi-dimensional chart — so the picture
 matches the numbers you analysed. See [data-api.md](data-api.md).
 

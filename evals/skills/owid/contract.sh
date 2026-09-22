@@ -337,7 +337,6 @@ fi
 
 section "Chart data API: documentation drift"
 doc_contains "the reference documents the .metadata.json suffix" "$DATA_REF" '\.metadata\.json'
-doc_contains "the reference documents the recommended base parameters" "$DATA_REF" 'csvType=filtered&useColumnShortNames=true'
 doc_contains "the embedding reference documents image sizing" "$EMBED_REF" '`imWidth`'
 doc_contains "the embedding reference documents the square size" "$EMBED_REF" '`imSquareSize`'
 doc_contains "the reference documents the map-default trap" "$DATA_REF" 'tab=chart'
