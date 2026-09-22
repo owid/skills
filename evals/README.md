@@ -225,6 +225,8 @@ skill make requests for real.
 make behaviour                                 # every case
 make behaviour CASE=finds-a-map-link           # one case
 make behaviour CASE=finds-a-map-link RUNS=1    # cheapest useful loop
+make behaviour CASE=extract-claims JUDGE=sonnet  # stronger judge for an llm grader
+make behaviour MODEL=claude-sonnet-5           # the model under test
 ```
 
 This layer runs on [`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals),

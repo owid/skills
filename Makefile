@@ -125,8 +125,11 @@ behaviour: ## Behaviour evals: what does the plugin change about what Claude doe
 	@# baseline can reach the same site, so a positive delta is the skill's doing
 	@# and not the tool grant's. Granting Bash would also pull in the OS sandbox,
 	@# whose preconditions vary by machine.
+	@# JUDGE=sonnet swaps the default small judge for a stronger one when an llm
+	@# grader keeps failing an answer that reads as correct.
 	@claude plugin eval . \
 	  $(if $(CASE),--case $(CASE),) $(if $(RUNS),--runs $(RUNS),) \
+	  $(if $(JUDGE),--judge-model $(JUDGE),) $(if $(MODEL),--model $(MODEL),) \
 	  --allow-tools "WebFetch(domain:ourworldindata.org)" --no-publish
 
 install: ## Install this repo as a plugin for Codex and the ChatGPT app (defaults to the current branch)
