@@ -285,28 +285,38 @@ from scoring in both arms and reported as an indicator only. Everything else is
 scored in both, and the gap between them, `Δ`, is what the plugin contributed.
 
 **A case that scores 1.00 with the plugin and 1.00 without it measures nothing.**
-The first version of the example case asked for a link to a life-expectancy
-chart. It scored a clean 1.00 — and so did the no-plugin arm, because that slug
-is famous enough for any model to recall. Making the chart obscure did not help
-either: with `WebFetch` granted, baseline Claude just browsed the site and found
-it. What finally separated the arms was grading the *route*: with the skill
-Claude calls the documented `/api/search` endpoint, and without it, it does not.
+The example case is exactly that, on purpose — it is here to show the shape of a
+case, and its own result is the more useful lesson:
 
 | | with | without | Δ |
 |---|---|---|---|
-| `finds-a-map-link`, 6 runs | 1.00 | 0.67 | **+0.33** |
+| `finds-a-map-link` | 1.00 | 1.00 | **0.00** |
 
-Both answer graders pass in both arms. That is not a failure of the case — they
-are regression guards on the `?tab=` mapping the skill documents — but they are
-not evidence the skill helps, and the Δ says so honestly.
+Its transcript says why. Asked for the chart of *mismanaged plastic waste per
+person*, baseline Claude with no plugin at all went straight to
+`ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita` and used its one
+granted tool only to check the page was not a 404. It never searched. The prompt
+had handed it the slug: OWID's slugs track its chart titles, so any phrasing
+natural enough to be realistic is close to a transliteration of the answer.
 
-So when a new case shows Δ ≈ 0, the question is never "how do I get the number
-up". It is whether the skill earns its place on that task, and whether the grader
-is looking at the part the skill actually changes.
+An earlier version did report Δ +0.33, bought by a fourth grader that checked
+whether Claude called the documented `/api/search` endpoint. That grader was
+dropped, because grading the *route* rather than the result answers the wrong
+question: if the reply is right, how Claude got there is not the user's problem.
+Remove it and the case honestly reports that this skill changed nothing here.
+
+So when a case shows Δ ≈ 0, the question is never "how do I get the number up".
+It is whether the skill earns its place on that task. For `search-charts` the
+answer may be that a frontier model has memorised much of OWID's slug namespace,
+and the skill's real value — currency, and not inventing a slug that looks right
+— is not what a pass/fail grader on one prompt can see. `joining-data` and
+`owid-catalog`, where the agent does real reasoning, are the better places to
+spend runs.
 
 ### Cost and grants
 
-Six runs of the example case cost about \$0.80 and take two minutes. Cost scales
+Six runs of the example case cost about \$0.80 and take two minutes (about a
+minute with `-j 4`). Cost scales
 as cases × runs × 2 arms, so pin `CASE` and `RUNS=1` while iterating on graders
 and use the defaults only for a number you intend to record.
 

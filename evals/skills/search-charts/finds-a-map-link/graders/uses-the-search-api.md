@@ -1,6 +1,0 @@
----
-type: tool_used
-tool: WebFetch
-input_match: 'ourworldindata\.org/api/search'
-arm: both
----
