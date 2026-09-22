@@ -5,7 +5,7 @@
 
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help validate lint test triggers clean
+.PHONY: help validate lint test triggers install clean
 
 # The Agent Skills spec's own reference validator. Pinned to 0.1.x because
 # skills-ref is pre-1.0, where a minor bump may change behaviour. Note the
@@ -22,8 +22,8 @@ help: ## List the available targets
 	@grep -hE '^[a-z][a-z-]*:.*## ' $(MAKEFILE_LIST) \
 	  | awk -F':.*## ' '{printf "  \033[1m%-9s\033[0m %s\n", $$1, $$2}'
 	@echo
-	@echo "  test/triggers take SKILL=<name>. triggers also takes RUNS=<n>,"
-	@echo "  MODEL=<id> and EFFORT=<low|medium|high>, which is where the cost is."
+	@echo "  test/triggers take SKILL=<name>, install takes BRANCH=<name>. triggers"
+	@echo "  also takes RUNS/MODEL/EFFORT, which is where the cost is."
 
 validate: ## Check spec conformance, both plugin manifests and marketplace registration
 	@# Spec conformance, per skill, using the validator the spec itself recommends.
@@ -90,6 +90,22 @@ triggers: ## Trigger evals: does the right skill fire? (needs the claude CLI, co
 	@# SKILL and RUNS=1; use the defaults for a measurement you intend to record.
 	@./evals/run-trigger-eval.py $(if $(SKILL),--skill $(SKILL),--all) \
 	  $(if $(RUNS),--runs $(RUNS),) $(if $(MODEL),--model $(MODEL),) $(if $(EFFORT),--effort $(EFFORT),)
+
+install: ## Install this repo as a plugin for Codex and the ChatGPT app (BRANCH=<name> to try a branch)
+	@command -v codex >/dev/null 2>&1 || { \
+	  echo "  x codex CLI not found - install it from https://developers.openai.com/codex"; exit 1; }
+	@# `marketplace add` refuses to re-point an existing marketplace at a different
+	@# source, which is what a second run with a different BRANCH is. Clearing ours
+	@# first makes the target idempotent; both removes are no-ops on a clean machine.
+	@codex plugin remove owid@owid-skills >/dev/null 2>&1 || true
+	@codex plugin marketplace remove owid-skills >/dev/null 2>&1 || true
+	@codex plugin marketplace add owid/skills $(if $(BRANCH),--ref $(BRANCH),)
+	@codex plugin add owid@owid-skills
+	@echo
+	@echo "  Codex is ready - run /plugins in a session to see it."
+	@echo "  For the ChatGPT app: turn on Settings > Security and login > Developer mode,"
+	@echo "  restart the desktop app, then install Our World in Data from Plugins."
+	@echo "  To undo: codex plugin remove owid@owid-skills && codex plugin marketplace remove owid-skills"
 
 clean: ## Delete eval run outputs (evals/results/)
 	@rm -rf evals/results

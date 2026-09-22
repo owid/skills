@@ -192,11 +192,60 @@ Want to add or improve a skill? See [AGENTS.md](AGENTS.md) for repo conventions,
 ```bash
 make            # list targets
 make validate   # spec conformance, both plugin manifests and marketplace registration
+make install    # install this repo as a plugin for Codex and the ChatGPT app
 make test       # contract tests: do the OWID endpoints still match what the skills document?
 make triggers   # trigger evals: does the right skill fire? (needs the claude CLI, costs tokens)
 ```
 
-Add `SKILL=<name>` to `test` or `triggers` to run a single skill. To try the skills in a live session, load the plugin directly with `claude --debug --plugin-dir .`
+To try the skills in a live session, load the plugin directly with `claude --debug --plugin-dir .`
+
+### Trying a branch
+
+`make install` registers this repo as a plugin source for the Codex CLI, which
+is also where the ChatGPT desktop app looks. Add `BRANCH=` to point it at a
+branch instead of `main`:
+
+```bash
+make install BRANCH=my-feature
+```
+
+Re-running it repoints an existing install, so you can switch branches freely.
+It prints the remaining ChatGPT-app steps (developer mode, restart) and the two
+commands that undo it.
+
+### Running the evals
+
+Two layers, and they answer different questions. [evals/README.md](evals/README.md)
+is the full playbook; this is enough to run them.
+
+```bash
+make test                            # all four skills
+make test SKILL=search-charts        # one
+SKIP_SLOW=1 make test                # skip the slow owid-catalog checks
+```
+
+**Contract tests** ask whether the endpoints and response shapes each `SKILL.md`
+documents still match what the API returns. No model, no cost, seconds to run,
+and they hit the live API — so a red run can also mean OWID is down, which is
+deliberate. This is what CI runs on every PR and nightly, and it is the layer
+that catches the failure these skills actually suffer: the prose stays put while
+the API moves.
+
+```bash
+make triggers SKILL=search-charts RUNS=1     # cheapest useful loop
+make triggers                                # all four, 3 runs each
+```
+
+**Trigger evals** ask whether the right skill fires — and, because all four cover
+overlapping subject matter, whether one is stealing a sibling's queries. This
+one costs real tokens: the default is 4 skills × 10 queries × 3 runs = 120
+`claude -p` sessions. Pin `SKILL` and `RUNS=1` while you iterate on a
+description, and use the defaults only for a number you intend to write down.
+`EFFORT=low` is the default because routing is decided before any real work, and
+`MODEL=<id>` measures that model's routing rather than the one your users get.
+
+Run `make triggers` after changing any skill's `description` — that field is what
+decides routing, and a wording change can quietly redirect a sibling's traffic.
 
 Plugins here are versionless on purpose: every commit to `main` is a release.
 
