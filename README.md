@@ -1,6 +1,6 @@
 # OWID Skills
 
-**Agent skills for working with [Our World in Data](https://ourworldindata.org).** Teach your AI coding agent — Claude Code, OpenAI Codex, Gemini CLI, Cursor, GitHub Copilot, and others — to search our charts, download the data behind them, and analyze it correctly.
+**Agent skills for working with [Our World in Data](https://ourworldindata.org).** Teach your AI assistant — Claude Code, Codex, the ChatGPT and Claude apps, Gemini CLI, Cursor, GitHub Copilot, and others — to search our charts, download the data behind them, and analyze it correctly.
 
 Our World in Data publishes thousands of charts and datasets on global problems: poverty, health, energy, climate, education, and more. These skills give agents the knowledge to use that data well — the right APIs, the right query parameters, and the caveats that matter (country harmonization, citations, metadata).
 
@@ -32,7 +32,17 @@ The HTTP-based skills are lightweight and language-agnostic. `owid-catalog` is t
 
 ## Installation
 
-### Claude Code
+Pick the client you use. Every route installs the same four skills.
+
+| Client | How it takes them | One-time setup? |
+|---|---|---|
+| [Claude Code](#claude-code-cli) | plugin, from this repo's marketplace | no |
+| [Codex](#codex-cli) | plugin, from this repo | no |
+| [ChatGPT app](#chatgpt-app-chat-and-work) | plugin, added via the desktop app | developer mode |
+| [Claude app](#claude-app-web-desktop-mobile) | one skill at a time, as a `.zip` | enable code execution |
+| [Anything else](#other-agents-gemini-cli-cursor-copilot-) | plain skill folders | no |
+
+### Claude Code (CLI)
 
 Install as a plugin from the marketplace:
 
@@ -41,21 +51,61 @@ Install as a plugin from the marketplace:
 /plugin install owid@owid-skills
 ```
 
-### ChatGPT and Codex
+### Codex (CLI)
 
 This repo is also an [Agent Plugins](https://agent-plugins.org) package, the
-vendor-neutral plugin format ChatGPT and Codex share. It is not (yet) in
-OpenAI's public Plugin Directory, so install it from the repo:
+vendor-neutral plugin format ChatGPT and Codex share:
 
 ```bash
 codex plugin marketplace add owid/skills   # register this repo as a source
-codex plugin add owid@owid-skills          # install it for Codex
+codex plugin add owid@owid-skills          # install it
 ```
 
-The first command registers the source for the ChatGPT desktop app too, where
-it then shows up as **Our World in Data** in the Plugins Directory and you
-install it from there. Turn on **Settings → Security and login → Developer
-mode** first, and restart the app after adding the source.
+`codex plugin list` shows what resolved, and `/plugins` inside a session lists
+what's active.
+
+### ChatGPT app (Chat and Work)
+
+The skills aren't in OpenAI's public Plugin Directory yet, so you add this repo
+as your own plugin source. That step needs the **desktop** app; once installed,
+the plugin works in both Chat and Work on web, desktop and mobile. The IDE
+extension doesn't support plugins at all.
+
+1. **Settings → Security and login → Developer mode**, turn it on. (Availability
+   can depend on your account and workspace policy.)
+2. Register this repo as a source, using the Codex CLI command above —
+   `codex plugin marketplace add owid/skills`. The ChatGPT desktop app reads the
+   same sources.
+3. Restart the ChatGPT desktop app.
+4. Switch to **Work** in the switcher (or open **Codex**), then open **Plugins**.
+   This repo appears as **Our World in Data** under your personal marketplace;
+   install it there.
+5. Start a new conversation. Describe what you want, or invoke the plugin
+   explicitly with `@`.
+
+If you're setting this up for colleagues rather than yourself, a workspace admin
+can import and sync a GitHub marketplace for the whole workspace, so nobody else
+has to touch developer mode.
+
+### Claude app (web, desktop, mobile)
+
+Claude's apps don't read plugin marketplaces — they take **one skill at a time,
+as a zip**. First enable **Settings → Capabilities → Code execution and file
+creation** (on Team and Enterprise an owner enables it under **Organization
+settings → Skills**). Then, from a clone of this repo:
+
+```bash
+cd skills && zip -r search-charts.zip search-charts    # one zip per skill
+```
+
+In Claude, go to **Customize → Skills**, click **+**, choose **+ Create skill →
+Upload a skill**, pick the zip, and toggle the skill on. Skills only apply to
+conversations started after you enable them.
+
+Skills run in Claude's sandbox rather than on your machine, so the prerequisites
+differ from the table above and we haven't verified all four there:
+`search-charts` and `fetch-chart-data` need only network access, while
+`joining-data` and `owid-catalog` need `duckdb` and Python packages.
 
 ### Other agents (Gemini CLI, Cursor, Copilot, …)
 
@@ -94,7 +144,7 @@ Every route above installs a snapshot of `main` as it was that day. Nothing refr
 
   Refreshing the marketplace on its own does not update the installed plugin; the second command does.
 
-- **ChatGPT / Codex plugin.** Refresh the source, then reinstall:
+- **Codex / ChatGPT plugin.** Refresh the source, then reinstall:
 
   ```bash
   codex plugin marketplace upgrade owid-skills
@@ -102,6 +152,9 @@ Every route above installs a snapshot of `main` as it was that day. Nothing refr
   ```
 
   Restart the ChatGPT desktop app afterwards so it picks up the new files.
+
+- **Claude app.** An uploaded skill is a frozen copy. To update it, re-zip the
+  skill folder from a fresh `git pull` and upload it again.
 
 - **`skills` CLI.** `npx skills add` installs one copy per scope, symlinks each agent's directory to it, and records what it installed in `skills-lock.json`. Update everything in that scope with:
 
