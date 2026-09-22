@@ -78,14 +78,12 @@ To keep them out of version control, add your agent's skills directory to
 
 ### Which tools do I need installed?
 
-`curl` and `jq`. Nothing else: the skill only uses public OWID endpoints, so
-there are no credentials to configure, and it deliberately does not depend on
-Python, DuckDB or any OWID library. On macOS,
-`./install-prerequisites-macos.sh` installs `jq` (curl is already there).
+None. Everything the skill documents is a URL over HTTPS, so an agent fetches it
+with whatever the project already uses: a shell, Python, R, JavaScript, a
+notebook. There are no credentials to configure and no OWID library to install.
 
-If you work in Python, the same URLs load with `pandas.read_csv`, and the skill
-says so; the [`owid-catalog`](https://docs.owid.io/projects/etl/api/) library is
-mentioned as an option, not a requirement.
+The skill deliberately names no tool. Prescribing one would assume something
+about your setup that we have no business assuming.
 
 ### Why does every request carry a `User-Agent`?
 
@@ -100,8 +98,8 @@ Check whether the skill or the data is at fault. The skill is documentation
 over OWID's public API; it doesn't transform values. Fetch the same numbers
 directly:
 
-```bash
-curl -s "https://ourworldindata.org/grapher/life-expectancy.csv?csvType=filtered&country=USA&time=2020"
+```
+https://ourworldindata.org/grapher/life-expectancy.csv?csvType=filtered&country=USA&time=2020
 ```
 
 If that matches what the agent told you, the skill worked and any concern belongs
@@ -127,8 +125,7 @@ They were the first version of this repository. The four covered adjacent
 ground and competed for the same prompts, and two of them pulled in
 dependencies (DuckDB, a Python library) that most users do not have. Their
 content is now in the single `owid` skill: one reference on the search endpoint
-and one on the data endpoints. Python users can still use the
-[`owid-catalog`](https://docs.owid.io/projects/etl/api/) library directly.
+and one on the data endpoints.
 
 If you installed the old skills by copying, delete those four directories:
 plugin and `skills`-CLI installs replace them on update.

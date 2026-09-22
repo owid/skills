@@ -31,7 +31,7 @@ Skills follow the open [Agent Skills](https://agentskills.io) format (`SKILL.md`
 | [`references/data-api.md`](skills/owid/references/data-api.md) | `.csv`, `.metadata.json`, `.readme.md`, `.zip`, `.png`, `.svg` for any chart; the filtering parameters; the metadata fields and how to cite; entity, code and year conventions |
 | [`references/embedding.md`](skills/owid/references/embedding.md) | The iframe snippet, when to use a PNG instead, image sizes, attribution |
 
-It uses only public endpoints and needs only `curl` and `jq`. No API key.
+It uses only public endpoints. No API key, and no tools to install.
 
 ## Installation
 
@@ -93,7 +93,7 @@ Every route above installs a snapshot of `main` as it was that day. Nothing refr
 
 There are no version numbers to bump: every commit to `main` is a release, and each of these steps picks up the latest one.
 
-> **Upgrading from the earlier four skills?** This repository used to ship `search-charts`, `fetch-chart-data`, `joining-data` and `owid-catalog`. They are folded into `owid` now. Plugin updates replace them automatically; if you installed by copying, delete the four old directories so they do not compete with the new skill. For Python-native access to OWID's full catalog, the [`owid-catalog`](https://docs.owid.io/projects/etl/api/) library still exists, it just no longer ships as a skill here.
+> **Upgrading from the earlier four skills?** This repository used to ship `search-charts`, `fetch-chart-data`, `joining-data` and `owid-catalog`. They are folded into `owid` now. Plugin updates replace them automatically; if you installed by copying, delete the four old directories so they do not compete with the new skill.
 
 ### Not working?
 
@@ -104,11 +104,7 @@ effort being turned down far enough that it stops making tool calls.
 
 ### Prerequisites
 
-The skill uses two common command-line tools: `curl` and `jq`. `curl` ships with macOS and most Linux distributions; install `jq` with your package manager (e.g. `brew install jq`), or on macOS run:
-
-```bash
-curl -sSL https://raw.githubusercontent.com/owid/skills/main/install-prerequisites-macos.sh | bash
-```
+None. Everything the skill documents is an ordinary URL over HTTPS, fetched with whatever the agent and the project already use. There is nothing to install and no API key.
 
 ## Using the data
 

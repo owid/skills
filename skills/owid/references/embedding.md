@@ -37,22 +37,23 @@ This is the snippet OWID's own "Embed" button produces:
 
 ## Static image
 
-```bash
-UA="owid-skills/1.0 (+https://github.com/owid/skills)"
-URL="https://ourworldindata.org/grapher/life-expectancy"
+Fetch these however suits your project, sending
+`User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)` as on any other
+request.
 
+```
 # Default layout, exactly the view you analysed
-curl -sA "$UA" -o chart.png "$URL.png?tab=line&country=USA~GBR&time=1950..latest"
+https://ourworldindata.org/grapher/life-expectancy.png?tab=line&country=USA~GBR&time=1950..latest
 
 # Sized for a 16:9 slide
-curl -sA "$UA" -o slide.png "$URL.png?tab=line&country=USA~GBR&imWidth=1600&imHeight=900"
+https://ourworldindata.org/grapher/life-expectancy.png?tab=line&country=USA~GBR&imWidth=1600&imHeight=900
 
 # Social-card and square variants
-curl -sA "$UA" -o card.png   "$URL.png?imType=og"
-curl -sA "$UA" -o square.png "$URL.png?imType=square&imSquareSize=1200"
+https://ourworldindata.org/grapher/life-expectancy.png?imType=og
+https://ourworldindata.org/grapher/life-expectancy.png?imType=square&imSquareSize=1200
 
 # Vector, for print or a design tool
-curl -sA "$UA" -o chart.svg "$URL.svg?tab=map&time=2020"
+https://ourworldindata.org/grapher/life-expectancy.svg?tab=map&time=2020
 ```
 
 The image endpoints take the same view parameters as the data endpoints; see
