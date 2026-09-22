@@ -31,14 +31,10 @@ This is the snippet OWID's own "Embed" button produces:
   `https://ourworldindata.org/explorers/<slug>?<params>`.
 - 600 px tall suits most charts; maps and charts with many entities read better
   at 700–800 px. Width should be 100% of a container at least 600 px wide.
-- The embedded chart shows its own title, subtitle, source line and OWID logo,
-  so it is self-attributing.
 
 ## Static image
 
-Fetch these however suits your project, sending
-`User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)` as on any other
-request.
+Fetch these however suits your project.
 
 ```
 # The view you analysed, at the default size
@@ -57,8 +53,7 @@ particular space:
 | `imHeight` | Height in pixels, likewise. |
 | `imSquareSize` | Side length for a square image, with `imType=square`. |
 
-Sizes are capped. Ask for more than 4250×3000 and you silently get 4250×3000
-back; an `imSquareSize` above about 4000 returns a 500 instead of clamping.
+Sizes are capped: ask for more than 4250×3000 and you silently get 4250×3000 back.
 
 ```
 # Sized for a 16:9 slide
@@ -68,8 +63,7 @@ https://ourworldindata.org/grapher/life-expectancy.png?tab=line&country=USA~GBR&
 https://ourworldindata.org/grapher/life-expectancy.png?imType=square&imSquareSize=1200
 ```
 
-The image endpoints take the view parameters too — `tab`, `country`, `time` and the
-dimension parameters of an explorer or multi-dimensional chart — so the picture
+The image endpoints take the same view parameters as the CSV, so the picture
 matches the numbers you analysed. See [data-api.md](data-api.md).
 
 ## Attribution

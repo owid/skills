@@ -345,9 +345,7 @@ doc_contains "the data reference documents the recommended base parameters" "$DA
 for ref in search-api data-api embedding; do
     skill_md_contains "SKILL.md links references/$ref.md" "references/$ref\.md"
 done
-for ref in "$SEARCH_REF" "$DATA_REF" "$EMBED_REF"; do
-    doc_contains "$ref uses the same User-Agent string" "$ref" 'owid-skills/1\.0 \(\+https://github\.com/owid/skills\)'
-done
+skill_md_contains "SKILL.md carries the User-Agent header" 'owid-skills/1\.0 \(\+https://github\.com/owid/skills\)'
 doc_contains "the embedding reference carries the iframe snippet" "$EMBED_REF" '<iframe src="https://ourworldindata\.org/grapher/'
 
 # ---------------------------------------------------------------------------

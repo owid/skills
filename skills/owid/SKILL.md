@@ -9,14 +9,17 @@ over HTTPS with no API key. OWID's own work is free to reuse under CC BY, but
 the data keeps whatever licence its original producer set, and a few charts
 cannot be downloaded at all.
 
-This file only says which reference to read. Each one is complete on its
-subject: every parameter, what comes back, and what fails silently. Read the one
-you need before making a kind of request you have not made yet in this session.
+Send this header on every request, whatever you fetch with:
+
+```
+User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)
+```
+
+This file only says which reference to read. Read the one you need before making
+a kind of request you have not made yet in this session.
 
 | What you are doing | Read |
 |---|---|
 | Finding a chart, explorer, article or data insight | [references/search-api.md](references/search-api.md) |
 | Getting the numbers behind a chart, understanding what they mean, or checking a claim against them | [references/data-api.md](references/data-api.md) |
 | Putting a chart into a page, a document, slides or an artifact | [references/embedding.md](references/embedding.md) |
-
-Everything here is public. If a request needs a login, you are on the wrong URL.

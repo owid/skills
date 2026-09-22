@@ -6,12 +6,10 @@ data you get. No API key, no sign-up.
 
 ## How a request is built
 
-Here is one request, taken apart:
+One request, taken apart:
 
 ```
 https://ourworldindata.org/grapher/life-expectancy.csv?csvType=filtered&country=USA~GBR&time=2000..2020
-└───────────┬────────────┘└──┬───┘└──────┬───────┘└┬─┘└───────────────────────┬───────────────────────┘
-         the site          section      slug     suffix                    the view
 ```
 
 - **The slug** names the chart. `life-expectancy` and `life-expectancy-hmd-unwpp`
@@ -30,13 +28,6 @@ Explorer charts work the same way. They sit under `/explorers/` instead of
 If the user gave you a URL, keep its query string. On explorers and
 multi-dimensional charts the query string chooses the indicator, so dropping it
 gives you different numbers.
-
-Send this header on every request, whatever you fetch with. OWID uses it to see
-that the skill is being used:
-
-```
-User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)
-```
 
 ## Start with the metadata
 
@@ -63,8 +54,7 @@ charts add `activeFilters`, echoing the dimensions you asked for.
 the CSV header — the chart renames its columns for display. `life-expectancy`
 has `Life expectancy` in the CSV and `Period life expectancy at birth` in the
 metadata; `Age 10` in one chart is `Life expectancy - Sex: total - Age: 10 -
-Type: period` in the other. Three independent samples put the match rate at
-roughly one column in three. **To line the two up, fetch the CSV with
+Type: period` in the other. **To line the two up, fetch the CSV with
 `useColumnShortNames=true` and match on `columns.*.shortName`.** Where a chart
 uses one indicator twice, the CSV adds a suffix the metadata does not have
 (`__projected`, `__in_2016`, `__annotations`), so match on the prefix. Never
@@ -166,16 +156,16 @@ Start from what the user gave you:
 - **You are answering one question** — filter on the server. Ask for exactly the
   countries and years you need, so you never handle more data than you need.
 
-Whichever you pick, `?csvType=filtered&useColumnShortNames=true` plus explicit
-`country=` and `time=` is the base worth starting from.
+When you do filter, `?csvType=filtered&useColumnShortNames=true` plus explicit
+`country=` and `time=` is the base to start from.
 
 ### Charts that will not give you their data
 
 Where the producer forbids redistribution, `.csv` and `.zip` return **403** with
 `{"status":403,"error":"This chart contains non-redistributable data..."}`,
-whatever parameters you pass. Four independent samples put it between one chart
-in fifteen and one in five, concentrated in health and causes of death; IHME's
-Global Burden of Disease charts are the common case.
+whatever parameters you pass. It is a real minority of charts, concentrated in
+health and causes of death; IHME's Global Burden of Disease charts are the common
+case.
 
 The metadata, readme, config and images still return 200, so you can still
 describe and cite the chart. Check the status code before you parse the body —
@@ -254,19 +244,15 @@ missing altogether has no data in that chart at all. Neither is a zero.
   [Definitions of world regions](https://ourworldindata.org/world-region-map-definitions),
   where every scheme's country-to-region mapping is also downloadable. Brackets do
   plenty of other work, so read what is inside before assuming it is a scheme:
-  a publication year (`Maddison (1991)`), a model version (`GPT-5 (Aug 2025)`), an
-  exclusion (`Europe (excl. EU-27)`), a disambiguation (`Micronesia (country)`),
-  a historical state (`Sudan (former)`) or a count (`European Union (27)`).
+  a publication year (`Maddison (1991)`), an exclusion (`Europe (excl. EU-27)`), a
+  disambiguation (`Micronesia (country)`) or a historical state (`Sudan (former)`).
 - **Historical states appear in long-run series**: `USSR`, `Yugoslavia`,
   `East Germany`, `Czechoslovakia`.
 - **Some entities are not places**: income groups like `Low-income countries`,
   and splits like `China (urban)` or `Ethiopia (rural)`.
 
-A whole chart can be like that. Its entities may be AI models, age groups, causes
-of death, industry sectors, sea regions or historical population estimates. Those
-charts have no `Code` column, and everything below about codes, regions and
-joining simply does not apply to them — the entity name is the only identifier
-there is.
+A whole chart can be like that, with AI models or industry sectors where you
+expect countries. Nothing below about codes, regions and joining applies to those.
 
 ### The Code column
 
@@ -291,10 +277,8 @@ When it is there it takes three shapes, and it is often empty:
   of countries, and entities that are not places at all: individual wars,
   projects, even calendar months where a chart uses those as its entities.
 
-The share varies enormously between charts — zero on many, a few per cent on
-most, over 90% on a chart whose entities are all sea regions. That is small
-enough that a join on `Code` will look like it worked while quietly dropping
-rows, so count what you lost rather than assume.
+A join on `Code` will look like it worked while quietly dropping those rows, so
+count what you lost rather than assume.
 
 Within OWID, names and codes are consistent: a name always maps to the same
 code, and a code to the same name, in every chart. So you can line up two OWID
@@ -319,15 +303,12 @@ twelve-month average side by side on the same `Month` axis, both filled in every
 month. Read `titleLong` before you assume what a second column is.
 
 - **`earliest` and `latest` are one year for the entities you selected**, not one
-  per country and not fixed for the chart. On one chart `time=latest` gives 2023
-  with no `country=`, 2022 for the United States and 2021 for the United Kingdom;
-  ask for both and you get 2022, with the United Kingdom silently dropped. For
-  each country's own most recent value, fetch the range and take the last
-  non-empty row per country yourself.
-- **`timespan` is empty on sub-annual charts.** On `life-expectancy` it reads
-  `1543-2023`; on `monthly-temperature-anomalies` and `daily-cases-covid-region`
-  it is an empty string, not a missing field. So on a `Month` or `Day` chart,
-  take the coverage from the first and last rows instead.
+  per country and not fixed for the chart. Ask for two countries whose data ends in
+  different years and you get the earlier one, with the other silently dropped. For
+  each country's own most recent value, fetch the range and take the last non-empty
+  row per country yourself.
+- **`timespan` is empty on sub-annual charts** — an empty string, not a missing
+  field. Take the coverage from the first and last rows instead.
 - **Filtering needs full dates on those charts.** `time=2021-01` is ignored and
   you get everything back. On a `Day` chart a range is exact. On a `Month` chart
   the end date rounds up, so `2021-01-01..2021-01-31` returns January *and*
@@ -358,10 +339,9 @@ Everything comes back as UTF-8. Two things follow:
 - **Entity names in the CSV do not.** Accents are stripped: the CSV says
   `Cote d'Ivoire`, `Curacao`, `Sao Tome and Principe`. Do not expect the accented
   spelling, and do not try to match against it.
-- **Column headers are a different matter** — they keep their special characters,
-  as in `Annual CO₂ emissions per capita` with a real subscript. Matching a
-  header by a string you typed will fail on those, which is another reason to use
-  `useColumnShortNames=true`.
+- **Column headers do keep their special characters**, as in `Annual CO₂ emissions
+  per capita` with a real subscript, so matching a header against a string you
+  typed will fail — another reason for `useColumnShortNames=true`.
 
 ## Joining with other data
 
@@ -386,19 +366,15 @@ what came back is not what you asked for.
   yourself.** `filtered` is not a filter: it copies whatever view the chart opens
   in, and any view that is not a line or bar-over-time throws `country=` away and
   collapses you to a single time point. Maps do it, and so do scatter, Marimekko
-  and discrete-bar views — in mixed samples that was ten to sixteen charts in
-  every twenty-five. `tab=chart` recovers the line view on some of them and does
+  and discrete-bar views. `tab=chart` recovers the line view on some of them and does
   nothing on the rest, because a map-only chart has no chart tab to switch to.
   `.config.json` tells you in advance: `tab`, `chartTypes`, `addCountryMode` and
   `hideTimeline` between them predict it exactly.
 - **On a filtered map view the `Year` column is the year you asked for, not the
   year of the number.** The map carries a value forward to fill a gap, stamps
   every row with the target year, and puts the real one in an extra
-  `<Indicator> (Original Year)` column that has no metadata entry. One chart had
-  102 of 104 rows stamped with a year the value did not come from. If that column
+  `<Indicator> (Original Year)` column that has no metadata entry. If that column
   is there, it is the year. `csvType=full` never does this.
-- **`country=` and `time=` do nothing without `csvType=filtered`.** They are not
-  rejected, they are ignored, and you get every country back.
 - **An entity you asked for that is not in the chart is dropped in silence.** So
   is a misspelling, an unrecognised code, and the wrong case — `country=usa`
   matches nothing. Count the entities that came back against the ones you asked
