@@ -136,7 +136,7 @@ behaviour: ## Behaviour evals: what does the plugin change about what Claude doe
 	@# JUDGE=sonnet swaps the default small judge for a stronger one when an llm
 	@# grader keeps failing an answer that reads as correct.
 	@claude plugin eval . \
-	  $(if $(CASE),--case $(CASE),) $(if $(RUNS),--runs $(RUNS),) \
+	  $(if $(CASE),--case $(CASE),) $(if $(TAG),--tag $(TAG),) $(if $(RUNS),--runs $(RUNS),) \
 	  $(if $(JUDGE),--judge-model $(JUDGE),) $(if $(MODEL),--model $(MODEL),) \
 	  --allow-tools "WebFetch(domain:ourworldindata.org)" --no-publish
 
