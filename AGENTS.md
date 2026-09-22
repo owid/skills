@@ -9,7 +9,7 @@ This repository publishes **agent skills for working with Our World in Data** (s
 
 ```
 FAQ.md                          # common user and contributor questions
-Makefile                        # entry points: make validate / test / triggers
+Makefile                        # entry points: make validate / install / test / triggers
 skills/<skill-name>/SKILL.md    # one directory per skill, and nothing else
 .claude-plugin/marketplace.json # Claude Code marketplace + plugin definition
 plugin.json                     # Agent Plugins manifest (ChatGPT, Codex)
@@ -62,12 +62,16 @@ Run `make` for the full list. The two you need most:
 For end-to-end testing, load the plugin directly in a live session:
 `claude --debug --plugin-dir .`
 
-For ChatGPT and Codex, `codex plugin marketplace add .` registers this repo's
-`.agents/plugins/marketplace.json`, and `codex plugin add owid@owid-skills`
-installs it; `codex plugin list` shows what resolved. To test a branch before
-merging, point a personal marketplace (`~/.agents/plugins/marketplace.json`,
-whose paths are relative to `$HOME`) at a worktree, or give the entry a
-Git-backed source with a `ref`.
+For ChatGPT and Codex, `make install` registers this repo as a plugin source via
+the Codex CLI, which the ChatGPT desktop app reads too, and `make install
+BRANCH=<name>` points it at a branch instead of `main`. It clears its own
+marketplace entry first, because `codex plugin marketplace add` refuses to
+re-point an existing marketplace at a different source. `codex plugin list`
+shows what resolved.
+
+For live edits rather than a pushed branch, point a personal marketplace
+(`~/.agents/plugins/marketplace.json`, whose paths are relative to `$HOME`) at a
+worktree.
 
 ## Evals
 
