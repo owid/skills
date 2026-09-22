@@ -5,7 +5,7 @@
 
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help validate lint test triggers install clean
+.PHONY: help validate lint test triggers behaviour install clean
 
 # The Agent Skills spec's own reference validator. Pinned to 0.1.x because
 # skills-ref is pre-1.0, where a minor bump may change behaviour. Note the
@@ -22,8 +22,8 @@ help: ## List the available targets
 	@grep -hE '^[a-z][a-z-]*:.*## ' $(MAKEFILE_LIST) \
 	  | awk -F':.*## ' '{printf "  \033[1m%-9s\033[0m %s\n", $$1, $$2}'
 	@echo
-	@echo "  test/triggers take SKILL=<name>, install takes BRANCH=<name>. triggers"
-	@echo "  also takes RUNS/MODEL/EFFORT, which is where the cost is."
+	@echo "  test/triggers take SKILL=<name>, behaviour CASE=<name>, install BRANCH=<name>."
+	@echo "  triggers also takes RUNS/MODEL/EFFORT and behaviour RUNS - that is the cost."
 
 validate: ## Check spec conformance, both plugin manifests and marketplace registration
 	@# Spec conformance, per skill, using the validator the spec itself recommends.
@@ -90,6 +90,16 @@ triggers: ## Trigger evals: does the right skill fire? (needs the claude CLI, co
 	@# SKILL and RUNS=1; use the defaults for a measurement you intend to record.
 	@./evals/run-trigger-eval.py $(if $(SKILL),--skill $(SKILL),--all) \
 	  $(if $(RUNS),--runs $(RUNS),) $(if $(MODEL),--model $(MODEL),) $(if $(EFFORT),--effort $(EFFORT),)
+
+behaviour: ## Behaviour evals: what does the plugin change about what Claude does? (costs tokens)
+	@# Grants are deliberately narrow. WebFetch to ourworldindata.org is all these
+	@# cases need, and it is what makes the no-plugin arm a fair comparison: the
+	@# baseline can reach the same site, so a positive delta is the skill's doing
+	@# and not the tool grant's. Granting Bash would also pull in the OS sandbox,
+	@# whose preconditions vary by machine.
+	@claude plugin eval . \
+	  $(if $(CASE),--case $(CASE),) $(if $(RUNS),--runs $(RUNS),) \
+	  --allow-tools "WebFetch(domain:ourworldindata.org)" --no-publish
 
 install: ## Install this repo as a plugin for Codex and the ChatGPT app (BRANCH=<name> to try a branch)
 	@command -v codex >/dev/null 2>&1 || { \

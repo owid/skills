@@ -195,6 +195,7 @@ make validate   # spec conformance, both plugin manifests and marketplace regist
 make install    # install this repo as a plugin for Codex and the ChatGPT app
 make test       # contract tests: do the OWID endpoints still match what the skills document?
 make triggers   # trigger evals: does the right skill fire? (needs the claude CLI, costs tokens)
+make behaviour  # behaviour evals: what does the plugin change about what Claude does?
 ```
 
 To try the skills in a live session, load the plugin directly with `claude --debug --plugin-dir .`
@@ -215,7 +216,7 @@ commands that undo it.
 
 ### Running the evals
 
-Two layers, and they answer different questions. [evals/README.md](evals/README.md)
+Three layers, and they answer different questions. [evals/README.md](evals/README.md)
 is the full playbook; this is enough to run them.
 
 ```bash
@@ -247,7 +248,21 @@ description, and use the defaults only for a number you intend to write down.
 Run `make triggers` after changing any skill's `description` — that field is what
 decides routing, and a wording change can quietly redirect a sibling's traffic.
 
-Plugins here are versionless on purpose: every commit to `main` is a release.
+```bash
+make behaviour CASE=finds-a-map-link RUNS=1   # cheapest useful loop
+make behaviour                                # every case, 3 runs per arm
+```
+
+**Behaviour evals** ask whether the skill changes the answer. Each case runs
+with the plugin loaded and then again with **no plugin at all**, and reports the
+difference — so a case that scores the same both ways is telling you the skill
+contributed nothing there, which is the point of running them. This layer uses
+[`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals) and needs
+Claude Code ≥ 2.1.269. Cost scales as cases × runs × 2 arms; add `-j 4` to the
+underlying command if you want the full matrix without the wait.
+
+Run `make behaviour` after changing what a skill *teaches*, as opposed to when
+it fires.
 
 This repository is limited to skills that rely on public OWID endpoints and common CLI tools; skills that require OWID-internal infrastructure or credentials are out of scope.
 

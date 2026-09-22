@@ -7,7 +7,7 @@ questions, and only the third one needs a model in the loop grading output.
 |---|---|---|---|---|
 | 1. Contract tests | Do the endpoints and response shapes documented in `SKILL.md` still match reality? | no | seconds | `evals/skills/<skill>/contract.sh` |
 | 2. Trigger evals | Does the skill fire when it should, stay quiet when it shouldn't, and not steal a sibling's job? | yes (routing only) | minutes | `evals/skills/<skill>/triggers.json` |
-| 3. Output evals | Is the output any good, and better than no skill at all? | yes (plus a human) | tens of minutes | `evals/skills/<skill>/evals.json` |
+| 3. Behaviour evals | Is the output any good, and better than no skill at all? | yes (graders, and a baseline arm) | minutes, and real money | `evals/skills/<skill>/<case>/` |
 
 Layer 1 catches the failure mode that will actually bite this repo: these skills
 are thin documentation over live public OWID endpoints, so they rot when the API
@@ -29,8 +29,11 @@ evals/
 └── skills/<skill>/                     # mirrors skills/, one directory per skill
     ├── contract.sh                     # layer 1
     ├── triggers.json                   # layer 2
-    ├── evals.json                      # layer 3
-    └── fixtures/                       # input files layer 3 cases need
+    ├── evals.json                      # layer 3, hand-run legacy format
+    ├── <case>/                         # layer 3, one directory per case
+    │   ├── prompt.md                   # frontmatter: limits and tools; body: the prompt
+    │   └── graders/<name>.md           # one grader per file
+    └── fixtures/                       # input files a case needs
 
 skills/<skill>/SKILL.md                 # the skill, and nothing else
 ```
@@ -211,28 +214,151 @@ Only the `Skill` tool is permitted during a run, and the run is killed the
 moment a skill fires: we are measuring the routing decision, not letting the
 skill run `curl` for real.
 
-## Layer 3 — output evals
+## Layer 3 — behaviour evals
 
-Not automated yet. `evals.json` holds the case definitions in the format
-described at <https://agentskills.io/skill-creation/evaluating-skills> — `prompt`,
-`expected_output`, optional `files`, and draft `assertions`. Each skill has three
-cases: a happy path, a case that tests a specific piece of guidance in the skill,
-and an edge case.
+```bash
+make behaviour                                 # every case
+make behaviour CASE=finds-a-map-link           # one case
+make behaviour CASE=finds-a-map-link RUNS=1    # cheapest useful loop
+```
 
-To run one by hand, spawn a subagent with a clean context for each configuration
-and give it the skill path, the prompt, any fixtures, and an output directory
-under `evals/results/output/iteration-N/<case>/{with_skill,without_skill}/`. Then
-grade each assertion PASS/FAIL with quoted evidence, and review the outputs
-yourself — assertions only catch what you thought to write down.
+This layer runs on [`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals),
+which sends a realistic prompt to a fresh headless session with this plugin
+loaded, runs each case three times, then repeats the whole thing **with no
+plugin at all** and reports the difference. That second arm is the reason to use
+it: it answers "did the skill do this, or would Claude have managed anyway",
+which is the question a skill repo has to keep asking itself.
 
-The baseline matters more than the score. A case where with-skill and
-without-skill both pass is telling you the skill added nothing there; drop the
-assertion or make the case harder.
+It needs Claude Code ≥ 2.1.269. Every run is a real model call on your account.
+
+### What a case looks like
+
+A case is a directory anywhere under `evals/`; we put them in
+`evals/skills/<skill>/<case>/` so they sit with that skill's other eval inputs.
+`prompt.md` holds the prompt in its body and the run's limits in frontmatter,
+and every file under `graders/` is one pass/fail check. The example case is
+[`skills/search-charts/finds-a-map-link/`](skills/search-charts/finds-a-map-link/):
+
+```markdown
+---
+description: >-
+  A chart the model cannot name from memory, asked for as a map.
+tags: [behaviour]
+allowed_tools: [WebFetch, Skill]
+---
+
+For a slide on ocean plastic I want Our World in Data's chart of mismanaged
+plastic waste per person, shown as a world map rather than as a line chart.
+What's the link?
+```
+
+Write the prompt the way a user would type it. Naming the skill in the prompt
+turns a routing measurement into an instruction-following one.
+
+### Graders
+
+One grader per file under `graders/`; the filename is the grader's name. The
+type goes in frontmatter, and for `llm` the body is the rubric.
+
+| Type | Passes when | Costs |
+|---|---|---|
+| `regex` | `pattern` matches the target (default: the final reply) | free |
+| `tool_used` | `tool` was called between `min` and `max` times, optionally matching `input_match` | free |
+| `tool_order` | the first `before` call precedes the first `after` call | free |
+| `file_exists` | a file Claude **created** matches the `path` glob | free |
+| `llm` | a judge model votes PASS on the body's rubric, 2 of 3 votes | a judge call |
+| `baseline` | a judge finds the run at least as good as a reference transcript | a judge call |
+
+Prefer the free four. These skills produce URLs, CSV columns and command lines —
+things a regex pins down exactly and a small judge model can talk itself out of.
+Keep `llm` for short prose where correctness is genuinely a judgement call, and
+reach for `--judge-model sonnet` before trusting a rubric that keeps flipping.
+
+Give each case **one grader on the answer and one on how Claude got there**.
+The answer grader catches a regression in what the skill teaches; the path
+grader is usually where the plugin's contribution actually shows up.
+
+### The baseline arm is the whole point
+
+A `tool_used: Skill` grader can never pass without the plugin, so it is excluded
+from scoring in both arms and reported as an indicator only. Everything else is
+scored in both, and the gap between them, `Δ`, is what the plugin contributed.
+
+**A case that scores 1.00 with the plugin and 1.00 without it measures nothing.**
+The example case is exactly that, on purpose — it is here to show the shape of a
+case, and its own result is the more useful lesson:
+
+| | with | without | Δ |
+|---|---|---|---|
+| `finds-a-map-link` | 1.00 | 1.00 | **0.00** |
+
+Its transcript says why. Asked for the chart of *mismanaged plastic waste per
+person*, baseline Claude with no plugin at all went straight to
+`ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita` and used its one
+granted tool only to check the page was not a 404. It never searched. The prompt
+had handed it the slug: OWID's slugs track its chart titles, so any phrasing
+natural enough to be realistic is close to a transliteration of the answer.
+
+An earlier version did report Δ +0.33, bought by a fourth grader that checked
+whether Claude called the documented `/api/search` endpoint. That grader was
+dropped, because grading the *route* rather than the result answers the wrong
+question: if the reply is right, how Claude got there is not the user's problem.
+Remove it and the case honestly reports that this skill changed nothing here.
+
+So when a case shows Δ ≈ 0, the question is never "how do I get the number up".
+It is whether the skill earns its place on that task. For `search-charts` the
+answer may be that a frontier model has memorised much of OWID's slug namespace,
+and the skill's real value — currency, and not inventing a slug that looks right
+— is not what a pass/fail grader on one prompt can see. `joining-data` and
+`owid-catalog`, where the agent does real reasoning, are the better places to
+spend runs.
+
+### Cost and grants
+
+Six runs of the example case cost about \$0.80 and take two minutes (about a
+minute with `-j 4`). Cost scales
+as cases × runs × 2 arms, so pin `CASE` and `RUNS=1` while iterating on graders
+and use the defaults only for a number you intend to record.
+
+`make behaviour` grants exactly `WebFetch(domain:ourworldindata.org)`. That grant
+is deliberate in both directions: the cases need it, and the no-plugin arm gets
+it too, so a positive Δ is the skill's doing rather than the tool grant's.
+
+Granting `Bash` instead would be closer to how the skills really run — they
+document `curl` and `jq` — but it puts every command under Claude Code's OS
+sandbox, whose preconditions are machine-dependent. On a Mac with Docker Desktop
+installed it refuses outright, because `~/.docker` contains symlinks it cannot
+reliably exclude, and the case fails with a run error rather than a score. If
+you want a Bash-granting case, expect to debug the sandbox first.
+
+### Gotchas
+
+- **The plugin must resolve.** `claude plugin eval` reports which plugin it
+  loaded; if it says `none resolved`, the cases run against plain Claude Code and
+  every Δ is meaningless. `.claude-plugin/plugin.json` is what makes it resolve
+  as `owid`, which is also why that file has to exist even though
+  `marketplace.json` already describes the same plugin.
+- **`claude plugin validate` warns that the plugin has no version.** That is the
+  repo's versionless convention, not an oversight. Don't silence it by adding
+  one.
+- **Runs cannot see the eval directory**, so a case cannot accidentally leak its
+  graders to the agent under test.
+- **`file_exists` only sees files created during the run**, not ones edited.
+- Results land in `evals/results/<timestamp>/`, gitignored like everything else a
+  run produces. `report.html` there shows each grader's verdict per run.
+
+### The older `evals.json`
+
+`evals.json` predates this layer and holds hand-run cases in the format at
+<https://agentskills.io/skill-creation/evaluating-skills>. It is still the record
+of what each skill was meant to be good at; port a case into the directory
+format when you next touch it.
 
 ## Iterating
 
 1. Run the layers. Layer 1 tells you whether the docs are still true; layer 2
-   whether the description routes correctly; layer 3 whether the output is good.
+   whether the description routes correctly; layer 3 whether the skill changes
+   what Claude does.
 2. Read the failures alongside the current `SKILL.md`.
 3. Change one thing. Prefer explaining *why* over adding a rule — models follow
    reasoning more reliably than directives.
@@ -240,8 +366,8 @@ assertion or make the case harder.
    regresses.
 
 Adopt a skill change when: contract tests pass; trigger accuracy does not drop;
-no output-eval assertion that previously passed now fails; and no eval file
-ended up referenced from `SKILL.md`.
+no behaviour-eval grader that previously passed now fails, and no case's Δ
+shrinks; and no eval file ended up referenced from `SKILL.md`.
 
 ## Caveats
 
@@ -253,3 +379,8 @@ ended up referenced from `SKILL.md`.
   That is deliberate — a red nightly run because OWID is down is information.
 - Layer 2 costs real tokens: 10 queries × 3 runs × 4 skills is 120 `claude -p`
   invocations. Run it when a description changes, not on every PR.
+- Layers 2 and 3 overlap. A `tool_used: Skill` grader asks the same question as
+  a trigger eval, on one prompt instead of ten, and `claude plugin eval` is
+  first-party where `run-trigger-eval.py` is ours to maintain. Whether layer 2
+  should fold into layer 3 is worth deciding once there are enough behaviour
+  cases to judge it on; until then the two measure at different widths.

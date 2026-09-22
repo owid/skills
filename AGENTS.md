@@ -9,9 +9,10 @@ This repository publishes **agent skills for working with Our World in Data** (s
 
 ```
 FAQ.md                          # common user and contributor questions
-Makefile                        # entry points: make validate / install / test / triggers
+Makefile                        # entry points: make validate / install / test / triggers / behaviour
 skills/<skill-name>/SKILL.md    # one directory per skill, and nothing else
 .claude-plugin/marketplace.json # Claude Code marketplace + plugin definition
+.claude-plugin/plugin.json      # the plugin's own Claude manifest; `claude plugin eval` needs it
 plugin.json                     # Agent Plugins manifest (ChatGPT, Codex)
 .agents/plugins/                # repo-scoped catalog: lets ChatGPT/Codex install the repo as-is
 evals/skills/<skill-name>/      # that skill's test cases and fixtures
@@ -36,7 +37,7 @@ sibling `evals/skills/<skill-name>/` for exactly this reason; see
 
 ## Versioning
 
-Plugins here are intentionally **versionless**: `.claude-plugin/marketplace.json`, `plugin.json` and the plugin entries carry no `version` field, so every commit to `main` is a new release and update mechanisms pick it up automatically. Do not add version fields back. (`version` is optional in the Agent Plugins schema; hosts that need one fall back to `1.0.0`.)
+Plugins here are intentionally **versionless**: `.claude-plugin/marketplace.json`, `.claude-plugin/plugin.json`, `plugin.json` and the plugin entries carry no `version` field, so every commit to `main` is a new release and update mechanisms pick it up automatically. Do not add version fields back — `version` is optional in the Agent Plugins schema, hosts that need one fall back to `1.0.0`, and `make validate` warning about the missing version is the convention working, not a defect to fix.
 
 Listing in OpenAI's public Plugin Directory would change this — each submitted
 version goes through review — so that is a separate decision from the packaging
@@ -89,3 +90,10 @@ rules, both enforced by `make validate`:
 When you change a skill's `description`, re-run its trigger eval
 (`make triggers SKILL=<name>`) — the four skills cover adjacent ground, so a
 description change can quietly steal a sibling's traffic.
+
+When you change what a skill *teaches*, run its behaviour cases
+(`make behaviour CASE=<name>`). These run the plugin against a real prompt and
+again with no plugin at all, and report the difference. A case that scores the
+same both ways is measuring nothing — see
+[evals/README.md](evals/README.md#the-baseline-arm-is-the-whole-point) before
+writing one, because that trap catches almost every first attempt.
