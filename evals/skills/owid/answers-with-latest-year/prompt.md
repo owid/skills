@@ -1,13 +1,13 @@
 ---
 description: >-
-  Asks for a year the data does not reach. The skill says to check the
-  timespan and give the latest year rather than extrapolate, and to name the
-  original producer.
+  Asks for a specific recent year. The skill says to read the year off the
+  data, name the original producer and link the chart, rather than answer
+  from memory.
 tags: [behaviour]
 allowed_tools: [WebFetch, Skill]
 expected_outcome: >-
-  A number of under-five deaths in Somalia for the latest available year,
-  stated as such, credited to UN IGME with a chart link.
+  A number of under-five deaths in Somalia for 2024 if the data has it, else
+  for the latest year with that stated, credited to UN IGME with a chart link.
 ---
 
 How many children died in Somalia in 2024, according to Our World in Data?
