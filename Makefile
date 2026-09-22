@@ -13,6 +13,11 @@ SHELL := /bin/bash
 # page still shows.
 SKILLS_REF := uvx --quiet --from 'skills-ref>=0.1.1,<0.2' agentskills
 
+# The Agent Plugins manifest schema, fetched over the network, so plugin.json is
+# checked against the published spec rather than a copy that can drift.
+CHECK_SCHEMA := uvx --quiet --from 'check-jsonschema>=0.33,<0.40' check-jsonschema
+PLUGIN_SCHEMA := https://agent-plugins.org/schemas/1.0.0/plugin.schema.json
+
 help: ## List the available targets
 	@grep -hE '^[a-z][a-z-]*:.*## ' $(MAKEFILE_LIST) \
 	  | awk -F':.*## ' '{printf "  \033[1m%-9s\033[0m %s\n", $$1, $$2}'
@@ -20,7 +25,7 @@ help: ## List the available targets
 	@echo "  test/triggers take SKILL=<name>. triggers also takes RUNS=<n>,"
 	@echo "  MODEL=<id> and EFFORT=<low|medium|high>, which is where the cost is."
 
-validate: ## Check spec conformance, the plugin manifest and marketplace registration
+validate: ## Check spec conformance, both plugin manifests and marketplace registration
 	@# Spec conformance, per skill, using the validator the spec itself recommends.
 	@# Agent-agnostic: these skills are also read by Codex, Gemini CLI, Cursor, ...
 	@if command -v uv >/dev/null 2>&1; then \
@@ -33,6 +38,12 @@ validate: ## Check spec conformance, the plugin manifest and marketplace registr
 	@# The marketplace manifest is Claude-specific and outside the spec.
 	@if command -v claude >/dev/null 2>&1; then claude plugin validate .; \
 	else echo "  ~ claude CLI not found - skipping manifest validation"; fi
+	@# plugin.json is what ChatGPT and Codex read, and neither CLI above looks at
+	@# it. Its schema forbids unknown keys, so a typo makes the whole package
+	@# unreadable rather than degrading - worth catching here.
+	@if command -v uv >/dev/null 2>&1; then \
+	  $(CHECK_SCHEMA) --schemafile $(PLUGIN_SCHEMA) plugin.json; \
+	else echo "  ~ uv not found - skipping plugin.json validation"; fi
 	@# Eval files must never be referenced from a SKILL.md. A reference would pull
 	@# test prose into the context budget of every user who triggers the skill, and
 	@# it is the one way the evals could leak into an agent's context at all.
@@ -47,7 +58,7 @@ validate: ## Check spec conformance, the plugin manifest and marketplace registr
 	  echo "  x the file(s) above contain escaped unicode - rewrite with ensure_ascii=False"; \
 	  exit 1; \
 	else echo "  ok  eval json has no escaped unicode"; fi
-	@# Registration: neither validator above knows about marketplace.json, and an
+	@# Registration: none of the validators above knows about marketplace.json, and an
 	@# unregistered skill is installable by neither route.
 	@fail=0; \
 	for dir in skills/*/; do \
