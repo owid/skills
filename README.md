@@ -196,27 +196,28 @@ Want to improve the skill? See [AGENTS.md](AGENTS.md) for repo conventions, [eva
 ```bash
 make            # list targets
 make validate   # spec conformance, both plugin manifests, registration, internal links
-make install    # install this repo as a plugin for Codex and the ChatGPT app
+make install    # install this repo as a plugin for Claude Code, Codex and the ChatGPT app
 make test       # contract tests: do the OWID endpoints still match what the skill documents?
 make triggers   # trigger evals: does the skill fire when it should? (needs the claude CLI, costs tokens)
 make behaviour  # behaviour evals: what does the plugin change about what Claude does?
 ```
 
-To try the skill in a live session, load the plugin directly with `claude --debug --plugin-dir .`
+To try the skill in a single session without installing it, load the plugin directly with `claude --debug --plugin-dir .`
 
 ### Trying a branch
 
-`make install` registers this repo as a plugin source for the Codex CLI, which
-is also where the ChatGPT desktop app looks. It installs the branch you have
-checked out, resolved from GitHub — so push it first. `BRANCH=` installs a
-different ref:
+`make install` installs the plugin for Claude Code and for the Codex CLI, which
+is also where the ChatGPT desktop app looks. Claude Code reads this worktree
+directly, so it gets whatever you have checked out, uncommitted edits included.
+Codex resolves from GitHub at the branch you are on, so push it first; `BRANCH=`
+picks a different ref:
 
 ```bash
 make install BRANCH=main
 ```
 
 Re-running it repoints an existing install, so you can switch branches freely.
-It prints the remaining ChatGPT-app steps (developer mode, restart) and the two
+It prints the remaining ChatGPT-app steps (developer mode, restart) and the
 commands that undo it.
 
 ### Running the evals

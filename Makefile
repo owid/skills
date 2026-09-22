@@ -139,27 +139,39 @@ behaviour: ## Behaviour evals: what does the plugin change about what Claude doe
 	  $(if $(JUDGE),--judge-model $(JUDGE),) $(if $(MODEL),--model $(MODEL),) \
 	  --allow-tools "WebFetch(domain:ourworldindata.org)" --no-publish
 
-install: ## Install this repo as a plugin for Codex and the ChatGPT app (defaults to the current branch)
-	@command -v codex >/dev/null 2>&1 || { \
-	  echo "  x codex CLI not found - install it from https://developers.openai.com/codex"; exit 1; }
+install: ## Install this repo as a plugin for Claude Code, Codex and the ChatGPT app
+	@# Both halves install what you are working on, by the best route each CLI has.
+	@# Claude Code reads a directory marketplace live, so it gets this worktree,
+	@# uncommitted edits included - and `claude plugin marketplace add` takes no
+	@# --ref, so it is also the only way to try a branch there. Codex resolves from
+	@# GitHub, so its half needs the branch pushed.
+	@if command -v claude >/dev/null 2>&1; then \
+	  claude plugin marketplace remove owid-skills >/dev/null 2>&1 || true; \
+	  claude plugin marketplace add "$(CURDIR)" >/dev/null && \
+	  claude plugin install owid@owid-skills >/dev/null && \
+	  echo "  ok  Claude Code: owid@owid-skills -> $(CURDIR)"; \
+	else echo "  ~ claude CLI not found - skipping Claude Code"; fi
 	@# codex installs from GitHub, not from this working tree, so a branch that was
 	@# never pushed - or a typo in BRANCH - would otherwise install a different ref
 	@# without saying so.
-	@git ls-remote --exit-code --heads origin $(BRANCH) >/dev/null 2>&1 || { \
-	  echo "  x origin has no branch $(BRANCH) - push it first, or pass BRANCH=<ref>"; exit 1; }
-	@# `marketplace add` refuses to re-point an existing marketplace at a different
-	@# source, which is what a second run with a different BRANCH is. Clearing ours
-	@# first makes the target idempotent; both removes are no-ops on a clean machine.
-	@codex plugin remove owid@owid-skills >/dev/null 2>&1 || true
-	@codex plugin marketplace remove owid-skills >/dev/null 2>&1 || true
-	@codex plugin marketplace add owid/skills --ref $(BRANCH)
-	@codex plugin add owid@owid-skills
+	@if ! command -v codex >/dev/null 2>&1; then \
+	  echo "  ~ codex CLI not found - skipping Codex and the ChatGPT app"; \
+	  echo "      install it from https://developers.openai.com/codex"; \
+	else \
+	  git ls-remote --exit-code --heads origin $(BRANCH) >/dev/null 2>&1 || { \
+	    echo "  x origin has no branch $(BRANCH) - push it first, or pass BRANCH=<ref>"; exit 1; }; \
+	  codex plugin remove owid@owid-skills >/dev/null 2>&1 || true; \
+	  codex plugin marketplace remove owid-skills >/dev/null 2>&1 || true; \
+	  codex plugin marketplace add owid/skills --ref $(BRANCH) >/dev/null && \
+	  codex plugin add owid@owid-skills >/dev/null && \
+	  echo "  ok  Codex: owid@owid-skills -> owid/skills at $(BRANCH)"; \
+	fi
 	@echo
-	@echo "  Installed from branch $(BRANCH)."
-	@echo "  Codex is ready - run /plugins in a session to see it."
+	@echo "  Claude Code picks it up in the next session - /plugin shows it."
 	@echo "  For the ChatGPT app: turn on Settings > Security and login > Developer mode,"
 	@echo "  restart the desktop app, then install Our World in Data from Plugins."
-	@echo "  To undo: codex plugin remove owid@owid-skills && codex plugin marketplace remove owid-skills"
+	@echo "  To undo: claude plugin marketplace remove owid-skills"
+	@echo "           codex plugin remove owid@owid-skills && codex plugin marketplace remove owid-skills"
 
 clean: ## Delete eval run outputs (evals/results/)
 	@rm -rf evals/results

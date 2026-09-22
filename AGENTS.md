@@ -102,16 +102,32 @@ Run `make` for the full list. The two you need most:
   response shapes the skill documents still match what the API returns, which
   is the way this skill is most likely to break. This is what CI runs.
 
-For end-to-end testing, load the plugin directly in a live session:
+For a single session without installing anything, load the plugin directly:
 `claude --debug --plugin-dir .`
 
-For ChatGPT and Codex, `make install` registers this repo as a plugin source via
-the Codex CLI, which the ChatGPT desktop app reads too. It resolves from GitHub
-rather than from the working tree, and installs the branch you are on, so it
-fails if that branch was never pushed; `BRANCH=<ref>` installs a different one.
-It clears its own marketplace entry first, because `codex plugin marketplace
-add` refuses to re-point an existing marketplace at a different source. `codex
-plugin list` shows what resolved.
+`make install` installs it properly, into Claude Code and into Codex - which is
+also where the ChatGPT desktop app looks. The two halves take the best route
+each CLI has, so they are not symmetric:
+
+- **Claude Code** gets a directory marketplace pointing at this worktree, which
+  it reads live: uncommitted edits included, and no push needed. That is also
+  the only way to try a branch there, since `claude plugin marketplace add`
+  takes a URL, a path or a GitHub repo but no ref.
+- **Codex** resolves from GitHub at `BRANCH`, which defaults to the branch you
+  are on - so its half needs that branch pushed, and a `git ls-remote` gate says
+  so rather than installing a different ref silently.
+
+Both halves clear their own marketplace entry first, because `marketplace add`
+refuses to re-point an existing marketplace at a different source. `claude
+plugin list` and `codex plugin list` show what resolved; an installed plugin
+shadows a same-named one synced from claude.ai, so the local one is what a
+session loads.
+
+A plugin that installs but reports `failed to load` is usually a manifest
+conflict: `strict: false` in the marketplace entry makes it the whole definition
+of the plugin's components, which the `plugin.json` beside it contradicts.
+`make validate` checks for that, because neither validator does and the error
+only appears at install time.
 
 For live edits rather than a pushed branch, point a personal marketplace
 (`~/.agents/plugins/marketplace.json`, whose paths are relative to `$HOME`) at a
