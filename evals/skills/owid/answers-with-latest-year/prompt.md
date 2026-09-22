@@ -4,6 +4,8 @@ description: >-
   data, name the original producer and link the chart, rather than answer
   from memory.
 tags: [behaviour, webfetch-ok]
+max_turns: 15
+timeout_seconds: 300
 allowed_tools: [WebFetch, Skill, Read, Glob, Grep]
 expected_outcome: >-
   A number of under-five deaths in Somalia for 2024 if the data has it, else

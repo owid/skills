@@ -2,8 +2,8 @@
 description: 'Ported from evals.json; see the graders for what a good answer does.'
 tags: [behaviour, ported, webfetch-ok]
 allowed_tools: [WebFetch, Skill, Read, Glob, Grep]
-max_turns: 20
-timeout_seconds: 300
+max_turns: 40
+timeout_seconds: 600
 ---
 
 Add Our World in Data citations to this draft to support its claims, and return the revised text.
