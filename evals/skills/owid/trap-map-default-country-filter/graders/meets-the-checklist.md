@@ -1,8 +1,7 @@
 ---
 type: llm
 ---
-Judge the final reply against this checklist. PASS only if every item that applies is satisfied; FAIL if any applicable item is clearly not met. Quote the part of the reply that decides each item.
+The user asked for a CSV with only the United States and the United Kingdom for 2020 from a religious-composition chart URL, and how many rows it has.
 
-- The CSV contains only the two countries (2 rows), not every country
-- If a first attempt returned every country, the answer explains why (map-default chart) and fixes it
-- The indicator and religion parameters from the URL are kept in the request
+PASS if the reply reports a result containing only those two countries (two data rows) for 2020, keeping the indicator and religion selection from the URL.
+FAIL if the reported result contains other countries, a different year, a different indicator, or if the reply never obtains the data.

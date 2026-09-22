@@ -1,8 +1,7 @@
 ---
 type: llm
 ---
-Judge the final reply against this checklist. PASS only if every item that applies is satisfied; FAIL if any applicable item is clearly not met. Quote the part of the reply that decides each item.
+The user asked what data sources Our World in Data has on child mortality.
 
-- It names the original producers behind the charts (e.g. UN IGME, Gapminder), taken from the metadata, not only chart titles
-- It distinguishes recent data from long-run historical series
-- Charts are linked
+PASS if the reply names at least two organisations that produce the child mortality data OWID publishes (for example UN IGME, Gapminder, or others named in the chart metadata) and links to at least one ourworldindata.org chart or page on child mortality.
+FAIL if it names no producer, only lists chart titles, or gives no ourworldindata.org link.
