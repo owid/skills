@@ -72,6 +72,13 @@ validate: ## Check spec conformance, both plugin manifests and marketplace regis
 	  done; \
 	done; \
 	if [ $$fail -eq 0 ]; then echo "  ok  every relative link inside skills/ resolves"; else exit 1; fi
+	@# `strict: false` makes the marketplace entry the whole definition, which
+	@# conflicts with the plugin.json that ships beside it: Claude Code then refuses
+	@# to load the plugin at install time. Neither validator above catches it.
+	@if grep -q '"strict": *false' .claude-plugin/marketplace.json; then \
+	  echo "  x marketplace.json sets strict: false, which conflicts with plugin.json - drop the field"; \
+	  exit 1; \
+	else echo "  ok  no marketplace entry overrides plugin.json"; fi
 	@# The ChatGPT and Codex listing falls back to a generic icon when an interface
 	@# asset path does not resolve, which looks exactly like never having set one.
 	@fail=0; \

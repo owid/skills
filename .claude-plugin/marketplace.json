@@ -12,7 +12,6 @@
             "name": "owid",
             "description": "Agent skills for working with Our World in Data: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. No API key.",
             "source": "./",
-            "strict": false,
             "license": "Apache-2.0",
             "skills": [
                 "./skills/owid"
