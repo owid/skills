@@ -21,6 +21,7 @@ skills/owid/references/*.md       # one file per endpoint or topic, read when ne
 .claude-plugin/marketplace.json   # Claude Code marketplace + plugin definition
 .claude-plugin/plugin.json        # the plugin's own Claude manifest; `claude plugin eval` needs it
 plugin.json                       # Agent Plugins manifest (ChatGPT, Codex)
+assets/                           # the icon and logo the ChatGPT/Codex listing shows
 .agents/plugins/                  # repo-scoped catalog: lets ChatGPT/Codex install the repo as-is
 evals/skills/<skill-name>/        # that skill's test cases and fixtures
 evals/                            # shared eval harness + playbook (evals/README.md)
@@ -105,11 +106,12 @@ For end-to-end testing, load the plugin directly in a live session:
 `claude --debug --plugin-dir .`
 
 For ChatGPT and Codex, `make install` registers this repo as a plugin source via
-the Codex CLI, which the ChatGPT desktop app reads too, and `make install
-BRANCH=<name>` points it at a branch instead of `main`. It clears its own
-marketplace entry first, because `codex plugin marketplace add` refuses to
-re-point an existing marketplace at a different source. `codex plugin list`
-shows what resolved.
+the Codex CLI, which the ChatGPT desktop app reads too. It resolves from GitHub
+rather than from the working tree, and installs the branch you are on, so it
+fails if that branch was never pushed; `BRANCH=<ref>` installs a different one.
+It clears its own marketplace entry first, because `codex plugin marketplace
+add` refuses to re-point an existing marketplace at a different source. `codex
+plugin list` shows what resolved.
 
 For live edits rather than a pushed branch, point a personal marketplace
 (`~/.agents/plugins/marketplace.json`, whose paths are relative to `$HOME`) at a

@@ -289,6 +289,13 @@ fi
 if fetch "$CHART.csv?csvType=filtered&country=USA~GBR&tab=table" "$WORK/tabtable.csv"; then
     csv_min_rows "tab=table undoes the country filter" "$WORK/tabtable.csv" 1000
 fi
+# tab= is documented as filtered-only too: with csvType=full it changes nothing,
+# on a line-default chart and on a map-default one alike.
+if fetch "$CHART.csv?csvType=full" "$WORK/full-notab.csv" &&
+    fetch "$CHART.csv?csvType=full&tab=map" "$WORK/full-tabmap.csv"; then
+    ok "tab= does nothing with csvType=full" \
+        test "$(wc -l < "$WORK/full-notab.csv")" = "$(wc -l < "$WORK/full-tabmap.csv")"
+fi
 
 section "Chart data API: multi-dimensional chart dimensions"
 # data-api.md tells agents to copy dimension parameters from the chart URL
@@ -333,12 +340,14 @@ doc_contains "the embedding reference carries the iframe snippet" "$EMBED_REF" '
 
 # ---------------------------------------------------------------------------
 section "Data format: the shapes the Code column comes in"
-# data-api.md tells agents that Code is ISO alpha-3 for countries, that regions
-# use OWID_, UN_ or WB_ codes, and that a large minority of entities have no
-# code at all. Each of those claims is checked against a chart that carries it.
+# data-api.md says Code is ISO alpha-3 for countries, <BODY>_ for a region under
+# somebody's scheme, and often empty. The prefix list is deliberately open: a
+# sample of 163 charts turned up OWID_, UN_, UNSDG_, WB_, WHO_ and PEW_, and the
+# region-definitions page names more schemes than that. So the shape is checked,
+# not a fixed set of prefixes.
 if fetch "$GRAPHER/share-of-population-in-extreme-poverty.csv?csvType=full" "$WORK/codes.csv"; then
-    csv_column_matches "every Code is ISO alpha-3, an OWID_/UN_/WB_ code, or empty" \
-        "$WORK/codes.csv" Code '^([A-Z]{3}|(OWID|UN|WB)_[A-Z0-9_]+)?$'
+    csv_column_matches "every Code is ISO alpha-3, a PREFIX_ code, or empty" \
+        "$WORK/codes.csv" Code '^([A-Z]{3}|[A-Z]+_[A-Z0-9_]+)?$'
     for prefix in OWID_ UN_ WB_; do
         ok "the Code column carries $prefix codes" \
             grep -q ",$prefix" "$WORK/codes.csv"
@@ -346,9 +355,14 @@ if fetch "$GRAPHER/share-of-population-in-extreme-poverty.csv?csvType=full" "$WO
     ok "some entities have an empty Code" \
         grep -qE '^[^,]+,,' "$WORK/codes.csv"
 fi
+# A chart from a different corner of the catalogue, carrying other families.
+if fetch "$GRAPHER/cross-country-literacy-rates.csv?csvType=full" "$WORK/codes2.csv"; then
+    csv_column_matches "the same shape holds on an unrelated chart" \
+        "$WORK/codes2.csv" Code '^([A-Z]{3}|[A-Z]+_[A-Z0-9_]+)?$'
+fi
 doc_contains "data-api.md documents the OWID_ code family" "$DATA_REF" 'OWID_WRL'
-doc_contains "data-api.md documents the UN_ and WB_ code family" "$DATA_REF" 'WB_SSA'
-doc_contains "data-api.md warns that codes can be empty" "$DATA_REF" 'Roughly a quarter of the entities'
+doc_contains "data-api.md keeps the prefix list open" "$DATA_REF" 'not the whole list'
+doc_contains "data-api.md warns that codes can be empty" "$DATA_REF" '\*\*Empty\*\*'
 
 section "Data format: entity names and codes line up across charts"
 # data-api.md promises a name always maps to the same code in every chart, which
@@ -362,6 +376,31 @@ if fetch "$GRAPHER/annual-co2-emissions-per-country.csv?$JOIN_PARAMS" "$WORK/co2
         test "$(cut -d, -f1,2 "$WORK/co2.csv" | sort -u)" = "$(cut -d, -f1,2 "$WORK/pop.csv" | sort -u)"
 fi
 doc_contains "data-api.md tells agents to join on Code and Year" "$DATA_REF" 'Join on `Code` and `Year`'
+
+section "Data format: sub-annual charts"
+# data-api.md documents a Month column, an empty timespan on sub-annual charts,
+# and time= needing full dates there. Each is checked against a real chart.
+if fetch "$GRAPHER/global-co2-concentration.csv?csvType=filtered&country=OWID_WRL" "$WORK/monthly.csv"; then
+    csv_has_columns "monthly charts carry a Month column" "$WORK/monthly.csv" Entity Code Month
+    ok "Month values are YYYY-MM" \
+        grep -qE '^World,OWID_WRL,[0-9]{4}-[0-9]{2},' "$WORK/monthly.csv"
+fi
+if fetch "$GRAPHER/monthly-temperature-anomalies.metadata.json" "$WORK/subannual.json"; then
+    all_match "timespan is present but empty on a sub-annual chart" "$WORK/subannual.json" \
+        '.columns[]' 'has("timespan") and (.timespan == "")'
+fi
+DAILY="$GRAPHER/daily-cases-covid-region.csv?csvType=filtered&country=OWID_WRL"
+if fetch "$DAILY&time=2020-05-01..2020-05-03" "$WORK/daily-dates.csv"; then
+    csv_column_set "full dates filter a Day chart" "$WORK/daily-dates.csv" Day \
+        "2020-05-01 2020-05-02 2020-05-03"
+fi
+if fetch "$DAILY&time=2020" "$WORK/daily-bare.csv"; then
+    # A bare number is read as a day offset, not a year. The origin is not
+    # documented anywhere, so assert only what the skill claims: asking for
+    # "2020" on a Day chart does not give you the year 2020.
+    ok "a bare number in time= is not read as a year" \
+        test -z "$(csv_column "$WORK/daily-bare.csv" Day | grep '^2020-')"
+fi
 
 section "Data format: text encoding"
 # data-api.md says the metadata carries real non-ASCII but CSV entity names do not.

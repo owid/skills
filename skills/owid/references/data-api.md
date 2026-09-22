@@ -138,7 +138,7 @@ The suffix decides which file comes back:
 |---|---|
 | `.metadata.json` | Definitions, units, sources, caveats. Get this first, always. |
 | `.csv` | The data. One row per entity and time point. |
-| `.readme.md` | A written description of the data and where it came from. Long, but it answers "how was this made" in one request. |
+| `.readme.md` | A written description of the data and where it came from. Long, but it answers "how was this made" in one request. It is also the only place that names each source inline: the producer, when it was published and retrieved, its URL and its licence. For the same thing as structured data, follow `fullMetadata` instead. |
 | `.zip` | The CSV, the metadata and the readme in one archive. Use it when the user wants a download. |
 | `.png` | The chart as an image. See [embedding.md](embedding.md). |
 | `.svg` | The same, as vector. |
@@ -150,9 +150,9 @@ The query string decides which part of the data comes back:
 |---|---|---|---|
 | `csvType` | `full`, `filtered` | `full` | `full` gives every entity and every year in the chart. `filtered` gives what the chart itself shows. |
 | `country` | codes joined by `~`, e.g. `USA~GBR~OWID_WRL` | the chart's own selection | Which entities to include. **Only works with `csvType=filtered`.** Names work too, but codes are safer. |
-| `time` | `2015`, `2000..2020`, `earliest..2020`, `2000..latest`, `earliest..latest`, `latest`, `earliest` | the chart's own range | Which years. On daily charts, use dates: `2021-01-01..2021-01-31`. **Only works with `csvType=filtered`.** |
+| `time` | `2015`, `2000..2020`, `earliest..2020`, `2000..latest`, `earliest..latest`, `latest`, `earliest` | the chart's own range | Which years. On `Month` and `Day` charts use full dates instead: `2021-01-01..2021-01-31`. **Only works with `csvType=filtered`.** |
 | `useColumnShortNames` | `true`, `false` | `false` | `true` gives you `entity,code,year,life_expectancy_0`. `false` gives you `Entity,Code,Year,Life expectancy`. Use `true`: the long names contain commas and spaces. |
-| `tab` | `chart`, `line`, `map`, `table` | the chart's own tab | Which view `filtered` should copy. You need it on charts that open as a map. |
+| `tab` | `chart`, `line`, `map`, `table` | the chart's own tab | Which view `filtered` should copy. **Only works with `csvType=filtered`**, like `country=` and `time=`. You need it on charts that open as a map. |
 | dimension parameters | chart-specific | the chart's default view | On multi-dimensional charts, these choose the indicator. See below. |
 | `nocache` | flag | | Skip the cache. Only useful right after a chart was updated. |
 
@@ -231,7 +231,7 @@ separate chart, or a dimension parameter as described above.
 | `Entity` / `entity` | The name. OWID spells each country the same way in every chart. |
 | `Code` / `code` | The identifier. See below: it is not always an ISO code, and it is sometimes empty. |
 | `Year` / `year` | A whole number. Negative means BCE, so `-10000` is 10,000 BCE. |
-| `Day` / `day` | `YYYY-MM-DD`, on daily charts, instead of `Year`. |
+| `Month` / `Day` | Sub-annual charts carry one of these instead of `Year`. See below. |
 | everything else | One indicator per column, already in the unit the metadata gives. |
 
 An empty cell means there is no data for that entity and year. A country that is
@@ -241,10 +241,13 @@ missing altogether has no data in that chart at all. Neither is a zero.
 
 - **Countries keep today's borders** when the data goes back in time. "Italy" in
   the year 1 means the area that is Italy now.
-- **Regions are aggregates**, and the name says whose definition it is:
-  `Sub-Saharan Africa (WB)` is the World Bank's, `Sub-Saharan Africa (FAO)` is
-  the FAO's, and they are not the same set of countries. The same chart can
-  carry several.
+- **Regions are aggregates**, and the name says whose definition it is. A name in
+  brackets is that body's scheme: `Sub-Saharan Africa (WB)` is the World Bank's,
+  `Sub-Saharan Africa (FAO)` is the FAO's, and they are not the same set of
+  countries. No brackets means OWID's own definition. The same chart can carry
+  several. Which countries each one contains is listed at
+  [Definitions of world regions](https://ourworldindata.org/world-region-map-definitions),
+  where every scheme's country-to-region mapping is also downloadable.
 - **Historical states appear in long-run series**: `USSR`, `Yugoslavia`,
   `East Germany`, `Czechoslovakia`.
 - **Some entities are not places**: income groups like `Low-income countries`,
@@ -252,26 +255,52 @@ missing altogether has no data in that chart at all. Neither is a zero.
 
 ### The Code column
 
-The `Code` column comes in three shapes, and it is often empty:
+Do not assume a `Code` is an ISO code, and do not assume there is one. It takes
+three shapes, and it is often empty:
 
 - **ISO 3166-1 alpha-3** for countries: `USA`, `GBR`, `CIV`.
-- **`OWID_` codes** for things with no ISO code: `OWID_WRL` (World), continents
-  (`OWID_AFR`), income groups (`OWID_HIC`), Kosovo (`OWID_KOS`), historical
-  states (`OWID_USS`), and `OWID_EU27`, which is longer than the rest.
-- **`UN_` and `WB_` codes** for regions defined by those bodies: `UN_AFR`,
-  `WB_SSA`, `WB_MENAP`.
-- **Empty.** Roughly a quarter of the entities in OWID's largest charts have no
-  code at all. That includes `Scotland`, `Northern Ireland`, `England and Wales`,
-  every `(FAO)` region, and every urban and rural split.
+- **`OWID_` codes** for things OWID defines that have no ISO code: `OWID_WRL`
+  (World), continents such as `OWID_AFR`, income groups such as `OWID_HIC`,
+  `OWID_KOS` for Kosovo, historical states such as `OWID_USS`. They are not all
+  the same length: `OWID_EU27` is longer.
+- **`<BODY>_` codes** for regions as another organisation defines them. `WB_`,
+  `WHO_`, `UN_`, `UNSDG_` and `PEW_` all appear, and they are not the whole list
+  — [Definitions of world regions](https://ourworldindata.org/world-region-map-definitions)
+  names more than a dozen schemes OWID carries.
+- **Empty**, for a large share of entities, and not only obscure ones. Regions
+  under somebody's scheme, groupings such as `Least developed countries`, parts
+  of countries, and entities that are not places at all: individual wars,
+  projects, even calendar months where a chart uses those as its entities.
+
+The share with no code varies a lot between charts, so count rather than assume.
 
 Within OWID, names and codes are consistent: a name always maps to the same
 code, and a code to the same name, in every chart. So you can line up two OWID
-charts on `Code` safely, as long as you handle the entities that have none.
+charts on `Code`, as long as you handle the entities that have none.
 
-### Years and days
+### Time
 
-- Annual data is the norm. Check `timespan` on the column before you promise a
-  year; if the data stops earlier, say so.
+The third column tells you how fine the data is, and its header is its name:
+
+| Header | Format | A chart that has it |
+|---|---|---|
+| `Year` | a whole number, negative for BCE | `life-expectancy` |
+| `Month` | `YYYY-MM` | `global-co2-concentration` |
+| `Day` | `YYYY-MM-DD` | `daily-cases-covid-region` |
+
+Annual is the norm. There is no `Week` column: weekly figures are dated by day,
+as on `weekly-covid-deaths`. One chart can also mix granularities across its
+columns — `global-co2-concentration` carries a monthly average and an annual
+average side by side on the same `Month` axis, the annual one filled in only
+once a year.
+
+- **`timespan` is empty on sub-annual charts.** On `life-expectancy` it reads
+  `1543-2023`; on `monthly-temperature-anomalies` and `daily-cases-covid-region`
+  it is an empty string, not a missing field. So on a `Month` or `Day` chart,
+  take the coverage from the first and last rows instead.
+- **Filtering needs full dates on those charts.** `time=2021-01-01..2021-01-31`
+  works; `time=2021-01` is ignored and you get everything back. `earliest` and
+  `latest` work everywhere.
 - Projections, where a chart has them, are a separate column with their own
   `timespan`, filled in only for the projected years. Say which one you used.
 
@@ -300,13 +329,13 @@ Join on `Code` and `Year`, never on names.
 
 Two things will bite you:
 
-- **Rows with an empty `Code` drop out silently.** That is a quarter of the
-  entities in a big chart. Count your rows before and after, and decide what to
-  do with the ones you lost rather than not noticing them.
+- **Rows with an empty `Code` drop out silently.** Count your rows before and
+  after, and decide what to do with the ones you lost rather than not noticing
+  them.
 - **A region name does not mean the same thing in two places.** `Sub-Saharan
   Africa` from OWID and `Sub-Saharan Africa` from another source can be different
-  country lists. Join regions by name and you get numbers that look right and are
-  not. Match countries, and build the region yourself if you need one.
+  country lists. If you join regions by name, you may get numbers that look right
+  and are not.
 
 ## Silent failures
 
@@ -319,11 +348,19 @@ what came back is not what you asked for.
 - **`csvType=filtered` with no `country=` gives the chart's own selection.** On
   `life-expectancy` that is the world and the continents, not the countries. Name
   the countries you want, or use `csvType=full`.
-- **Charts that open as a map ignore `country=`.** A map shows every country, so
-  there is nothing to filter. Add `tab=chart` to get the country selection back.
-  `political-regime` behaves this way.
+- **The map tab ignores `country=` and collapses you to one year.** `filtered`
+  copies whatever tab is active, and a map shows every country at a single point
+  in time. On `political-regime`, which opens as a map, `country=USA~GBR` returns
+  174 entities for 2025 alone; adding `tab=chart` returns the two countries from
+  1789 to 2025. It is the tab, not the chart: ask `life-expectancy` for
+  `tab=map` and you get 201 entities for 2023.
 - **`tab=table` gives you everything.** The table view holds all entities, so it
   undoes your filtering.
+- **A bare number in `time=` is not a year on a `Month` or `Day` chart.** It is
+  read as an offset in days from an internal origin, so `time=2020` on
+  `daily-cases-covid-region` returns a single day in 2025, not the year 2020.
+  The origin is not given anywhere in the chart's metadata, so do not try to
+  work the date out: always use full dates on those charts.
 - **`earliest` and `latest` are one year for the whole chart, not per country.**
   `time=earliest` on `life-expectancy` gives the first year any country has data,
   and countries with nothing that year are simply missing from the result.

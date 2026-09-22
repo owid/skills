@@ -4,13 +4,13 @@
         "description": "Agent skills for working with Our World in Data: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. No API key."
     },
     "owner": {
-        "name": "Our World In Data",
+        "name": "Our World in Data",
         "email": "tech@ourworldindata.org"
     },
     "plugins": [
         {
             "name": "owid",
-            "description": "Work with Our World in Data: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. No API key.",
+            "description": "Agent skills for working with Our World in Data: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. No API key.",
             "source": "./",
             "strict": false,
             "license": "Apache-2.0",
