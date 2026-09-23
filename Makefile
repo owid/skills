@@ -30,7 +30,7 @@ help: ## List the available targets
 	  | awk -F':.*## ' '{printf "  \033[1m%-9s\033[0m %s\n", $$1, $$2}'
 	@echo
 	@echo "  test/triggers take SKILL=<name>, behaviour CASE=<name>, install BRANCH=<ref>."
-	@echo "  triggers also takes RUNS/MODEL/EFFORT and behaviour RUNS - that is the cost."
+	@echo "  triggers also takes RUNS/MODEL/EFFORT and behaviour RUNS/JOBS - RUNS is the cost, JOBS the wall clock."
 
 validate: ## Check spec conformance, both plugin manifests and marketplace registration
 	@# Spec conformance, per skill, using the validator the spec itself recommends.
@@ -127,6 +127,8 @@ triggers: ## Trigger evals: does the right skill fire? (needs the claude CLI, co
 	@./evals/run-trigger-eval.py $(if $(SKILL),--skill $(SKILL),--all) \
 	  $(if $(RUNS),--runs $(RUNS),) $(if $(MODEL),--model $(MODEL),) $(if $(EFFORT),--effort $(EFFORT),)
 
+JOBS ?= 4
+
 behaviour: ## Behaviour evals: what does the plugin change about what Claude does? (costs tokens)
 	@# Grants are deliberately narrow. WebFetch to ourworldindata.org is all these
 	@# cases need, and it is what makes the no-plugin arm a fair comparison: the
@@ -135,7 +137,9 @@ behaviour: ## Behaviour evals: what does the plugin change about what Claude doe
 	@# whose preconditions vary by machine.
 	@# JUDGE=sonnet swaps the default small judge for a stronger one when an llm
 	@# grader keeps failing an answer that reads as correct.
-	@claude plugin eval . \
+	@# Runs are independent claude sessions, so they parallelise; the CLI allows
+	@# 1-8, and all of them share your rate limit. JOBS=1 if it starts throttling.
+	@claude plugin eval . -j $(JOBS) \
 	  $(if $(CASE),--case $(CASE),) $(if $(TAG),--tag $(TAG),) $(if $(RUNS),--runs $(RUNS),) \
 	  $(if $(JUDGE),--judge-model $(JUDGE),) $(if $(MODEL),--model $(MODEL),) \
 	  --allow-tools "WebFetch(domain:ourworldindata.org)" --no-publish
