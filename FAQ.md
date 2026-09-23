@@ -26,8 +26,8 @@ most common.
 
 **1. Are the files where your agent looks?** Every agent reads a different
 directory, and installing to the wrong one fails silently. The
-[`skills` CLI](https://github.com/vercel-labs/skills) knows the paths for 76
-agents and picks the right one:
+[`skills` CLI](https://github.com/vercel-labs/skills) knows the right path for
+every agent it supports and picks it for you:
 
 ```bash
 npx skills add owid/skills            # into the current project
@@ -35,7 +35,7 @@ npx skills add owid/skills --global   # user-level, all projects
 npx skills list                       # what is installed where
 ```
 
-Nineteen of those agents — including Codex, Cursor and Gemini CLI — share the
+Many of those agents — including Codex, Cursor and Gemini CLI — share the
 project-level `.agents/skills/` convention. Claude Code is the notable exception,
 using `.claude/skills/` per project and `~/.claude/skills/` globally. If you
 installed by hand, check with `ls .agents/skills/owid .claude/skills/owid 2>/dev/null`,
@@ -51,7 +51,8 @@ answered directly instead, with no skill consulted. Nothing about the skills
 changed; only the effort did.
 
 The same class of setting exists elsewhere — Codex has `model_reasoning_effort`
-(`minimal`/`low`/`medium`/`high`/`xhigh`) in `~/.codex/config.toml`, and most
+(`low`/`medium`/`high`/`xhigh`/`max`/`ultra`, depending on the model) in
+`~/.codex/config.toml`, and most
 agents expose something similar. **We have only measured the effect on Claude
 Code**, so treat the others as a plausible first thing to check rather than a
 known cause. If your agent ignores skills, raise the effort and try again before
@@ -125,13 +126,15 @@ bug. Three known traps worth ruling out first, all documented in the skill:
   "all countries". `population.csv?csvType=filtered&time=2020` returns seven rows
   — continents and World — with no individual country. Pass an explicit
   `country=` filter, or `csvType=full`.
-- **On charts whose default view is a map, `country=` is ignored** unless the
-  request also carries `tab=chart`. A filtered CSV that comes back with every
-  country is this.
-- **A no-match search still returns results.** OWID's search falls back to
-  low-relevance hits (flagged `closestMatches: true`) rather than returning
-  nothing, so `nbHits` is never a reliable signal that a topic is missing. Judge
-  the titles.
+- **On charts whose default view is a map, `country=` is ignored.** Adding
+  `tab=chart` recovers it on a chart that has a chart view; a map-only chart has
+  none, so nothing recovers it and you need `csvType=full`. A filtered CSV that
+  comes back with every country is this.
+- **A partly-matching search still returns results.** When only some of your
+  words match, OWID's search relaxes the query and returns loosely related hits
+  flagged `closestMatches: true`. On a relaxed response `nbHits` counts only what
+  came back, so judge the titles rather than the count. A query that matches
+  nothing does come back empty.
 
 ### What happened to `search-charts`, `fetch-chart-data`, `joining-data` and `owid-catalog`?
 
