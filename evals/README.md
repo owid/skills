@@ -228,6 +228,7 @@ make behaviour CASE=finds-a-map-link RUNS=1    # cheapest useful loop
 make behaviour CASE=extract-claims JUDGE=sonnet  # stronger judge for an llm grader
 make behaviour MODEL=claude-sonnet-5           # the model under test
 make behaviour JOBS=1                          # serial; the default runs 4 sessions at once
+make behaviour TAG=user-agent RUNS=1          # does generated code send the owid-skills User-Agent?
 ```
 
 This layer runs on [`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals),
@@ -366,6 +367,11 @@ you want a Bash-granting case, expect to debug the sandbox first.
 - **`file_exists` only sees files created during the run**, not ones edited.
 - Results land in `evals/results/<timestamp>/`, gitignored like everything else a
   run produces. `report.html` there shows each grader's verdict per run.
+- **The report shows verdicts, not replies.** `make behaviour` passes
+  `--keep-temp`, so each run's `trace.jsonl` survives at the `tracePath` listed
+  in `aggregate-result.json`, under the system temp directory. Read it to see
+  what the agent did and replied, which is how you tell a skill failure from a
+  grader that rejected a correct answer.
 
 ### The older `evals.json`
 

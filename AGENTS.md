@@ -161,3 +161,19 @@ again with no plugin at all, and report the difference. A case that scores the
 same both ways is measuring nothing — see
 [evals/README.md](evals/README.md#the-baseline-arm-is-the-whole-point) before
 writing one, because that trap catches almost every first attempt.
+
+**When you run behaviour evals for a PR, always put the report in the PR.**
+Each run writes a self-contained `report.html` under `evals/results/`, which is
+gitignored and invisible to reviewers. Publish it as a Claude artifact and link
+it from the PR description under an `## Eval report` heading (not "Verified").
+Artifacts are private by default, so remind whoever ran the evals to share it
+before review.
+
+The report itself is long and lists only verdicts, so the section must also say
+what it means. Give per-case scores with and without the plugin, then a
+qualitative read of the runs: open each run's `trace.jsonl` (its path is
+`tracePath` in the run's `aggregate-result.json`) and say what the agent actually
+did in each arm, why each failing grader failed, and whether that is the skill
+falling short or the case being wrong: a grader too literal to accept a correct
+answer, or a tool grant that stopped the agent. Fix a broken case before
+reporting its numbers.
