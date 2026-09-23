@@ -18,7 +18,9 @@ Once installed, you can ask your agent things like:
 - *"Embed the CO₂ per capita chart in this HTML page, or give me a PNG for the slides."*
 - *"Where does the data in this chart come from and how was it processed?"*
 
-You don't have to ask for it by name. Your assistant uses it on its own whenever your question is about our charts or data.
+
+Most of the time you don't have to ask for it by name — your assistant reaches for
+it on its own when your question is about our charts or data.
 
 ## Installation
 
@@ -29,70 +31,88 @@ The quickest way is to ask your AI assistant to do it. Send it this:
 Claude Code and Codex can carry that out themselves. The Claude and ChatGPT apps
 will read this page and walk you through it.
 
-To do it by hand, find your app below. They all install the same thing, and none
-of them needs an OWID account or an API key. **If you use the Claude app or the
-ChatGPT app, use one of the first two** — the rest are for people who work in a
-terminal.
-
-Use one of those routes if you can: they install the skill from this project, so
-it keeps up with our changes. The last two — uploading the skill by hand, or
-copying the folder — give you a fixed copy that never updates itself. They are
-there for when the others don't work for you.
-
-In the apps this arrives as a **plugin**. A plugin is the wrapper a skill comes
-in: install the plugin and you have the skill. You will also see the same thing
-called `owid/skills` (the address it comes from), **Our World in Data** (what you
-click) and `owid@owid-skills` (what the terminal commands call it).
+To do it by hand, find your app here:
 
 | Your app | How you install it |
 |---|---|
 | [Claude app](#claude-app-web-and-desktop) | in the app, in a few clicks |
-| [ChatGPT app](#chatgpt-app-chat-and-work) | in the app, in a few clicks |
-| [Claude Code](#claude-code-cli) | two commands, at Claude Code's own prompt |
-| [Codex](#codex-cli) | two commands, in a terminal |
+| [ChatGPT app](#chatgpt-app) | in the app, in a few clicks |
+| [Claude Code](#claude-code) | two commands, at Claude Code's own prompt |
+| [Codex](#codex) | two commands, in a terminal |
 | [Anything else](#other-agents-gemini-cli-cursor-copilot-) | one command in a terminal |
+
+They all install the same thing, none of them needs an Our World in Data account,
+and nothing on our side costs anything. Two more ways are further down this page:
+[uploading the skill yourself](#claude-app-by-uploading-the-skill) and
+[copying the folder](#manual).
 
 ### Claude app (web and desktop)
 
-You are going to point Claude at this project on GitHub, where the skill lives.
-Claude calls a collection of add-ons a *marketplace*, and the place ours is kept a
-*repository*. You don't need to know more than that — you paste one short address
-and Claude does the rest. No GitHub account needed.
+**You need a paid Claude plan** — Pro, Max, Team or Enterprise. Plugins and skills
+are both paid features, so on the free plan there is no way to add this to the
+Claude app.
+
+You are going to point Claude at this project on GitHub, where the skill lives. It
+arrives as a **plugin** — the wrapper a skill comes in. Install the plugin and you
+have the skill. Claude calls its list of add-ons a *marketplace*; you don't need to
+know more than that, because you paste one short address and Claude does the rest.
+You don't need a GitHub account.
 
 1. Open Claude. Click your name at the bottom left, then **Customize**, then the
    **Plugins** tab.
-2. Under *Personal plugins*, click **+**, then **Add marketplace**, then
-   **Add from a repository**.
-3. A box appears. Type `owid/skills` and confirm.
+2. Under *Personal plugins*, click the **+** at the right-hand end of the heading,
+   then **Add marketplace**, then **Add from a repository**.
+3. A box appears. Type `owid/skills` — with the slash, and no `https://` — then
+   press Enter, or click the button beside the box.
 4. Click **Browse plugins**, find **Our World in Data**, and click **Install**.
-5. If it shows a switch next to its name, make sure it is on.
+5. Look for a switch next to its name and make sure it is on. If there is no
+   switch, it is already on.
 6. Start a **new** chat. The plugin only applies to conversations you begin after
    installing it.
 
+Menu names change from time to time. If you can't find **Customize**, look for
+**Settings**, then anything called **Plugins**, **Extensions** or **Add-ons**.
+
 Then [check it worked](#check-it-worked).
 
-*Setting this up for a team?* On Team and Enterprise plans an admin can add
-`owid/skills` once for everyone, and it appears in every colleague's plugin list,
-so nobody else has to do the steps above.
+### Claude app, by uploading the skill
 
-### ChatGPT app (Chat and Work)
+This needs a paid Claude plan too, so it is not a way around that. Use it when you
+want a fixed copy — a particular version, or a branch you are trying out.
+
+1. Turn on **Settings → Capabilities → Code execution and file creation**. Skills
+   are greyed out without it.
+2. Go to <https://github.com/owid/skills>, click the green **Code** button, then
+   **Download ZIP**. Unzip it and open the `skills` folder inside. Compress the
+   `owid` folder on its own — right-click it, then **Compress** on a Mac or
+   **Send to → Compressed folder** on Windows. `owid` has to be the top level of
+   the zip. (In a terminal: `cd skills && zip -r owid.zip owid`.)
+3. In Claude, go to **Customize → Skills → + → Create skill → Upload a skill**
+   and choose that zip.
+
+An uploaded skill never updates itself, so repeat this when you want a newer
+version.
+
+### ChatGPT app
 
 The skill isn't in OpenAI's own plugin list yet, so you point ChatGPT at where it
 lives on GitHub. This works on chatgpt.com as well as in the desktop app.
 
-1. Open **Settings → Plugins**, choose **Add marketplace**, and type
-   `owid/skills`. That is the address of this project on GitHub. Leave every
-   other field alone.
-2. Find **Our World in Data** in the list and install it.
+1. Click your name at the bottom left, then **Settings**, then **Plugins**. Choose
+   to add — or import — a marketplace, and give `owid/skills` as the source. That
+   is the address of this project on GitHub. You may see other boxes; leave them
+   empty. You don't need a GitHub account.
+2. Find **Our World in Data** in the list and install it. If there is a switch next
+   to its name, make sure it is on.
 3. Start a **new** conversation. The plugin only applies to chats you start after
    installing it.
 
+If the menu names don't match what you see, look for anything called **Plugins**,
+**Extensions** or **Add-ons**.
+
 Then [check it worked](#check-it-worked).
 
-If you're setting this up for colleagues rather than yourself, a workspace admin
-can import and sync a GitHub marketplace for the whole workspace.
-
-### Claude Code (CLI)
+### Claude Code
 
 Type these two lines into Claude Code's own prompt, one at a time. They start
 with a slash, which is how it knows they are commands rather than questions.
@@ -103,10 +123,10 @@ with a slash, which is how it knows they are commands rather than questions.
 ```
 
 The first line tells Claude Code where to find the skill; the second installs it.
-Then run `/reload-plugins`, or restart Claude Code, so it picks the skill up —
-Claude Code will prompt you for this. Then [check it worked](#check-it-worked).
+Claude Code usually reloads for you; if it tells you to run `/reload-plugins`, run
+it. Then [check it worked](#check-it-worked).
 
-### Codex (CLI)
+### Codex
 
 Codex is a tool you run by typing in a terminal. If that isn't you, use one of the
 app routes above.
@@ -120,12 +140,16 @@ codex plugin add owid@owid-skills
 ```
 
 The first line registers this project as a source; the second installs the skill.
-`codex plugin list` shows what it installed. Then
-[check it worked](#check-it-worked).
+`codex plugin list` shows what your marketplaces offer, with this one among them.
+Then [check it worked](#check-it-worked).
 
 ### Other agents (Gemini CLI, Cursor, Copilot, …)
 
-This is a standard [Agent Skill](https://agentskills.io), read as-is by Codex, Gemini CLI, Cursor, GitHub Copilot, and many other tools — no Claude-specific setup required. The [`skills`](https://github.com/vercel-labs/skills) CLI detects which of your installed agents support skills (75+ supported) and installs it into each one's directory:
+This is a standard [Agent Skill](https://agentskills.io), read as-is by Codex,
+Gemini CLI, Cursor, GitHub Copilot and many other tools — nothing Claude-specific
+is needed. The [`skills`](https://github.com/vercel-labs/skills) CLI finds the
+agents you have installed and asks which of them to install into. It supports 75
+and more.
 
 ```bash
 npx skills add owid/skills            # into the current project
@@ -152,75 +176,25 @@ Then put `owid-skills/skills/owid` where your agent looks for skills:
 
 Copy the whole `owid/` directory, not just `SKILL.md`: the references live next to it.
 
-### Claude app, without a paid plan
-
-Plugins need a paid Claude plan, but skills do not. If you are on the free plan,
-upload the skill on its own instead:
-
-1. Turn on **Settings → Capabilities → Code execution and file creation**. Skills
-   are greyed out without it.
-2. Download this repository and zip the skill folder, so that `owid` is the top
-   level of the zip: `cd skills && zip -r owid.zip owid`.
-3. In Claude, go to **Customize → Skills → + → Create skill → Upload a skill**
-   and choose that zip.
-
-An uploaded skill is a fixed copy — it will not update itself, so repeat this
-when you want a newer version.
-
 ### Check it worked
 
 Start a new chat and ask:
 
-> Tell me what source this OWID chart relies on:
-> https://ourworldindata.org/grapher/child-mortality — and fetch the complete
-> time series for Uganda.
+> Use the Our World in Data skill to fetch the data behind this chart:
+> https://ourworldindata.org/grapher/child-mortality — the complete time series
+> for Uganda, and the source the chart relies on.
 
-A working install names **Gapminder and the UN Inter-agency Group for Child
-Mortality Estimation**, not "Our World in Data", and comes back with the whole
-series for Uganda — about seventy yearly figures, starting in the 1950s.
+A working install comes back with the whole series for Uganda — about seventy
+yearly figures, starting in the 1950s — and names **Gapminder and the UN
+Inter-agency Group for Child Mortality Estimation** as the source, rather than
+"Our World in Data".
 
-Both halves matter. An assistant without the skill will usually name us as the
-source rather than the people who collected the data, and will summarise or
-invent the numbers instead of fetching them. If that is what you get, see
+If that is what you got, you are done — there is nothing else to set up.
+
+Naming the skill in the question is deliberate: an assistant that doesn't have it
+will tell you so. One that has it but didn't fetch anything will summarise or
+invent the numbers instead of returning the series. If either happens, see
 [Not working?](#not-working) below.
-
-### Keeping the skill up to date
-
-However you installed it, you got the skill as it was that day. It does not update itself unless you turn that on. Find the way you installed it:
-
-- **Claude app.** Nothing to do: a plugin installed from the plugin list keeps
-  itself up to date.
-
-- **Claude Code plugin.** Auto-update is off by default for marketplaces other than Anthropic's own. Turn it on once: run `/plugin`, open the **Marketplaces** tab, select `owid-skills` and choose **Enable auto-update**. Claude Code then checks within about ten minutes of a session starting, and tells you to `/reload-plugins` when something changed. To update by hand instead:
-
-  ```bash
-  claude plugin marketplace update owid-skills   # refresh the catalog
-  claude plugin update owid@owid-skills          # then restart, or /reload-plugins
-  ```
-
-  Refreshing the marketplace on its own does not update the installed plugin; the second command does.
-
-- **Codex / ChatGPT plugin.** Refresh the source, then reinstall:
-
-  ```bash
-  codex plugin marketplace upgrade owid-skills   # refresh the source
-  codex plugin remove owid@owid-skills           # then reinstall
-  codex plugin add owid@owid-skills
-  ```
-
-  Restart the ChatGPT desktop app afterwards so it picks up the new files.
-
-- **`skills` CLI.** `npx skills add` installs one copy per scope, symlinks each agent's directory to it, and records what it installed — `skills-lock.json` in the project, `~/.agents/.skill-lock.json` for a global install. Update everything in that scope with:
-
-  ```bash
-  npx skills update            # -g for the user-level install, -p for the project one
-  ```
-
-- **Manual.** A copied directory is frozen; copy it again to update. A symlink into your clone follows the clone, so `git pull` in `owid-skills` is enough.
-
-There are no version numbers to bump: every commit to `main` is a release, and each of these steps picks up the latest one.
-
-> **Upgrading from an earlier version?** This repository used to ship `search-charts`, `fetch-chart-data`, `joining-data`, `owid-catalog` and `fact-check-article`. They are folded into `owid` now. Plugin updates replace them automatically; if you installed by copying, delete the old directories so they do not compete with the new skill.
 
 ### Not working?
 
@@ -231,6 +205,57 @@ the data" will use it, "what's OWID" may not. If it still doesn't use the skill,
 by name: *use the Our World in Data skill to…*
 
 For anything else, see the [FAQ](FAQ.md#my-agent-isnt-using-the-skill-at-all).
+
+### Keeping the skill up to date
+
+However you installed it, you got the skill as it was that day. Nothing here
+refreshes itself until you say so. Find the way you installed it:
+
+- **Claude app.** Anthropic doesn't document whether Claude refreshes a
+  marketplace you added yourself, and we have not been able to confirm it. If the
+  skill looks out of date, remove the marketplace in **Customize → Plugins** and
+  add it again.
+
+- **Claude Code plugin.** Auto-update is off by default for marketplaces other than Anthropic's own. Turn it on once: run `/plugin`, open the **Marketplaces** tab, select `owid-skills` and choose **Enable auto-update**. Claude Code then checks within about ten minutes of a session starting, and tells you to `/reload-plugins` when something changed. To update by hand instead:
+
+  ```bash
+  claude plugin marketplace update owid-skills   # refresh the catalog
+  claude plugin update owid@owid-skills          # then restart, or /reload-plugins
+  ```
+
+  Refreshing the marketplace on its own does not update the installed plugin; the second command does.
+
+- **ChatGPT app.** Remove **Our World in Data** from your plugins list and install
+  it again from the same marketplace.
+
+- **Codex.** Refresh the source, then reinstall, then start a new Codex session:
+
+  ```bash
+  codex plugin marketplace upgrade owid-skills   # refresh the source
+  codex plugin remove owid@owid-skills           # then reinstall
+  codex plugin add owid@owid-skills
+  ```
+
+  A Codex install is Codex's own; the ChatGPT app keeps its plugins separately.
+
+- **`skills` CLI.** `npx skills add` installs one copy per scope, symlinks each agent's directory to it by default, and records what it installed — `skills-lock.json` in the project, `~/.agents/.skill-lock.json` for a global install. Update everything in that scope with:
+
+  ```bash
+  npx skills update            # -g for the user-level install, -p for the project one
+  ```
+
+- **Uploaded skill.** A fixed copy. Download and upload it again.
+
+- **Manual.** A copied directory is frozen; copy it again to update. A symlink into your clone follows the clone, so `git pull` in `owid-skills` is enough.
+
+There are no version numbers to keep track of. We change the skill in place, and
+each of these steps picks up the newest version.
+
+> **Only if you installed this skill before September 2026:** this repository used
+> to ship `search-charts`, `fetch-chart-data`, `joining-data` and `owid-catalog`,
+> which are folded into `owid` now, plus an experimental `fact-check-article` that
+> was withdrawn. Plugin updates replace them automatically; if you installed by
+> copying, delete those five directories so they do not compete with the new skill.
 
 ## What's in it
 
