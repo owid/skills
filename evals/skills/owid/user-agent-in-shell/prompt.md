@@ -5,7 +5,7 @@ description: >-
 tags: [behaviour, webfetch-ok, user-agent]
 max_turns: 15
 timeout_seconds: 300
-allowed_tools: [WebFetch, Skill]
+allowed_tools: [WebFetch, Skill, Read, Glob, Grep]
 expected_outcome: >-
   A curl (or wget) command against co-emissions-per-capita.csv, filtered to
   Germany and France, that sends the owid-skills User-Agent.

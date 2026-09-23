@@ -7,7 +7,7 @@ description: >-
 tags: [behaviour, webfetch-ok, user-agent]
 max_turns: 15
 timeout_seconds: 300
-allowed_tools: [WebFetch, Skill]
+allowed_tools: [WebFetch, Skill, Read, Glob, Grep]
 expected_outcome: >-
   A Python function that reads life-expectancy.csv from the grapher and sends
   User-Agent: owid-skills/1.0 (+https://github.com/owid/skills).

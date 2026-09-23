@@ -355,6 +355,11 @@ you want a Bash-granting case, expect to debug the sandbox first.
 - **`file_exists` only sees files created during the run**, not ones edited.
 - Results land in `evals/results/<timestamp>/`, gitignored like everything else a
   run produces. `report.html` there shows each grader's verdict per run.
+- **The report shows verdicts, not replies.** `make behaviour` passes
+  `--keep-temp`, so each run's `trace.jsonl` survives at the `tracePath` listed
+  in `aggregate-result.json`, under the system temp directory. Read it to see
+  what the agent did and replied, which is how you tell a skill failure from a
+  grader that rejected a correct answer.
 
 ### The older `evals.json`
 
