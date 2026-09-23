@@ -133,8 +133,9 @@ agent made and the response it got.
 ### Does installing this put files in my repo?
 
 Yes, if you install per-project: the skill directory is copied into your
-agent's skills directory inside the project. It is `SKILL.md` plus three
-Markdown files under `references/` — about 40 KB in total, no data files. Our
+agent's skills directory inside the project. It is `SKILL.md`, three Markdown
+files under `references/`, and a two-line `agents/openai.yaml` that sets the
+name ChatGPT shows — about 50 KB in total, no data files. Our
 test fixtures and eval scripts live in a top-level `evals/` directory precisely
 so they are never copied into your repository, where a fixture CSV could be
 mistaken for your own data. See
