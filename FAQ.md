@@ -8,7 +8,21 @@ conventions see [AGENTS.md](AGENTS.md); for how the skill is evaluated see
 
 ### My agent isn't using the skill at all
 
-Work through these in order — the first two are the most common.
+**If you installed in the Claude or ChatGPT app**, check these three first.
+
+1. **Is the plugin switched on?** New plugins arrive switched off. Find it in
+   your plugins list and turn the switch on.
+2. **Did you start a new chat?** It only applies to conversations you begin after
+   switching it on.
+3. **Is the question specific enough?** Agents skip skills for work they can do
+   unaided. "Find the OWID chart on child mortality and pull the data" will use
+   it; "what's OWID" may not. That is by design.
+
+If it still doesn't fire, ask for it by name: *use the Our World in Data skill
+to…*. That tells you whether the skill is missing or just wasn't picked.
+
+**If you installed from a terminal**, work through these — the first two are the
+most common.
 
 **1. Are the files where your agent looks?** Every agent reads a different
 directory, and installing to the wrong one fails silently. The
@@ -55,7 +69,7 @@ addressed as `owid:owid`.
 
 ### The skill fired but the agent still got the API wrong
 
-`SKILL.md` holds the workflow and the rules; the details of each endpoint live
+`SKILL.md` says which reference covers what; the details of each endpoint live
 in `references/`, which the agent is told to read before making a kind of call
 it has not made yet. If it skipped that step, say so: "read the search-api
 reference first". If the reference itself is wrong, that is a bug — the
@@ -66,7 +80,7 @@ agent made and the response it got.
 ### Does installing this put files in my repo?
 
 Yes, if you install per-project: the skill directory is copied into your
-agent's skills directory inside the project. It is `SKILL.md` plus four
+agent's skills directory inside the project. It is `SKILL.md` plus three
 Markdown files under `references/` — about 40 KB in total, no data files. Our
 test fixtures and eval scripts live in a top-level `evals/` directory precisely
 so they are never copied into your repository, where a fixture CSV could be
@@ -133,52 +147,8 @@ and one on the data endpoints.
 If you installed the old skills by copying, delete those four directories:
 plugin and `skills`-CLI installs replace them on update.
 
-## Contributing
+## Changing the skill
 
-### `make test` fails and I didn't change anything
-
-That is the contract tests doing their job. They check the OWID endpoints and
-response shapes the skill documents against what the API actually returns, so
-they can break when OWID ships a change and nobody has touched this repo. They
-also run nightly for exactly that reason.
-
-Read the failure before assuming it's a flake — it names the endpoint and the
-mismatch, and the downloaded responses are kept under `evals/results/contract/`
-so you can inspect one without re-running. Network outages also surface here,
-which is intentional.
-
-### `make triggers` costs a lot. How do I make it cheaper?
-
-It runs `queries x RUNS` full agent sessions — 30 for the default invocation.
-While iterating on the description, narrow it:
-
-```bash
-make triggers RUNS=1
-```
-
-Don't reach for a lower effort level to save money: as above, effort changes
-whether skills fire at all, so a cheap run measures something other than what
-your users experience. Same caution for `MODEL=` — routing is model-dependent, so
-a cheaper model measures that model's routing. Both are fine for fast iteration
-on wording, then confirm on the real model and effort before believing a number.
-
-### Why does the skill never mention its own evals?
-
-Because the `description`, `SKILL.md` and any reference it points to are loaded
-into the user's context when the skill triggers, and eval prose would be pure
-overhead there. It's enforced by `make validate`, not left to discipline.
-
-### `make triggers` exits non-zero. Is that a failure?
-
-Only if runs errored. Trigger accuracy is a measurement, not a pass/fail gate —
-100% routing accuracy isn't a realistic bar. The runner exits non-zero when runs
-actually failed (meaning the numbers can't be trusted) or when you set a floor
-with `--min-accuracy`. `make test` is the gate.
-
-### How do I add to the skill?
-
-See [AGENTS.md](AGENTS.md). The short version: detail goes in a reference file
-under `skills/owid/references/`, rules and workflow go in `SKILL.md`, every new
-API claim gets a check in `evals/skills/owid/contract.sh`, and `make validate`
-plus `make test` must pass. Prefer adding a reference over adding a sibling
-skill.
+This FAQ is for people using the skill. If you want to change it, see
+[`AGENTS.md`](AGENTS.md) for how the repository works and
+[`evals/README.md`](evals/README.md) for how it is tested.

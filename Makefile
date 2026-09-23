@@ -167,8 +167,14 @@ install: ## Install this worktree as a plugin for Claude Code, Codex and the Cha
 	  echo "      install it from https://developers.openai.com/codex"; \
 	else \
 	  if [ -n "$(BRANCH)" ]; then \
-	    git ls-remote --exit-code --heads origin "$(BRANCH)" >/dev/null 2>&1 || { \
+	    remote=$$(git ls-remote --heads origin "$(BRANCH)" 2>/dev/null | cut -f1); \
+	    [ -n "$$remote" ] || { \
 	      echo "  x origin has no branch $(BRANCH) - push it first"; exit 1; }; \
+	    local=$$(git rev-parse --verify --quiet "$(BRANCH)" || true); \
+	    if [ -n "$$local" ] && [ "$$local" != "$$remote" ]; then \
+	      echo "  x origin/$(BRANCH) is behind your local $(BRANCH) - push first, or"; \
+	      echo "      Codex installs the older commit and reports success"; exit 1; \
+	    fi; \
 	    src="owid/skills at $(BRANCH)"; \
 	  else src="$(CURDIR)"; fi; \
 	  codex plugin remove owid@owid-skills >/dev/null 2>&1 || true; \
@@ -191,14 +197,18 @@ zip: ## Package the plugin as an archive the Claude app can upload (ZIP=<path>)
 	@# what makes Claude Code refuse to load the plugin - so ship neither.
 	@# This is a snapshot of the worktree, which is the point: uploading is the only
 	@# way to try a branch in the Claude app, whose marketplaces serve main.
-	@stage=$$(mktemp -d) && \
-	  mkdir -p "$$stage/.claude-plugin" "$$(dirname "$(ZIP)")" && \
+	@# ZIP has to be absolute: the zip runs from the staging directory, so a
+	@# relative path would be written there and deleted with it, while we print ok.
+	@case "$(ZIP)" in /*) out="$(ZIP)";; *) out="$$PWD/$(ZIP)";; esac; \
+	  stage=$$(mktemp -d) && \
+	  mkdir -p "$$stage/.claude-plugin" "$$(dirname "$$out")" && \
 	  cp .claude-plugin/plugin.json "$$stage/.claude-plugin/" && \
 	  cp -R skills "$$stage/skills" && \
-	  rm -f "$(ZIP)" && \
-	  (cd "$$stage" && zip -qr "$(ZIP)" . -x '*.DS_Store') && \
+	  rm -f "$$out" && \
+	  (cd "$$stage" && zip -qr "$$out" . -x '*.DS_Store') && \
 	  rm -rf "$$stage" && \
-	  echo "  ok  $(ZIP)" && \
+	  [ -f "$$out" ] || { echo "  x zip produced nothing at $$out"; exit 1; }; \
+	  echo "  ok  $$out" && \
 	  echo "      Customize > Plugins > + > Upload a plugin. Turn the installed owid" && \
 	  echo "      plugin off first, or both answer the same prompts."
 
