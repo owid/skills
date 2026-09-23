@@ -251,11 +251,12 @@ refreshes itself until you say so. Find the way you installed it:
 There are no version numbers to keep track of. We change the skill in place, and
 each of these steps picks up the newest version.
 
-> **Only if you installed this skill before September 2026:** this repository used
-> to ship `search-charts`, `fetch-chart-data`, `joining-data` and `owid-catalog`,
+> **Only if you already have one of our older skills:** this repository used to
+> ship `search-charts`, `fetch-chart-data`, `joining-data` and `owid-catalog`,
 > which are folded into `owid` now, plus an experimental `fact-check-article` that
 > was withdrawn. Plugin updates replace them automatically; if you installed by
 > copying, delete those five directories so they do not compete with the new skill.
+> If none of those names is in your skills directory, this doesn't apply to you.
 
 ## What's in it
 
