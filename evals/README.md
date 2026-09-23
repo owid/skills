@@ -312,7 +312,7 @@ natural enough to be realistic is close to a transliteration of the answer.
 An earlier version of this file argued that only the answer should be scored,
 because "if the reply is right, how Claude got there is not the user's problem".
 We reversed that. An answer produced from memory is more likely to be made up,
-and a user cannot tell the two apart from the text. So four conditions are
+and a user cannot tell the two apart from the text. So the conditions below are
 scored in both arms on every case that touches data, because they are what the
 skill exists to guarantee:
 
@@ -321,6 +321,9 @@ skill exists to guarantee:
 | `metadata-fetched` | The metadata (or readme) was fetched before any fact about the data was stated | `tool_used` on a `.metadata.json` or `.readme.md` URL |
 | `names-the-producer` | The original producer or dataset is named, not only "Our World in Data" | `llm` |
 | `respects-the-licence` | For non-redistributable data, the reply says the numbers must come from the producer and does not invent them | `llm`, on the `licence-non-redistributable` case |
+| `links-owid-resource` | The reply links to the OWID chart, data page or article the content came from | `regex` on the reply |
+| `no-unrequested-png` | No chart image was downloaded unless the user asked for one | `tool_used` with `max: 0` on `.png`, except where an image is the deliverable |
+| `offers-a-png` (secondary, weight 0.5) | When discussing a chart, the reply offers an image of it | `llm`, on the chart-viewing cases |
 | `user-agent-sent` | Every request carried the skill's User-Agent header | `tool_used` on `Bash` with `input_match`; only meaningful when Bash is granted, so it lives in `graders-when-bash/` and is moved into `graders/` for such runs |
 
 The baseline arm is graded on the same conditions. A frontier model often gets
