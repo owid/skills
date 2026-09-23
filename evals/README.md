@@ -228,6 +228,7 @@ make behaviour CASE=finds-a-map-link RUNS=1    # cheapest useful loop
 make behaviour CASE=extract-claims JUDGE=sonnet  # stronger judge for an llm grader
 make behaviour MODEL=claude-sonnet-5           # the model under test
 make behaviour JOBS=1                          # serial; the default runs 4 sessions at once
+make behaviour TAG=user-agent RUNS=1          # does generated code send the owid-skills User-Agent?
 ```
 
 This layer runs on [`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals),
