@@ -197,6 +197,7 @@ Want to improve the skill? See [AGENTS.md](AGENTS.md) for repo conventions, [eva
 make            # list targets
 make validate   # spec conformance, both plugin manifests, registration, internal links
 make install    # install this repo as a plugin for Claude Code, Codex and the ChatGPT app
+make zip        # package the plugin for upload in the Claude app
 make test       # contract tests: do the OWID endpoints still match what the skill documents?
 make triggers   # trigger evals: does the skill fire when it should? (needs the claude CLI, costs tokens)
 make behaviour  # behaviour evals: what does the plugin change about what Claude does?
@@ -219,6 +220,10 @@ make install BRANCH=main
 Re-running it repoints an existing install, so you can switch branches freely.
 It prints the remaining ChatGPT-app steps (developer mode, restart) and the
 commands that undo it.
+
+The Claude app is the exception: its marketplaces serve a repo's default branch,
+so a branch gets there only as an upload. `make zip` writes the archive to
+`~/Downloads` for Customize > Plugins > + > Upload a plugin.
 
 ### Running the evals
 

@@ -123,6 +123,12 @@ plugin list` and `codex plugin list` show what resolved; an installed plugin
 shadows a same-named one synced from claude.ai, so the local one is what a
 session loads.
 
+The Claude app takes neither route: its marketplaces serve a repo's default
+branch, so a branch reaches it only as an upload. `make zip` writes an archive
+of the plugin - `.claude-plugin/plugin.json` and `skills/`, nothing else - to
+`~/Downloads`, for Customize > Plugins > + > Upload a plugin. Turn the installed
+`owid` plugin off while testing one, or both answer the same prompts.
+
 A plugin that installs but reports `failed to load` is usually a manifest
 conflict: `strict: false` in the marketplace entry makes it the whole definition
 of the plugin's components, which the `plugin.json` beside it contradicts.

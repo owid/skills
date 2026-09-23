@@ -5,7 +5,7 @@
 
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help validate lint test triggers behaviour install clean
+.PHONY: help validate lint test triggers behaviour install zip clean
 
 # The Agent Skills spec's own reference validator. Pinned to 0.1.x because
 # skills-ref is pre-1.0, where a minor bump may change behaviour. Note the
@@ -25,11 +25,15 @@ PLUGIN_SCHEMA := https://agent-plugins.org/schemas/1.0.0/plugin.schema.json
 # git call only runs when install does.
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 
+# Where `make zip` writes the archive the Claude app uploads. Downloads by
+# default, because that dialog is a file picker.
+ZIP ?= $(HOME)/Downloads/owid-plugin.zip
+
 help: ## List the available targets
 	@grep -hE '^[a-z][a-z-]*:.*## ' $(MAKEFILE_LIST) \
 	  | awk -F':.*## ' '{printf "  \033[1m%-9s\033[0m %s\n", $$1, $$2}'
 	@echo
-	@echo "  test/triggers take SKILL=<name>, behaviour CASE=<name>, install BRANCH=<ref>."
+	@echo "  test/triggers take SKILL=<name>, behaviour CASE=<name>, install BRANCH=<ref>, zip ZIP=<path>."
 	@echo "  triggers also takes RUNS/MODEL/EFFORT and behaviour RUNS/JOBS - RUNS is the cost, JOBS the wall clock."
 
 validate: ## Check spec conformance, both plugin manifests and marketplace registration
@@ -177,6 +181,24 @@ install: ## Install this repo as a plugin for Claude Code, Codex and the ChatGPT
 	@echo "  restart the desktop app, then install Our World in Data from Plugins."
 	@echo "  To undo: claude plugin marketplace remove owid-skills"
 	@echo "           codex plugin remove owid@owid-skills && codex plugin marketplace remove owid-skills"
+
+zip: ## Package the plugin as an archive the Claude app can upload (ZIP=<path>)
+	@# The app's "Upload a plugin" wants an archive with .claude-plugin/plugin.json
+	@# at its root. The rest of this repo serves the other install routes: the Agent
+	@# Plugins manifest is ChatGPT's, and a marketplace entry beside plugin.json is
+	@# what makes Claude Code refuse to load the plugin - so ship neither.
+	@# This is a snapshot of the worktree, which is the point: uploading is the only
+	@# way to try a branch in the Claude app, whose marketplaces serve main.
+	@stage=$$(mktemp -d) && \
+	  mkdir -p "$$stage/.claude-plugin" "$$(dirname "$(ZIP)")" && \
+	  cp .claude-plugin/plugin.json "$$stage/.claude-plugin/" && \
+	  cp -R skills "$$stage/skills" && \
+	  rm -f "$(ZIP)" && \
+	  (cd "$$stage" && zip -qr "$(ZIP)" . -x '*.DS_Store') && \
+	  rm -rf "$$stage" && \
+	  echo "  ok  $(ZIP)" && \
+	  echo "      Customize > Plugins > + > Upload a plugin. Turn the installed owid" && \
+	  echo "      plugin off first, or both answer the same prompts."
 
 clean: ## Delete eval run outputs (evals/results/)
 	@rm -rf evals/results
