@@ -115,6 +115,10 @@ reads the repo's own `.agents/plugins/marketplace.json`). `BRANCH=<ref>` swaps
 the Codex half to GitHub, behind a `git ls-remote` gate, for checking what is
 actually published.
 
+The ChatGPT app has its own, shorter route that needs neither: **Plugins → Add
+marketplace** takes a repo *and a branch*, so a pushed branch installs there
+without the CLI at all. `make install` remains the way to try uncommitted edits.
+
 Both halves clear their own marketplace entry first, because `marketplace add`
 refuses to re-point an existing marketplace at a different source. `claude
 plugin list` and `codex plugin list` show what resolved; an installed plugin

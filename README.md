@@ -76,15 +76,15 @@ extension doesn't support plugins at all.
 
 1. **Settings → Security and login → Developer mode**, turn it on. (Availability
    can depend on your account and workspace policy.)
-2. Register this repo as a source, using the Codex CLI command above —
-   `codex plugin marketplace add owid/skills`. The ChatGPT desktop app reads the
-   same sources.
-3. Restart the ChatGPT desktop app.
-4. Switch to **Work** in the switcher (or open **Codex**), then open **Plugins**.
-   This repo appears as **Our World in Data** under your personal marketplace;
-   install it there.
-5. Start a new conversation. Describe what you want, or invoke the plugin
+2. Open **Plugins → Add marketplace** and give it this repo, `owid/skills`. The
+   dialog takes a branch as well, so you can point it at one instead of `main`.
+3. The repo appears as **Our World in Data**; install it there.
+4. Start a new conversation. Describe what you want, or invoke the plugin
    explicitly with `@`.
+
+If you already use the Codex CLI, `codex plugin marketplace add owid/skills`
+registers the same source from the terminal — the desktop app reads it too, after
+a restart. Either way you end up in the same place.
 
 If you're setting this up for colleagues rather than yourself, a workspace admin
 can import and sync a GitHub marketplace for the whole workspace, so nobody else
@@ -230,6 +230,10 @@ make install BRANCH=main
 Re-running it repoints an existing install, so you can switch branches freely.
 It prints the remaining ChatGPT-app steps (developer mode, restart) and the
 commands that undo it.
+
+For the ChatGPT app specifically, you do not need any of this: **Plugins → Add
+marketplace** takes a repo and a branch, so a pushed branch installs there
+directly.
 
 The Claude app is the exception: its marketplaces serve a repo's default branch
 and it takes no local path, so a branch gets there only as an upload. `make zip`
