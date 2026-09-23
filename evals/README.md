@@ -307,19 +307,28 @@ granted tool only to check the page was not a 404. It never searched. The prompt
 had handed it the slug: OWID's slugs track its chart titles, so any phrasing
 natural enough to be realistic is close to a transliteration of the answer.
 
-An earlier version did report Δ +0.33, bought by a fourth grader that checked
-whether Claude called the documented `/api/search` endpoint. That grader was
-dropped, because grading the *route* rather than the result answers the wrong
-question: if the reply is right, how Claude got there is not the user's problem.
-Remove it and the case honestly reports that this skill changed nothing here.
+### The route is part of the result
 
-So when a case shows Δ ≈ 0, the question is never "how do I get the number up".
-It is whether the skill earns its place on that task. For chart discovery the
-answer may be that a frontier model has memorised much of OWID's slug namespace,
-and the skill's real value — currency, and not inventing a slug that looks right
-— is not what a pass/fail grader on one prompt can see. Fact-checks and data
-questions, where the agent does real reasoning and the traps the skill documents
-bite, are the better places to spend runs.
+An earlier version of this file argued that only the answer should be scored,
+because "if the reply is right, how Claude got there is not the user's problem".
+We reversed that. An answer produced from memory is more likely to be made up,
+and a user cannot tell the two apart from the text. So four conditions are
+scored in both arms on every case that touches data, because they are what the
+skill exists to guarantee:
+
+| Grader | Condition | How it is checked |
+|---|---|---|
+| `metadata-fetched` | The metadata (or readme) was fetched before any fact about the data was stated | `tool_used` on a `.metadata.json` or `.readme.md` URL |
+| `names-the-producer` | The original producer or dataset is named, not only "Our World in Data" | `llm` |
+| `respects-the-licence` | For non-redistributable data, the reply says the numbers must come from the producer and does not invent them | `llm`, on the `licence-non-redistributable` case |
+| `user-agent-sent` | Every request carried the skill's User-Agent header | `tool_used` on `Bash` with `input_match`; only meaningful when Bash is granted, so it lives in `graders-when-bash/` and is moved into `graders/` for such runs |
+
+The baseline arm is graded on the same conditions. A frontier model often gets
+the answer right from memory, and these graders are what show that it did so
+without checking; that gap is real, and it is the point of the skill.
+
+When a case shows Δ ≈ 0 on every grader, the question is still never "how do I
+get the number up". It is whether the skill earns its place on that task.
 
 ### Cost and grants
 
