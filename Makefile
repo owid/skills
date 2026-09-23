@@ -18,12 +18,9 @@ SKILLS_REF := uvx --quiet --from 'skills-ref>=0.1.1,<0.2' agentskills
 CHECK_SCHEMA := uvx --quiet --from 'check-jsonschema>=0.33,<0.40' check-jsonschema
 PLUGIN_SCHEMA := https://agent-plugins.org/schemas/1.0.0/plugin.schema.json
 
-# The ref `make install` resolves from GitHub for its Codex half; the Claude Code
-# half reads this worktree instead. It defaults to the branch you are on, because
-# installing main while working on a branch silently installs code you are not
-# testing. BRANCH=main installs the released version. Recursive on purpose: the
-# git call only runs when install does.
-BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
+# `make install` installs this worktree. BRANCH=<ref> installs from GitHub
+# instead, for the Codex half - to check what is actually published, or if the
+# ChatGPT app does not list a local source.
 
 # Where `make zip` writes the archive the Claude app uploads. Downloads by
 # default, because that dialog is a file picker.
@@ -34,6 +31,7 @@ help: ## List the available targets
 	  | awk -F':.*## ' '{printf "  \033[1m%-9s\033[0m %s\n", $$1, $$2}'
 	@echo
 	@echo "  test/triggers take SKILL=<name>, behaviour CASE=<name>, install BRANCH=<ref>, zip ZIP=<path>."
+	@echo "  install and zip both package this worktree; BRANCH= makes install resolve from GitHub."
 	@echo "  triggers also takes RUNS/MODEL/EFFORT and behaviour RUNS/JOBS - RUNS is the cost, JOBS the wall clock."
 
 validate: ## Check spec conformance, both plugin manifests and marketplace registration
@@ -151,32 +149,33 @@ behaviour: ## Behaviour evals: what does the plugin change about what Claude doe
 	  $(if $(JUDGE),--judge-model $(JUDGE),) $(if $(MODEL),--model $(MODEL),) \
 	  --allow-tools "WebFetch(domain:ourworldindata.org)" --keep-temp --no-publish
 
-install: ## Install this repo as a plugin for Claude Code, Codex and the ChatGPT app
-	@# Both halves install what you are working on, by the best route each CLI has.
-	@# Claude Code reads a directory marketplace live, so it gets this worktree,
-	@# uncommitted edits included - and `claude plugin marketplace add` takes no
-	@# --ref, so it is also the only way to try a branch there. Codex resolves from
-	@# GitHub, so its half needs the branch pushed.
+install: ## Install this worktree as a plugin for Claude Code, Codex and the ChatGPT app
+	@# Both CLIs read a local marketplace live, so both halves get this worktree,
+	@# uncommitted edits included, and neither needs the branch pushed. That is the
+	@# only way to try a branch at all: `claude plugin marketplace add` takes no
+	@# ref, and for the ChatGPT app a local marketplace is what stands in for one.
 	@if command -v claude >/dev/null 2>&1; then \
 	  claude plugin marketplace remove owid-skills >/dev/null 2>&1 || true; \
 	  claude plugin marketplace add "$(CURDIR)" >/dev/null && \
 	  claude plugin install owid@owid-skills >/dev/null && \
 	  echo "  ok  Claude Code: owid@owid-skills -> $(CURDIR)"; \
 	else echo "  ~ claude CLI not found - skipping Claude Code"; fi
-	@# codex installs from GitHub, not from this working tree, so a branch that was
-	@# never pushed - or a typo in BRANCH - would otherwise install a different ref
-	@# without saying so.
+	@# BRANCH=<ref> swaps this half to GitHub, where a ref that was never pushed -
+	@# or a typo - would otherwise install something else without saying so.
 	@if ! command -v codex >/dev/null 2>&1; then \
 	  echo "  ~ codex CLI not found - skipping Codex and the ChatGPT app"; \
 	  echo "      install it from https://developers.openai.com/codex"; \
 	else \
-	  git ls-remote --exit-code --heads origin $(BRANCH) >/dev/null 2>&1 || { \
-	    echo "  x origin has no branch $(BRANCH) - push it first, or pass BRANCH=<ref>"; exit 1; }; \
+	  if [ -n "$(BRANCH)" ]; then \
+	    git ls-remote --exit-code --heads origin "$(BRANCH)" >/dev/null 2>&1 || { \
+	      echo "  x origin has no branch $(BRANCH) - push it first"; exit 1; }; \
+	    src="owid/skills at $(BRANCH)"; \
+	  else src="$(CURDIR)"; fi; \
 	  codex plugin remove owid@owid-skills >/dev/null 2>&1 || true; \
 	  codex plugin marketplace remove owid-skills >/dev/null 2>&1 || true; \
-	  codex plugin marketplace add owid/skills --ref $(BRANCH) >/dev/null && \
+	  codex plugin marketplace add $(if $(BRANCH),owid/skills --ref $(BRANCH),"$(CURDIR)") >/dev/null && \
 	  codex plugin add owid@owid-skills >/dev/null && \
-	  echo "  ok  Codex: owid@owid-skills -> owid/skills at $(BRANCH)"; \
+	  echo "  ok  Codex: owid@owid-skills -> $$src"; \
 	fi
 	@echo
 	@echo "  Claude Code picks it up in the next session - /plugin shows it."

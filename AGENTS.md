@@ -106,16 +106,14 @@ For a single session without installing anything, load the plugin directly:
 `claude --debug --plugin-dir .`
 
 `make install` installs it properly, into Claude Code and into Codex - which is
-also where the ChatGPT desktop app looks. The two halves take the best route
-each CLI has, so they are not symmetric:
-
-- **Claude Code** gets a directory marketplace pointing at this worktree, which
-  it reads live: uncommitted edits included, and no push needed. That is also
-  the only way to try a branch there, since `claude plugin marketplace add`
-  takes a URL, a path or a GitHub repo but no ref.
-- **Codex** resolves from GitHub at `BRANCH`, which defaults to the branch you
-  are on - so its half needs that branch pushed, and a `git ls-remote` gate says
-  so rather than installing a different ref silently.
+also where the ChatGPT desktop app looks. Both CLIs take a local marketplace and
+read it live, so both halves install this worktree, uncommitted edits included,
+and neither needs the branch pushed. That is also the only way to try a branch:
+`claude plugin marketplace add` takes a URL, a path or a GitHub repo but no ref,
+and for the ChatGPT app a local marketplace is what stands in for one (Codex
+reads the repo's own `.agents/plugins/marketplace.json`). `BRANCH=<ref>` swaps
+the Codex half to GitHub, behind a `git ls-remote` gate, for checking what is
+actually published.
 
 Both halves clear their own marketplace entry first, because `marketplace add`
 refuses to re-point an existing marketplace at a different source. `claude
@@ -124,10 +122,13 @@ shadows a same-named one synced from claude.ai, so the local one is what a
 session loads.
 
 The Claude app takes neither route: its marketplaces serve a repo's default
-branch, so a branch reaches it only as an upload. `make zip` writes an archive
-of the plugin - `.claude-plugin/plugin.json` and `skills/`, nothing else - to
-`~/Downloads`, for Customize > Plugins > + > Upload a plugin. Turn the installed
-`owid` plugin off while testing one, or both answer the same prompts.
+branch, and it has no local-path option, so a branch reaches it only as an
+upload. `make zip` writes an archive of the plugin - `.claude-plugin/plugin.json`
+and `skills/`, nothing else - to `~/Downloads`, for Customize > Plugins > + >
+Upload a plugin. Turn the installed `owid` plugin off while testing one, or both
+answer the same prompts. There is no ChatGPT equivalent to build: ChatGPT
+installs from marketplaces only, never from an archive, which is what `make
+install` covers.
 
 A plugin that installs but reports `failed to load` is usually a manifest
 conflict: `strict: false` in the marketplace entry makes it the whole definition

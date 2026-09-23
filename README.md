@@ -218,10 +218,10 @@ To try the skill in a single session without installing it, load the plugin dire
 ### Trying a branch
 
 `make install` installs the plugin for Claude Code and for the Codex CLI, which
-is also where the ChatGPT desktop app looks. Claude Code reads this worktree
-directly, so it gets whatever you have checked out, uncommitted edits included.
-Codex resolves from GitHub at the branch you are on, so push it first; `BRANCH=`
-picks a different ref:
+is also where the ChatGPT desktop app looks. Both read this worktree directly,
+so both get whatever you have checked out, uncommitted edits included, and
+nothing needs pushing. `BRANCH=` resolves the Codex half from GitHub instead,
+for checking what is published:
 
 ```bash
 make install BRANCH=main
@@ -231,9 +231,10 @@ Re-running it repoints an existing install, so you can switch branches freely.
 It prints the remaining ChatGPT-app steps (developer mode, restart) and the
 commands that undo it.
 
-The Claude app is the exception: its marketplaces serve a repo's default branch,
-so a branch gets there only as an upload. `make zip` writes the archive to
-`~/Downloads` for Customize > Plugins > + > Upload a plugin.
+The Claude app is the exception: its marketplaces serve a repo's default branch
+and it takes no local path, so a branch gets there only as an upload. `make zip`
+writes the archive to `~/Downloads` for Customize > Plugins > + > Upload a
+plugin.
 
 ### Running the evals
 
