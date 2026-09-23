@@ -155,3 +155,11 @@ again with no plugin at all, and report the difference. A case that scores the
 same both ways is measuring nothing — see
 [evals/README.md](evals/README.md#the-baseline-arm-is-the-whole-point) before
 writing one, because that trap catches almost every first attempt.
+
+**When you run behaviour evals for a PR, always put the report in the PR.**
+Each run writes a self-contained `report.html` under `evals/results/`, which is
+gitignored and invisible to reviewers. Publish it as a Claude artifact and link
+it from the PR description under an `## Eval report` heading (not "Verified"),
+with a short summary: per-case scores with and without the plugin, and which
+grader carries the difference. Artifacts are private by default, so remind
+whoever ran the evals to share it before review.
