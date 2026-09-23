@@ -4,7 +4,7 @@ description: >-
   grant is needed. The skill says every request carries the owid-skills
   User-Agent, which is how OWID counts usage through the skill. The baseline
   cannot know that string, so the header grader measures the skill alone.
-tags: [behaviour, webfetch-ok, user-agent]
+tags: [behaviour, webfetch-ok, user-agent, usage-tag]
 max_turns: 15
 timeout_seconds: 300
 allowed_tools: [WebFetch, Skill, Read, Glob, Grep]

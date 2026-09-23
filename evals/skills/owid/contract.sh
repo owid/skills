@@ -425,4 +425,31 @@ if fetch "$GRAPHER/life-expectancy.csv?csvType=filtered&country=CIV~CUW&time=202
     ok "Curacao comes back unaccented" grep -q "Curacao" "$WORK/accents.csv"
 fi
 
+# ---------------------------------------------------------------------------
+section "Usage tag: utm_source is ignored by the endpoints"
+# SKILL.md tells agents to append utm_source=owid-skills to every URL, on the
+# promise that the servers ignore it. If an endpoint ever starts rejecting or
+# varying on unknown parameters, that instruction breaks every request.
+skill_md_contains "SKILL.md carries the utm_source tag" 'utm_source=owid-skills'
+TAG_CSV="$GRAPHER/life-expectancy.csv?csvType=filtered&country=DEU~FRA&useColumnShortNames=true"
+if fetch "$TAG_CSV" "$WORK/tag-plain.csv" && fetch "$TAG_CSV&utm_source=owid-skills" "$WORK/tag-tagged.csv"; then
+    ok "a chart CSV is byte-identical with the tag" cmp "$WORK/tag-plain.csv" "$WORK/tag-tagged.csv"
+fi
+if fetch "$GRAPHER/life-expectancy.metadata.json" "$WORK/tag-plain-meta.json" &&
+    fetch "$GRAPHER/life-expectancy.metadata.json?utm_source=owid-skills" "$WORK/tag-tagged-meta.json"; then
+    # Any query string makes the metadata echo itself: chart.originalChartUrl
+    # gains the tag and an empty activeFilters appears. The data and its
+    # description must not change.
+    META_SAME='del(.activeFilters, .chart.originalChartUrl)'
+    jq -S "$META_SAME" "$WORK/tag-plain-meta.json" >"$WORK/tag-plain-meta.norm.json"
+    jq -S "$META_SAME" "$WORK/tag-tagged-meta.json" >"$WORK/tag-tagged-meta.norm.json"
+    ok "chart metadata is identical with the tag, bar the echoed URL" \
+        cmp "$WORK/tag-plain-meta.norm.json" "$WORK/tag-tagged-meta.norm.json"
+fi
+if fetch "$API?q=life+expectancy&hitsPerPage=5" "$WORK/tag-plain-search.json" &&
+    fetch "$API?q=life+expectancy&hitsPerPage=5&utm_source=owid-skills" "$WORK/tag-tagged-search.json"; then
+    jq_eq "search returns the same hits with the tag" "$WORK/tag-tagged-search.json" \
+        '[.results[].slug] | join(",")' "$(jq -r '[.results[].slug] | join(",")' "$WORK/tag-plain-search.json")"
+fi
+
 finish

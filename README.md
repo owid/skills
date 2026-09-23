@@ -197,7 +197,7 @@ None. Everything the skill documents is an ordinary URL over HTTPS, fetched with
 
 Data published by Our World in Data is open: it is available under the [Creative Commons BY license](https://ourworldindata.org/faqs#can-i-use-or-reproduce-your-data), and it builds on the work of the original data providers. The skill instructs agents to name those providers in every output — please keep the citations when you publish results.
 
-Requests made through the skill carry the User-Agent `owid-skills/1.0 (+https://github.com/owid/skills)`. That is how we can see the skill being used and keep the endpoints it relies on supported; please leave it in place.
+URLs the skill fetches or hands out carry `utm_source=owid-skills`, and requests from tools that can set headers also carry the User-Agent `owid-skills/1.0 (+https://github.com/owid/skills)`. That is how we can see the skill being used and keep the endpoints it relies on supported; please leave them in place.
 
 ## Development
 

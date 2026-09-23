@@ -85,12 +85,15 @@ notebook. There are no credentials to configure and no OWID library to install.
 The skill deliberately names no tool. Prescribing one would assume something
 about your setup that we have no business assuming.
 
-### Why does every request carry a `User-Agent`?
+### Why do URLs from the skill end in `utm_source=owid-skills`?
 
-The skill sends `owid-skills/1.0 (+https://github.com/owid/skills)` on every
-call. It identifies traffic that comes through the skill, which is the only way
-we can tell whether it is used and keep the endpoints supported. It does not
-identify you. Please leave it in place.
+The skill adds `utm_source=owid-skills` to every ourworldindata.org URL it
+fetches or gives you, and sends the User-Agent
+`owid-skills/1.0 (+https://github.com/owid/skills)` when its fetch tool can set
+headers. Many agent fetch tools cannot, which is why the tag is in the URL. OWID
+ignores it when serving data. Both identify traffic that comes through the
+skill, which is the only way we can tell whether it is used and keep the
+endpoints supported. Neither identifies you. Please leave them in place.
 
 ### A skill gave me data I think is wrong
 

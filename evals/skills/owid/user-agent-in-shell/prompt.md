@@ -2,7 +2,7 @@
 description: >-
   The shell twin of user-agent-in-python: a one-off command rather than
   library code, which is where a header is easiest to forget.
-tags: [behaviour, webfetch-ok, user-agent]
+tags: [behaviour, webfetch-ok, user-agent, usage-tag]
 max_turns: 15
 timeout_seconds: 300
 allowed_tools: [WebFetch, Skill, Read, Glob, Grep]
