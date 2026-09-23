@@ -42,7 +42,7 @@ Pick the client you use. Every route installs the same skill.
 | [Claude Code](#claude-code-cli) | plugin, from this repo's marketplace | no |
 | [Codex](#codex-cli) | plugin, from this repo | no |
 | [ChatGPT app](#chatgpt-app-chat-and-work) | plugin, added via the desktop app | developer mode |
-| [Claude app](#claude-app-web-desktop-mobile) | the skill folder, as a `.zip` | enable code execution |
+| [Claude app](#claude-app-web-desktop-mobile) | plugin, from this repo's marketplace | no |
 | [Anything else](#other-agents-gemini-cli-cursor-copilot-) | plain skill folders | no |
 
 ### Claude Code (CLI)
@@ -92,21 +92,28 @@ has to touch developer mode.
 
 ### Claude app (web, desktop, mobile)
 
-Claude's apps don't read plugin marketplaces — they take **one skill at a time,
-as a zip**. First enable **Settings → Capabilities → Code execution and file
-creation** (on Team and Enterprise an owner enables it under **Organization
-settings → Skills**). Then, from a clone of this repo:
+Claude's apps install plugins from a marketplace, like Claude Code does. Open
+**Customize → Plugins**, and under *Personal plugins* choose **+ → Add
+marketplace → Add from a repository**, entering `owid/skills`. Then **Browse
+plugins** and install Our World in Data. A plugin arrives switched off, so
+toggle it on; it applies to conversations started afterwards.
 
-```bash
-cd skills && zip -r owid.zip owid
-```
+On Team and Enterprise, an admin can add the marketplace once for the whole
+organization instead, and it shows up in everyone's directory.
 
-In Claude, go to **Customize → Skills**, click **+**, choose **+ Create skill →
-Upload a skill**, pick the zip, and toggle the skill on. Skills only apply to
-conversations started after you enable them.
+Two alternatives, both snapshots that do not update themselves:
 
-The skill runs in Claude's sandbox rather than on your machine. Everything it
-documents is a URL over HTTPS, so it needs only network access to
+- **Upload the plugin.** **+ → Upload a plugin** takes a `.zip` whose root holds
+  `.claude-plugin/plugin.json` and `skills/`; `make zip` in a clone builds one.
+  This is how you try a branch, since a marketplace only ever serves `main`.
+- **Upload the skill alone.** **Customize → Skills → + → Create skill → Upload a
+  skill** takes the skill folder zipped (`cd skills && zip -r owid.zip owid`).
+  That route needs **Settings → Capabilities → Code execution and file
+  creation** on (Team and Enterprise: an owner enables it under **Organization
+  settings**).
+
+Either way the skill runs in Claude's sandbox rather than on your machine.
+Everything it documents is a URL over HTTPS, so it needs only network access to
 ourworldindata.org from that sandbox, which we have not verified yet.
 
 ### Other agents (Gemini CLI, Cursor, Copilot, …)
@@ -157,8 +164,11 @@ Every route above installs a snapshot of `main` as it was that day. Nothing refr
 
   Restart the ChatGPT desktop app afterwards so it picks up the new files.
 
-- **Claude app.** An uploaded skill is a frozen copy. To update it, re-zip the
-  skill folder from a fresh `git pull` and upload it again.
+- **Claude app.** A plugin installed from the marketplace follows this repo, like
+  the other plugin routes. Anything you uploaded — a plugin archive or a single
+  skill — is a frozen copy instead: rebuild it from a fresh `git pull` and upload
+  it again, and delete an upload you are done with, so it does not sit beside the
+  marketplace copy answering the same prompts.
 
 - **`skills` CLI.** `npx skills add` installs one copy per scope, symlinks each agent's directory to it, and records what it installed in `skills-lock.json`. Update everything in that scope with:
 

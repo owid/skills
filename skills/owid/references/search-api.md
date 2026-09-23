@@ -151,3 +151,7 @@ ignore `country=` — see [data-api.md](data-api.md).
 
 When several charts fit, tell the user the top few titles and subtitles, and
 either pick one and say why, or ask which they meant.
+
+Once you have the chart, the answer to "find me a chart on X" is the chart: its
+title, what it shows, and a link to it. Do not go on to download the data or an
+image unless the user asked for those, or said where they are going.

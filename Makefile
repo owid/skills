@@ -143,10 +143,13 @@ behaviour: ## Behaviour evals: what does the plugin change about what Claude doe
 	@# grader keeps failing an answer that reads as correct.
 	@# Runs are independent claude sessions, so they parallelise; the CLI allows
 	@# 1-8, and all of them share your rate limit. JOBS=1 if it starts throttling.
+	@# --keep-temp keeps each run's trace.jsonl (its tool calls and final reply) at
+	@# the tracePath in aggregate-result.json. The HTML report shows only verdicts,
+	@# and reading why a grader failed needs the reply it failed on.
 	@claude plugin eval . -j $(JOBS) \
 	  $(if $(CASE),--case $(CASE),) $(if $(TAG),--tag $(TAG),) $(if $(RUNS),--runs $(RUNS),) \
 	  $(if $(JUDGE),--judge-model $(JUDGE),) $(if $(MODEL),--model $(MODEL),) \
-	  --allow-tools "WebFetch(domain:ourworldindata.org)" --no-publish
+	  --allow-tools "WebFetch(domain:ourworldindata.org)" --keep-temp --no-publish
 
 install: ## Install this repo as a plugin for Claude Code, Codex and the ChatGPT app
 	@# Both halves install what you are working on, by the best route each CLI has.

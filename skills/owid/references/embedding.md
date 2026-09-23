@@ -3,6 +3,13 @@
 How to show an OWID chart inside something you are producing: an HTML page, a
 slide deck, a document, a notebook, or a chat artifact.
 
+**First check that is what was asked for.** "Get me a chart on child mortality"
+usually wants the chart, not a file — find it, say what it shows, and give the
+link. Produce an image only when the user names where it is going (slides, a
+document, a page, an artifact, an email) or asks for one in so many words (an
+image, a PNG/SVG, a picture, a screenshot). Otherwise hand over the link and offer
+the image.
+
 ## Which form to use
 
 | Output | Use | Why |
