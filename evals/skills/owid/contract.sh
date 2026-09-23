@@ -172,7 +172,7 @@ if fetch "$CHART.metadata.json?$PARAMS" "$META"; then
     # only these; a new one appearing means the documented list has gone stale.
     all_match "column type is one of the documented values" "$META" \
         '.columns[] | select(has("type"))' \
-        '.type as $t | ["Numeric","Integer","String","NumberOrString","Ordinal","Continent","SeriesAnnotation"] | index($t) != null'
+        '.type as $t | ["Numeric","Integer","String","NumberOrString","Ordinal","Continent","SeriesAnnotation","Year"] | index($t) != null'
     note "columns: $(jq -r '.columns | keys | join(", ")' "$META")"
 fi
 
@@ -305,6 +305,11 @@ if fetch "$CHART.csv?csvType=full" "$WORK/full-notab.csv" &&
     ok "tab= does nothing with csvType=full" \
         test "$(wc -l < "$WORK/full-notab.csv")" = "$(wc -l < "$WORK/full-tabmap.csv")"
 fi
+
+# data-api.md warns that the suffix goes before the query string. Appending it
+# after one returns the chart page with a 200, which is why the warning exists.
+content_type "a suffix appended after the query string returns the page, not JSON" \
+    "$GRAPHER/religious-composition?indicator=share.metadata.json" '^text/html'
 
 section "Chart data API: multi-dimensional chart dimensions"
 # data-api.md tells agents to copy dimension parameters from the chart URL
