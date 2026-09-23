@@ -37,13 +37,13 @@ It uses only public endpoints. No API key, and no tools to install.
 
 Pick the client you use. Every route installs the same skill.
 
-| Client | How it takes them | One-time setup? |
+| Client | How you install it | Anything to turn on first? |
 |---|---|---|
-| [Claude Code](#claude-code-cli) | plugin, from this repo's marketplace | no |
-| [Codex](#codex-cli) | plugin, from this repo | no |
-| [ChatGPT app](#chatgpt-app-chat-and-work) | plugin, added via the desktop app | developer mode |
-| [Claude app](#claude-app-web-desktop-mobile) | plugin, from this repo's marketplace | no |
-| [Anything else](#other-agents-gemini-cli-cursor-copilot-) | plain skill folders | no |
+| [Claude Code](#claude-code-cli) | as a plugin, from this repo's marketplace | no |
+| [Codex](#codex-cli) | as a plugin, from this repo | no |
+| [ChatGPT app](#chatgpt-app-chat-and-work) | as a plugin, through the desktop app | yes, developer mode |
+| [Claude app](#claude-app-web-desktop-mobile) | as a plugin, from this repo's marketplace | no |
+| [Anything else](#other-agents-gemini-cli-cursor-copilot-) | by copying the skill folder | no |
 
 ### Claude Code (CLI)
 
