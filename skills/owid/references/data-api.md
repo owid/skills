@@ -33,7 +33,8 @@ gives you different numbers.
 
 Fetch `<chart-url>.metadata.json` before you do anything else, every time, even
 when the user only asked for numbers. Read it into your context and keep it
-there.
+there. Take the producer's name and the dataset title from the metadata you
+fetched, never from memory.
 
 Treat it differently from the data. A CSV can be hundreds of thousands of rows,
 so keep it out of your context and process it wherever you process data. The
