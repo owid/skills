@@ -49,11 +49,14 @@ If you uploaded the skill yourself, it is under **Customize → Skills** instead
 
 ### Does Our World in Data see what I ask?
 
-We see what any website sees: which pages and files were requested. Every request
-the skill makes is labelled `owid-skills/1.0 (+https://github.com/owid/skills)`,
-which is the only way we can tell the skill is being used and keep the endpoints
-supported. It doesn't say who you are, and we never see your conversation. Please
-leave the label in place.
+We see what any website sees: which pages and files were requested. Every
+ourworldindata.org link the skill fetches or gives you carries
+`utm_source=owid-skills`, and code it writes also sends the header
+`User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)`. The tag is in
+the URL because many agents' fetch tools can't set headers. That labelling is
+the only way we can tell the skill is being used and keep the endpoints
+supported. It doesn't say who you are, and we never see your conversation.
+Please leave it in place.
 
 ### A number looks wrong
 

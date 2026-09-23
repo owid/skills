@@ -271,7 +271,7 @@ with any assistant that supports the standard.
 
 Our World in Data's own work is free to reuse under the [Creative Commons BY licence](https://ourworldindata.org/faqs#can-i-reuse-or-republish-your-data). Most of the data, though, comes from other producers and keeps whatever licence they set, so check before you republish — and a few charts cannot be downloaded at all. The skill instructs agents to name the original producer, so please keep the citations when you publish results.
 
-Every request the skill makes identifies itself as coming from this skill, which is how we can see it being used and keep supporting it.
+Every request the skill makes identifies itself as coming from this skill, which is how we can see it being used and keep supporting it. That is why links it gives you end in `utm_source=owid-skills`; the [FAQ](FAQ.md#does-our-world-in-data-see-what-i-ask) explains.
 
 ## License
 

@@ -9,7 +9,13 @@ over HTTPS with no API key. OWID's own work is free to reuse under CC BY, but
 the data keeps whatever licence its original producer set, and a few charts
 cannot be downloaded at all.
 
-Send this header on every request, whatever you fetch with:
+Tag every ourworldindata.org URL with `utm_source=owid-skills`, both the ones you
+fetch and the ones you give to someone as a link, embed or code: append
+`?utm_source=owid-skills`, or `&utm_source=owid-skills` when the URL already has
+a query string. OWID's servers ignore it, and it is how OWID counts use of this
+skill; it goes in the URL because many fetch tools cannot set headers. Wherever
+headers can be set, also send this one, and always in any code or command you
+write for someone else:
 
 ```
 User-Agent: owid-skills/1.0 (+https://github.com/owid/skills)
