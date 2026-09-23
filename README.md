@@ -20,101 +20,88 @@ Once installed, you can ask your agent things like:
 
 The skill triggers automatically when relevant — you don't need to invoke it by name.
 
-## The skill
-
-Skills follow the open [Agent Skills](https://agentskills.io) format (`SKILL.md`), so they work with any agent that supports the standard. There is one skill, `owid`, built as a short `SKILL.md` that holds the workflow and the rules, plus reference files the agent reads only when it needs them:
-
-| File | What it covers |
-|---|---|
-| [`SKILL.md`](skills/owid/SKILL.md) | When to use it, the five-step workflow (identify, metadata first, fetch, do the task, cite), the hard rules and the traps |
-| [`references/search-api.md`](skills/owid/references/search-api.md) | Every parameter of `/api/search` for charts, explorers, articles and data insights; response shapes; the `?tab=` mapping |
-| [`references/data-api.md`](skills/owid/references/data-api.md) | `.csv`, `.metadata.json`, `.readme.md`, `.zip`, `.png`, `.svg` for any chart; the filtering parameters; the metadata fields and how to cite; entity, code and year conventions |
-| [`references/embedding.md`](skills/owid/references/embedding.md) | The iframe snippet, when to use a PNG instead, image sizes, attribution |
-
-It uses only public endpoints. No API key, and no tools to install.
-
 ## Installation
 
-Pick the client you use. Every route installs the same skill.
+Nothing to install first, and no account or key to get.
 
-| Client | How you install it | Anything to turn on first? |
+Find your app below. They all install the same thing. **If you use the Claude app
+or the ChatGPT app, use one of the first two** — the rest are for people who work
+in a terminal.
+
+| Your app | How you install it | Anything to turn on first? |
 |---|---|---|
-| [Claude Code](#claude-code-cli) | as a plugin, from this repo's marketplace | no |
-| [Codex](#codex-cli) | as a plugin, from this repo | no |
-| [ChatGPT app](#chatgpt-app-chat-and-work) | as a plugin, through the desktop app | yes, developer mode |
-| [Claude app](#claude-app-web-desktop-mobile) | as a plugin, from this repo's marketplace | no |
+| [Claude app](#claude-app-web-desktop-mobile) | in the app, in a few clicks | no |
+| [ChatGPT app](#chatgpt-app-chat-and-work) | in the app, in a few clicks | yes, a setting called Developer mode — you don't need to be a developer |
+| [Claude Code](#claude-code-cli) | two commands | no |
+| [Codex](#codex-cli) | two commands, in a terminal | no |
 | [Anything else](#other-agents-gemini-cli-cursor-copilot-) | by copying the skill folder | no |
+
+### Claude app (web, desktop, mobile)
+
+1. Open Claude and go to **Customize → Plugins**.
+2. Under *Personal plugins*, click **+**, then **Add marketplace**, then **Add
+   from a repository**.
+3. Type `owid/skills` in the box and confirm. That is the address of this
+   project on GitHub — it is public and free.
+4. Click **Browse plugins**, find **Our World in Data**, and install it.
+5. New plugins arrive switched off. Find the switch and turn it on.
+6. Start a **new** chat. The plugin only applies to conversations you begin after
+   switching it on.
+
+Then [check it worked](#check-it-worked).
+
+On Team and Enterprise, an admin can add the marketplace once for the whole
+organization instead, and it shows up in everyone's directory.
+
+### ChatGPT app (Chat and Work)
+
+The skill isn't in OpenAI's public Plugin Directory yet, so you add this project
+as your own source. That step needs the **desktop** app. After that it works
+everywhere you use ChatGPT — web, desktop and phone.
+
+1. Go to **Settings → Security and login** and turn on **Developer mode**. If you
+   can't see it, your workplace has probably switched it off — ask whoever
+   manages your ChatGPT account.
+2. Open **Plugins → Add marketplace** and type `owid/skills`. Leave any other
+   fields as they are.
+3. The project appears as **Our World in Data**; install it there.
+4. Start a new conversation.
+
+Then [check it worked](#check-it-worked).
+
+If you're setting this up for colleagues rather than yourself, a workspace admin
+can import and sync a GitHub marketplace for the whole workspace, so nobody else
+has to touch developer mode.
 
 ### Claude Code (CLI)
 
-Install as a plugin from the marketplace:
+Type these two lines into Claude Code's own prompt, one at a time. They start
+with a slash, which is how it knows they are commands rather than questions.
 
 ```
 /plugin marketplace add owid/skills
 /plugin install owid@owid-skills
 ```
 
+The first line tells Claude Code where to find the skill; the second installs it.
+Then [check it worked](#check-it-worked).
+
 ### Codex (CLI)
 
+Codex is a tool you run by typing in a terminal. If that isn't you, use one of the
+app routes above.
+
 This repo is also an [Agent Plugins](https://agent-plugins.org) package, the
-vendor-neutral plugin format ChatGPT and Codex share:
+format ChatGPT and Codex share. In a terminal:
 
 ```bash
-codex plugin marketplace add owid/skills   # register this repo as a source
-codex plugin add owid@owid-skills          # install it
+codex plugin marketplace add owid/skills
+codex plugin add owid@owid-skills
 ```
 
-`codex plugin list` shows what resolved, and `/plugins` inside a session lists
-what's active.
-
-### ChatGPT app (Chat and Work)
-
-The skills aren't in OpenAI's public Plugin Directory yet, so you add this repo
-as your own plugin source. That step needs the **desktop** app; once installed,
-the plugin works in both Chat and Work on web, desktop and mobile. The IDE
-extension doesn't support plugins at all.
-
-1. **Settings → Security and login → Developer mode**, turn it on. (Availability
-   can depend on your account and workspace policy.)
-2. Open **Plugins → Add marketplace** and give it this repo, `owid/skills`. The
-   dialog takes a branch as well, so you can point it at one instead of `main`.
-3. The repo appears as **Our World in Data**; install it there.
-4. Start a new conversation. Describe what you want, or invoke the plugin
-   explicitly with `@`.
-
-If you already use the Codex CLI, `codex plugin marketplace add owid/skills`
-registers the same source from the terminal — the desktop app reads it too, after
-a restart. Either way you end up in the same place.
-
-If you're setting this up for colleagues rather than yourself, a workspace admin
-can import and sync a GitHub marketplace for the whole workspace, so nobody else
-has to touch developer mode.
-
-### Claude app (web, desktop, mobile)
-
-Claude's apps install plugins from a marketplace, like Claude Code does. Open
-**Customize → Plugins**, and under *Personal plugins* choose **+ → Add
-marketplace → Add from a repository**, entering `owid/skills`. Then **Browse
-plugins** and install Our World in Data. A plugin arrives switched off, so
-toggle it on; it applies to conversations started afterwards.
-
-On Team and Enterprise, an admin can add the marketplace once for the whole
-organization instead, and it shows up in everyone's directory.
-
-Two alternatives, both snapshots that do not update themselves:
-
-- **Upload the plugin.** **+ → Upload a plugin** takes a `.zip` whose root holds
-  `.claude-plugin/plugin.json` and `skills/`; `make zip` in a clone builds one.
-  This is how you try a branch, since a marketplace only ever serves `main`.
-- **Upload the skill alone.** **Customize → Skills → + → Create skill → Upload a
-  skill** takes the skill folder zipped (`cd skills && zip -r owid.zip owid`).
-  That route needs **Settings → Capabilities → Code execution and file
-  creation** on (Team and Enterprise: an owner enables it under **Organization
-  settings**).
-
-Either way the skill runs in Claude's sandbox rather than on your machine.
-Everything it documents is a URL over HTTPS, so it needs only network access to
-ourworldindata.org from that sandbox, which we have not verified yet.
+The first line registers this project as a source; the second installs the skill.
+`codex plugin list` shows what it installed. Then
+[check it worked](#check-it-worked).
 
 ### Other agents (Gemini CLI, Cursor, Copilot, …)
 
@@ -141,6 +128,16 @@ Then put `owid-skills/skills/owid` where your agent looks for skills:
 - **Per user** — your agent's own skills directory, e.g. `~/.codex/skills/`, `~/.gemini/skills/`, or `~/.claude/skills/`
 
 Copy the whole `owid/` directory, not just `SKILL.md`: the references live next to it.
+
+### Check it worked
+
+Start a new chat and ask:
+
+> Find the Our World in Data chart on child mortality and give me the link.
+
+You should get back a link to a chart on ourworldindata.org, and the name of the
+organisation that produced the data. If you get a vague answer with no link, see
+[Not working?](#not-working) below.
 
 ### Keeping the skill up to date
 
@@ -170,7 +167,7 @@ Every route above installs a snapshot of `main` as it was that day. Nothing refr
   it again, and delete an upload you are done with, so it does not sit beside the
   marketplace copy answering the same prompts.
 
-- **`skills` CLI.** `npx skills add` installs one copy per scope, symlinks each agent's directory to it, and records what it installed in `skills-lock.json`. Update everything in that scope with:
+- **`skills` CLI.** `npx skills add` installs one copy per scope, symlinks each agent's directory to it, and records what it installed — `skills-lock.json` in the project, `~/.agents/.skill-lock.json` for a global install. Update everything in that scope with:
 
   ```bash
   npx skills update            # -g for the user-level install, -p for the project one
@@ -184,111 +181,34 @@ There are no version numbers to bump: every commit to `main` is a release, and e
 
 ### Not working?
 
-If your agent doesn't seem to be using the skill, see the
-[FAQ](FAQ.md#my-agent-isnt-using-the-skill-at-all). The two usual causes are the
-files being in a directory your agent doesn't read, and your agent's reasoning
-effort being turned down far enough that it stops making tool calls.
+If you installed in the Claude or ChatGPT app, check three things first: the
+plugin is switched on, you started a new chat after switching it on, and your
+question is specific enough — "find the OWID chart on child mortality and pull
+the data" will use it, "what's OWID" may not. If it still doesn't fire, ask for it
+by name: *use the Our World in Data skill to…*
 
-### Prerequisites
+For anything else, see the [FAQ](FAQ.md#my-agent-isnt-using-the-skill-at-all).
 
-None. Everything the skill documents is an ordinary URL over HTTPS, fetched with whatever the agent and the project already use. There is nothing to install and no API key.
+## What's in it
+
+The skill is a short set of notes your assistant reads when it needs them: how to
+search our site, how to fetch the data and sources behind a chart, and how to put
+a chart into a page or a slide. You can read them in
+[`skills/owid/`](skills/owid/) if you're curious.
+
+It follows the open [Agent Skills](https://agentskills.io) format, so it works
+with any assistant that supports the standard.
 
 ## Using the data
 
-Data published by Our World in Data is open: it is available under the [Creative Commons BY license](https://ourworldindata.org/faqs#can-i-use-or-reproduce-your-data), and it builds on the work of the original data providers. The skill instructs agents to name those providers in every output — please keep the citations when you publish results.
+Our World in Data's own work is free to reuse under the [Creative Commons BY license](https://ourworldindata.org/faqs#can-i-reuse-or-republish-your-data). Most of the data, though, comes from other producers and keeps whatever licence they set, so check before you republish — and a few charts cannot be downloaded at all. The skill instructs agents to name the original producer, so please keep the citations when you publish results.
 
-Requests made through the skill carry the User-Agent `owid-skills/1.0 (+https://github.com/owid/skills)`. That is how we can see the skill being used and keep the endpoints it relies on supported; please leave it in place.
+Every request the skill makes identifies itself as coming from this skill, which is how we can see it being used and keep supporting it.
 
-## Development
+## Contributing
 
-Want to improve the skill? See [AGENTS.md](AGENTS.md) for repo conventions, [evals/README.md](evals/README.md) for how it is evaluated, and the [FAQ](FAQ.md) for questions that come up often.
-
-```bash
-make            # list targets
-make validate   # spec conformance, both plugin manifests, registration, internal links
-make install    # install this repo as a plugin for Claude Code, Codex and the ChatGPT app
-make zip        # package the plugin for upload in the Claude app
-make test       # contract tests: do the OWID endpoints still match what the skill documents?
-make triggers   # trigger evals: does the skill fire when it should? (needs the claude CLI, costs tokens)
-make behaviour  # behaviour evals: what does the plugin change about what Claude does?
-```
-
-To try the skill in a single session without installing it, load the plugin directly with `claude --debug --plugin-dir .`
-
-### Trying a branch
-
-`make install` installs the plugin for Claude Code and for the Codex CLI, which
-is also where the ChatGPT desktop app looks. Both read this worktree directly,
-so both get whatever you have checked out, uncommitted edits included, and
-nothing needs pushing. `BRANCH=` resolves the Codex half from GitHub instead,
-for checking what is published:
-
-```bash
-make install BRANCH=main
-```
-
-Re-running it repoints an existing install, so you can switch branches freely.
-It prints the remaining ChatGPT-app steps (developer mode, restart) and the
-commands that undo it.
-
-For the ChatGPT app specifically, you do not need any of this: **Plugins → Add
-marketplace** takes a repo and a branch, so a pushed branch installs there
-directly.
-
-The Claude app is the exception: its marketplaces serve a repo's default branch
-and it takes no local path, so a branch gets there only as an upload. `make zip`
-writes the archive to `~/Downloads` for Customize > Plugins > + > Upload a
-plugin.
-
-### Running the evals
-
-Three layers, and they answer different questions. [evals/README.md](evals/README.md)
-is the full playbook; this is enough to run them.
-
-```bash
-make test                            # the contract tests, about a minute
-```
-
-**Contract tests** ask whether the endpoints and response shapes the skill
-documents still match what the API returns. No model, no cost, seconds to run,
-and they hit the live API — so a red run can also mean OWID is down, which is
-deliberate. This is what CI runs on every PR and nightly, and it is the layer
-that catches the failure this skill actually suffers: the prose stays put while
-the API moves.
-
-```bash
-make triggers RUNS=1                         # cheapest useful loop
-make triggers                                # 3 runs per query
-```
-
-**Trigger evals** ask whether the skill fires on OWID work and stays quiet on
-near-misses that merely share its vocabulary. This one costs real tokens: the
-default is 9 queries × 3 runs = 27 `claude -p` sessions. Pin `RUNS=1` while you
-iterate on the description, and use the defaults only for a number you intend
-to write down.
-`EFFORT=low` is the default because routing is decided before any real work, and
-`MODEL=<id>` measures that model's routing rather than the one your users get.
-
-Run `make triggers` after changing the skill's `description` — that field is what
-decides routing.
-
-```bash
-make behaviour CASE=finds-a-map-link RUNS=1   # cheapest useful loop
-make behaviour                                # every case, 3 runs per arm
-```
-
-**Behaviour evals** ask whether the skill changes the answer. Each case runs
-with the plugin loaded and then again with **no plugin at all**, and reports the
-difference — so a case that scores the same both ways is telling you the skill
-contributed nothing there, which is the point of running them. This layer uses
-[`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals) and needs
-Claude Code ≥ 2.1.269. Cost scales as cases × runs × 2 arms; add `-j 4` to the
-underlying command if you want the full matrix without the wait.
-
-Run `make behaviour` after changing what a skill *teaches*, as opposed to when
-it fires.
-
-This repository is limited to skills that rely on public OWID endpoints and common CLI tools; skills that require OWID-internal infrastructure or credentials are out of scope.
+Want to change the skill itself? Start with [`AGENTS.md`](AGENTS.md). Issues and
+pull requests are welcome.
 
 ## License
 
