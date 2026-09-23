@@ -19,6 +19,10 @@ https://ourworldindata.org/grapher/life-expectancy.csv?csvType=filtered&country=
   you get an empty body rather than an error. `HEAD` is no way to test a slug
   either: it returns 404 for URLs that `GET` serves fine.
 - **The suffix** says which file you want. Leave it off and you get the web page.
+  It goes on the path, **before** the `?`. Appending it to a URL that already has
+  a query string gives you
+  `/religious-composition?indicator=share.metadata.json`, which returns the chart
+  page with a 200 and no sign that anything went wrong.
 - **The view** says which part of the data you want: which countries, which
   years, and on some charts which indicator.
 

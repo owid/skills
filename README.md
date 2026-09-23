@@ -1,12 +1,10 @@
-# OWID Skills
+# AI skill for Our World in Data
 
 **An agent skill for working with [Our World in Data](https://ourworldindata.org).** It teaches your AI assistant to find our charts and articles, pull the numbers behind them, put a chart into a page or a slide, and credit whoever produced the data.
 
 It works with the Claude and ChatGPT apps, Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot and others.
 
-Our World in Data publishes thousands of charts and hundreds of articles on global problems: poverty, health, energy, climate, education, and more. This skill teaches assistants how to use that content properly: how to find the right chart, how to get the numbers behind it, what the data does and does not mean, and how to credit the people who collected it — because naming "Our World in Data" alone is not a citation.
-
-> **Status:** early and experimental. Things will change. Tell us what breaks.
+Our World in Data publishes thousands of charts and hundreds of articles on global problems: poverty, health, energy, climate, education, and more. This skill teaches assistants how to use that content properly: how to find the right chart, how to get the numbers behind it, what the data does and does not mean, and how to credit the people who collected it.
 
 ## What you can do
 
@@ -36,18 +34,23 @@ of them needs an OWID account or an API key. **If you use the Claude app or the
 ChatGPT app, use one of the first two** — the rest are for people who work in a
 terminal.
 
+Use one of those routes if you can: they install the skill from this project, so
+it keeps up with our changes. The last two — uploading the skill by hand, or
+copying the folder — give you a fixed copy that never updates itself. They are
+there for when the others don't work for you.
+
 In the apps this arrives as a **plugin**. A plugin is the wrapper a skill comes
 in: install the plugin and you have the skill. You will also see the same thing
 called `owid/skills` (the address it comes from), **Our World in Data** (what you
 click) and `owid@owid-skills` (what the terminal commands call it).
 
-| Your app | How you install it | Before you start |
-|---|---|---|
-| [Claude app](#claude-app-web-and-desktop) | in the app, in a few clicks | a paid Claude plan — Pro, Max, Team or Enterprise |
-| [ChatGPT app](#chatgpt-app-chat-and-work) | in the app, in a few clicks | the **desktop** app on a computer, and a setting called Developer mode (you don't need to be a developer) |
-| [Claude Code](#claude-code-cli) | two commands, at Claude Code's own prompt | nothing |
-| [Codex](#codex-cli) | two commands, in a terminal | nothing |
-| [Anything else](#other-agents-gemini-cli-cursor-copilot-) | one command in a terminal | Node.js, for `npx` |
+| Your app | How you install it |
+|---|---|
+| [Claude app](#claude-app-web-and-desktop) | in the app, in a few clicks |
+| [ChatGPT app](#chatgpt-app-chat-and-work) | in the app, in a few clicks |
+| [Claude Code](#claude-code-cli) | two commands, at Claude Code's own prompt |
+| [Codex](#codex-cli) | two commands, in a terminal |
+| [Anything else](#other-agents-gemini-cli-cursor-copilot-) | one command in a terminal |
 
 ### Claude app (web and desktop)
 
@@ -74,30 +77,20 @@ so nobody else has to do the steps above.
 
 ### ChatGPT app (Chat and Work)
 
-**Before you start:** you need the ChatGPT **desktop app**, on a computer, for the
-setup steps. A browser or phone won't do it. Once it is set up, the skill works
-wherever your account's plugins are available.
-
 The skill isn't in OpenAI's own plugin list yet, so you point ChatGPT at where it
-lives on GitHub.
+lives on GitHub. This works on chatgpt.com as well as in the desktop app.
 
-1. In **Settings → Security and login**, turn on **Developer mode**. Despite the
-   name you don't need to be a developer — it just lets you add things OpenAI
-   hasn't listed itself. If you can't see the setting, your workplace has turned
-   it off; ask whoever manages your ChatGPT account.
-2. Still in Settings, open **Plugins**, click **Add marketplace**, and type
-   `owid/skills`. That is the address of this project on GitHub. Leave every other
-   field alone.
-3. Find **Our World in Data** in the list and install it.
-4. Restart the desktop app.
-5. Start a **new** conversation. The plugin only applies to chats you start after
+1. Open **Settings → Plugins**, choose **Add marketplace**, and type
+   `owid/skills`. That is the address of this project on GitHub. Leave every
+   other field alone.
+2. Find **Our World in Data** in the list and install it.
+3. Start a **new** conversation. The plugin only applies to chats you start after
    installing it.
 
 Then [check it worked](#check-it-worked).
 
 If you're setting this up for colleagues rather than yourself, a workspace admin
-can import and sync a GitHub marketplace for the whole workspace, so nobody else
-has to touch developer mode.
+can import and sync a GitHub marketplace for the whole workspace.
 
 ### Claude Code (CLI)
 
@@ -158,6 +151,21 @@ Then put `owid-skills/skills/owid` where your agent looks for skills:
 - **Per user** — your agent's own skills directory, e.g. `~/.codex/skills/`, `~/.gemini/skills/`, or `~/.claude/skills/`
 
 Copy the whole `owid/` directory, not just `SKILL.md`: the references live next to it.
+
+### Claude app, without a paid plan
+
+Plugins need a paid Claude plan, but skills do not. If you are on the free plan,
+upload the skill on its own instead:
+
+1. Turn on **Settings → Capabilities → Code execution and file creation**. Skills
+   are greyed out without it.
+2. Download this repository and zip the skill folder, so that `owid` is the top
+   level of the zip: `cd skills && zip -r owid.zip owid`.
+3. In Claude, go to **Customize → Skills → + → Create skill → Upload a skill**
+   and choose that zip.
+
+An uploaded skill is a fixed copy — it will not update itself, so repeat this
+when you want a newer version.
 
 ### Check it worked
 
@@ -239,11 +247,6 @@ with any assistant that supports the standard.
 Our World in Data's own work is free to reuse under the [Creative Commons BY licence](https://ourworldindata.org/faqs#can-i-reuse-or-republish-your-data). Most of the data, though, comes from other producers and keeps whatever licence they set, so check before you republish — and a few charts cannot be downloaded at all. The skill instructs agents to name the original producer, so please keep the citations when you publish results.
 
 Every request the skill makes identifies itself as coming from this skill, which is how we can see it being used and keep supporting it.
-
-## Contributing
-
-Want to change the skill itself? Start with [`AGENTS.md`](AGENTS.md). Issues and
-pull requests are welcome.
 
 ## License
 
