@@ -1,4 +1,5 @@
 ---
 type: regex
-pattern: 'https://ourworldindata\.org/[a-z0-9]'
+pattern: '(https?://)?(www\.)?ourworldindata\.org/[a-z0-9]'
+flags: i
 ---
