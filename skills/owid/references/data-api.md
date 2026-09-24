@@ -168,9 +168,7 @@ When you do filter, `?csvType=filtered&useColumnShortNames=true` plus explicit
 
 Where the producer forbids redistribution, `.csv` and `.zip` return **403** with
 `{"status":403,"error":"This chart contains non-redistributable data..."}`,
-whatever parameters you pass. It is a real minority of charts, concentrated in
-health and causes of death; IHME's Global Burden of Disease charts are the common
-case.
+whatever parameters you pass.
 
 The metadata, readme, config and images still return 200, so you can still
 describe and cite the chart. Check the status code before you parse the body —
