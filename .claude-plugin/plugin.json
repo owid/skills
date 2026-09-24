@@ -1,8 +1,8 @@
 {
     "name": "owid",
-    "description": "Skills for working with Our World in Data: search published charts, fetch chart data and metadata via the web API, join OWID data with external sources (e.g. per-capita metrics), and access the full data catalog with the owid-catalog Python library.",
+    "description": "Agent skills for working with Our World in Data: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. No API key.",
     "author": {
-        "name": "Our World In Data",
+        "name": "Our World in Data",
         "email": "tech@ourworldindata.org"
     },
     "homepage": "https://github.com/owid/skills",

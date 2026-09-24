@@ -7,14 +7,14 @@
 
 Runs each query from evals/skills/<skill>/triggers.json through `claude -p` with this
 repo loaded as a plugin, and records *which* skill (if any) the model reached
-for. Because all four OWID skills are loaded together, the interesting failure
-is not just "nothing triggered" but "the wrong sibling triggered" — the skills
-here overlap heavily in subject matter, so misrouting is the likelier defect.
+for. Every skill in the repo is loaded together, so if there is ever more than
+one the interesting failure is not just "nothing triggered" but "the wrong
+sibling triggered"; the runner reports that as a misroute.
 
 Usage:
-    ./evals/run-trigger-eval.py --skill search-charts
+    ./evals/run-trigger-eval.py --skill owid
     ./evals/run-trigger-eval.py --all --runs 3
-    ./evals/run-trigger-eval.py --skill joining-data --dry-run   # print the plan
+    ./evals/run-trigger-eval.py --skill owid --dry-run   # print the plan
 
 Nothing here is authoritative about how Claude Code registers plugin skills; if
 detection looks wrong, run one query by hand with the command printed by
@@ -41,7 +41,7 @@ EVAL_SKILLS_DIR = EVALS_DIR / "skills"
 RESULTS_DIR = EVALS_DIR / "results" / "triggers"
 
 # Only the Skill tool is allowed: we want to observe the routing decision, not
-# let the skill run curl/duckdb for real. The run is killed as soon as a skill
+# let the skill run curl for real. The run is killed as soon as a skill
 # fires, so the model never gets far anyway.
 ALLOWED_TOOLS = "Skill"
 

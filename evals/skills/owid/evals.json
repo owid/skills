@@ -1,0 +1,384 @@
+{
+  "skill_name": "owid",
+  "_about": "One case per example prompt from the planning doc. `checks` are graded automatically by evals/run-output-eval.py from the run transcript; `assertions` are for a person reading the answer. Fixtures referenced in `files` are copied into the run's working directory, so prompts refer to them by bare filename.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "find-chart",
+      "prompt": "Find a chart on child mortality on Our World in Data.",
+      "checks": [
+        "skill_fired",
+        "fetched: /api/search\\?"
+      ],
+      "assertions": [
+        "The top few candidate charts are named with their titles and URLs, not just one",
+        "Every URL given exists (no invented slugs)",
+        "It either picks one with a stated reason or asks which the user means"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "data-from-url",
+      "prompt": "Get me the data from this URL: https://ourworldindata.org/grapher/child-mortality and tell me which five countries had the highest child mortality in the latest year available.",
+      "checks": [
+        "skill_fired",
+        "metadata_before_csv",
+        "user_agent",
+        "fetched: child-mortality\\.csv"
+      ],
+      "assertions": [
+        "The latest year is read from the data, and stated",
+        "Values are given with their unit as defined in the metadata",
+        "The original producer (UN IGME) is named, not only Our World in Data",
+        "Regions and aggregates are excluded from the country ranking"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "factual-question",
+      "prompt": "How many children have died in Somalia in 2024, according to Our World in Data?",
+      "checks": [
+        "skill_fired",
+        "metadata_before_csv",
+        "fetched: ourworldindata\\.org/grapher/"
+      ],
+      "assertions": [
+        "It checks whether 2024 is in the data and, if not, says so and gives the latest year instead of extrapolating",
+        "It gives a number of deaths, not a rate, or explains the difference if only a rate is available",
+        "The value is for Somalia specifically and carries its year",
+        "The original producer is named with a link to the chart"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "fact-check-article",
+      "prompt": "Fact-check the claims in article.md against Our World in Data data.",
+      "files": [
+        "evals/skills/owid/fixtures/article.md"
+      ],
+      "checks": [
+        "skill_fired",
+        "metadata_before_csv",
+        "fetched: /api/search\\?"
+      ],
+      "assertions": [
+        "Each of the four claims is listed with its own verdict",
+        "Each verdict cites a number with year, unit and original producer",
+        "The 'one in five' Somalia claim is compared with the actual share, and the mismatch is stated",
+        "The malaria claim is checked against causes-of-death data rather than asserted from memory",
+        "Where the article's year differs from the latest data year, the answer says which year it used"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "data-sources-on-topic",
+      "prompt": "What data sources does Our World in Data have on child mortality?",
+      "checks": [
+        "skill_fired",
+        "fetched: /api/search\\?",
+        "fetched: \\.metadata\\.json"
+      ],
+      "assertions": [
+        "It names the original producers behind the charts (e.g. UN IGME, Gapminder), taken from the metadata, not only chart titles",
+        "It distinguishes recent data from long-run historical series",
+        "Charts are linked"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "html-summary-with-charts",
+      "prompt": "Create an HTML page summarising how democracy has developed over the last century, with Our World in Data charts embedded. Save it as democracy.html.",
+      "checks": [
+        "skill_fired",
+        "fetched: /api/search\\?",
+        "answer_or_files_match: <iframe|\\.png"
+      ],
+      "assertions": [
+        "Every chart URL in the page exists",
+        "Charts are embedded with the iframe snippet (or PNG with a link), with a view chosen deliberately (tab, time range)",
+        "Each claim in the text is backed by a number from the data, with year",
+        "Original producers (e.g. V-Dem) are credited on the page"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "latest-articles-by-author",
+      "prompt": "Show me the latest articles by Hannah Ritchie on Our World in Data.",
+      "checks": [
+        "skill_fired",
+        "fetched: type=pages"
+      ],
+      "assertions": [
+        "Results come from the page search, not from memory",
+        "Each item has date, title and URL, newest first",
+        "Only articles where she is an author are listed"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "explain-term-in-chart",
+      "prompt": "I'm looking at https://ourworldindata.org/grapher/gdp-per-capita-worldbank. What do they mean by 'international-$'?",
+      "checks": [
+        "skill_fired",
+        "fetched: gdp-per-capita-worldbank\\.(metadata\\.json|readme\\.md)"
+      ],
+      "assertions": [
+        "The explanation is grounded in the chart's metadata or readme, and quotes or paraphrases it",
+        "It explains purchasing power parity and constant prices in plain terms",
+        "It names the World Bank as the producer"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "png-of-chart",
+      "prompt": "Get me a PNG of https://ourworldindata.org/grapher/child-mortality showing Kenya, India and Brazil from 1990 to 2020. Save it as child-mortality.png.",
+      "checks": [
+        "skill_fired",
+        "user_agent",
+        "fetched: child-mortality\\.png\\?.*country=.*time="
+      ],
+      "assertions": [
+        "The PNG request carries the three countries and the time range",
+        "The file is saved and the chart URL with the same view is given",
+        "It does not attempt to draw the chart itself"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "whats-interesting",
+      "prompt": "What's interesting about this chart? https://ourworldindata.org/grapher/life-expectancy",
+      "checks": [
+        "skill_fired",
+        "metadata_before_csv"
+      ],
+      "assertions": [
+        "Observations are backed by numbers read from the CSV, with years",
+        "At least one caveat from the metadata (definition, data quality) is mentioned",
+        "Original producers are named"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "explain-spike",
+      "prompt": "Why is there a spike around 1918 in this chart? https://ourworldindata.org/grapher/life-expectancy",
+      "checks": [
+        "skill_fired",
+        "metadata_before_csv",
+        "fetched: life-expectancy\\.csv"
+      ],
+      "assertions": [
+        "It looks at the data around 1918 and describes what is actually there (a drop, not a spike) before explaining",
+        "The explanation (1918 influenza pandemic, the war) is offered as context, not presented as something the data says",
+        "It states which entities the observation holds for"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "topic-coverage",
+      "prompt": "Does Our World in Data have anything about victims of wars?",
+      "checks": [
+        "skill_fired",
+        "fetched: /api/search\\?"
+      ],
+      "assertions": [
+        "Charts and articles or the topic page are listed with links, from the search",
+        "It notes what the datasets measure (battle deaths vs all conflict deaths, state-based vs one-sided) using the metadata",
+        "No invented slugs"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "how-was-data-produced",
+      "prompt": "How was the data in https://ourworldindata.org/grapher/co2-emissions-per-capita produced, and where does it come from?",
+      "checks": [
+        "skill_fired",
+        "fetched: co2-emissions-per-capita\\.(metadata\\.json|readme\\.md)"
+      ],
+      "assertions": [
+        "The original producer (Global Carbon Project) is named from the metadata or readme",
+        "OWID's own processing (per-capita calculation using population data) is described",
+        "It links to the chart and, if used, the readme"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "is-that-true",
+      "prompt": "Someone said that more people die from air pollution than from road accidents. Is that true according to Our World in Data?",
+      "checks": [
+        "skill_fired",
+        "fetched: /api/search\\?",
+        "metadata_before_csv"
+      ],
+      "assertions": [
+        "Both quantities are taken from OWID data for the same year and the same geography (World)",
+        "Numbers are given with units and year",
+        "The verdict follows from the numbers, and the producer (IHME) is named",
+        "Any definitional caveat (e.g. what counts as air pollution) from the metadata is mentioned"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "extract-claims",
+      "prompt": "List all the factual claims made in article.md.",
+      "files": [
+        "evals/skills/owid/fixtures/article.md"
+      ],
+      "checks": [],
+      "assertions": [
+        "All factual claims in the article are listed, including the non-numeric ones",
+        "It does not fetch data or check the claims, since that was not asked (or asks whether to)"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "consistent-with-owid",
+      "prompt": "Is this number consistent with Our World in Data? 'Global life expectancy in 2023 was 73.3 years.'",
+      "checks": [
+        "skill_fired",
+        "metadata_before_csv",
+        "fetched: life-expectancy.*csv"
+      ],
+      "assertions": [
+        "The World value for 2023 is fetched and quoted",
+        "The comparison accounts for rounding and says whether the numbers agree",
+        "The original producer is named"
+      ]
+    },
+    {
+      "id": 17,
+      "name": "integrate-into-pipeline",
+      "prompt": "Integrate the Our World in Data population dataset into my Python data pipeline: write a function that returns a pandas DataFrame of population by country and year, and document what the columns mean.",
+      "checks": [
+        "skill_fired",
+        "fetched: population\\.metadata\\.json"
+      ],
+      "assertions": [
+        "The function loads the CSV URL with csvType=full and useColumnShortNames=true",
+        "Requests set the owid-skills User-Agent",
+        "The docstring explains entity, code (ISO3 and OWID_ codes) and year, from the metadata",
+        "The citation from the metadata is included so pipeline users can credit the source"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "article-to-slides",
+      "prompt": "Turn this Our World in Data article into a short slide deck: https://ourworldindata.org/a-never-ending-childhood-of-malaria",
+      "checks": [
+        "skill_fired"
+      ],
+      "assertions": [
+        "The article's actual content is used (fetched page or page search), not a guess from the title",
+        "Charts from the article are included as PNGs or links with the right view",
+        "The author and OWID are credited, and the original data producers are named on chart slides",
+        "Nothing is stated that is not in the article or the data"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "add-citations",
+      "prompt": "Add Our World in Data citations to draft.md to support its claims. Edit the file in place.",
+      "files": [
+        "evals/skills/owid/fixtures/draft.md"
+      ],
+      "checks": [
+        "skill_fired",
+        "fetched: /api/search\\?",
+        "metadata_before_csv"
+      ],
+      "assertions": [
+        "Each claim gets a link to a specific chart and the original producer's name",
+        "The numbers in the draft are checked against the data and corrected or qualified where they differ",
+        "The third claim (life expectancy vs energy use) is supported by a chart that actually shows both, or flagged as not directly supported"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "reproduce-in-notebook",
+      "prompt": "Reproduce https://ourworldindata.org/grapher/share-of-population-in-extreme-poverty in a Jupyter notebook.",
+      "checks": [
+        "skill_fired",
+        "metadata_before_csv"
+      ],
+      "assertions": [
+        "The notebook loads the CSV from the URL rather than pasting data",
+        "Title, subtitle and unit come from the metadata",
+        "The entity selection is stated (the chart's default or a chosen set)",
+        "A source line with the original producer is on the figure"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "trap-map-default-country-filter",
+      "prompt": "From https://ourworldindata.org/grapher/religious-composition?indicator=share&religion=any_religion download a CSV with only the United States and the United Kingdom for 2020, and tell me how many rows it has.",
+      "checks": [
+        "skill_fired",
+        "metadata_before_csv",
+        "fetched: religious-composition\\.csv\\?.*tab=(chart|line)"
+      ],
+      "assertions": [
+        "The CSV contains only the two countries (2 rows), not every country",
+        "If a first attempt returned every country, the answer explains why (map-default chart) and fixes it",
+        "The indicator and religion parameters from the URL are kept in the request"
+      ]
+    },
+    {
+      "id": 22,
+      "name": "trap-filtered-default-selection",
+      "prompt": "Get the population of every country in 2020 from https://ourworldindata.org/grapher/population as a CSV and tell me how many countries it contains.",
+      "checks": [
+        "skill_fired",
+        "metadata_before_csv",
+        "fetched: population\\.csv\\?.*(csvType=full|country=)"
+      ],
+      "assertions": [
+        "The result has on the order of 200 countries, not 7 regions",
+        "Regions and aggregates (OWID_ codes) are excluded from the country count or clearly separated",
+        "The producer of the population series is named"
+      ]
+    },
+    {
+      "id": 23,
+      "name": "trap-multidim-url-params",
+      "prompt": "Get the data behind https://ourworldindata.org/grapher/natural-disasters-people-affected?impact=total_affected&metric=total_number&timespan=annual&type=all_stacked for the world over the last 10 years.",
+      "checks": [
+        "skill_fired",
+        "metadata_before_csv",
+        "fetched: natural-disasters-people-affected\\.(csv|metadata\\.json)\\?.*impact=total_affected"
+      ],
+      "assertions": [
+        "The query parameters from the URL are kept, so the indicator is 'total affected' and not a different one",
+        "Values are for World and the last ten years, with unit and year",
+        "The original producer (EM-DAT) is named"
+      ]
+    },
+    {
+      "id": 24,
+      "name": "trap-data-insights-search",
+      "prompt": "Find Our World in Data's data insights (the short posts, not full articles) about malaria.",
+      "checks": [
+        "skill_fired",
+        "fetched: type=pages",
+        "fetched: pageTypes=[^&\"]*data-insight"
+      ],
+      "assertions": [
+        "The results are data insights (URLs under /data-insights/), not articles",
+        "Each has a date, title and URL",
+        "Nothing is listed from memory"
+      ]
+    },
+    {
+      "id": 25,
+      "name": "trap-no-real-match",
+      "prompt": "Does Our World in Data have a chart on the number of pet cats per country?",
+      "checks": [
+        "skill_fired",
+        "fetched: /api/search\\?"
+      ],
+      "assertions": [
+        "The answer says no such chart was found, rather than presenting unrelated charts as matches",
+        "It does not invent a chart URL",
+        "If it mentions related charts, it says they are only loosely related"
+      ]
+    }
+  ]
+}
