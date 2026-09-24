@@ -143,11 +143,11 @@ ignore `country=` — see [data-api.md](data-api.md).
 
 ## Silent failures
 
-- **A non-empty response is not a match.** A query that matches nothing comes back
-  empty; a query where only some of the words match comes back with a few loosely
-  related hits and `closestMatches: true` (a boolean, not a list). Read it, and
-  judge the titles rather than `nbHits` — on a relaxed response `nbHits` counts
-  only what came back, and paging further gets you nothing.
+**A non-empty response is not a match.** A query that matches nothing comes back
+empty; a query where only some of the words match comes back with a few loosely
+related hits and `closestMatches: true` (a boolean, not a list). Read it, and
+judge the titles rather than `nbHits` — on a relaxed response `nbHits` counts
+only what came back, and paging further gets you nothing.
 
 When several charts fit, tell the user the top few titles and subtitles, and
 either pick one and say why, or ask which they meant.
