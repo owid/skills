@@ -52,6 +52,13 @@ Each hit:
 | `queryParams` | The query string that selects this view. Only on `explorerView` and `multiDimView`. |
 | `containerTitle` | The explorer or multi-dimensional chart the view belongs to. Only on `explorerView` and `multiDimView`, and worth showing the user when several views of one explorer come back together. |
 
+When several charts fit, tell the user the top few titles and subtitles, and
+either pick one and say why, or ask which they meant.
+
+Once you have the chart, the answer to "find me a chart on X" is the chart: its
+title, what it shows, and a link to it. Do not go on to download the data or an
+image unless the user asked for those, or said where they are going.
+
 ## What a page search returns
 
 A different envelope: `query`, `results`, `nbHits`, and then `offset` and
@@ -148,10 +155,3 @@ empty; a query where only some of the words match comes back with a few loosely
 related hits and `closestMatches: true` (a boolean, not a list). Read it, and
 judge the titles rather than `nbHits` — on a relaxed response `nbHits` counts
 only what came back, and paging further gets you nothing.
-
-When several charts fit, tell the user the top few titles and subtitles, and
-either pick one and say why, or ask which they meant.
-
-Once you have the chart, the answer to "find me a chart on X" is the chart: its
-title, what it shows, and a link to it. Do not go on to download the data or an
-image unless the user asked for those, or said where they are going.
