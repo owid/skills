@@ -1,2 +1,5 @@
 interface:
   display_name: "Our World in Data"
+  short_description: "Find, fetch and cite Our World in Data charts and data"
+  brand_color: "#002147"
+  default_prompt: "Use the Our World in Data skill to find the chart and data for:"

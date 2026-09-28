@@ -89,6 +89,14 @@ validate: ## Check spec conformance, both plugin manifests and marketplace regis
 	  if [ ! -e "$$path" ]; then echo "  x plugin.json references $$path, which does not exist"; fail=1; fi; \
 	done; \
 	if [ $$fail -eq 0 ]; then echo "  ok  plugin.json asset paths resolve"; else exit 1; fi
+	@# OpenAI's plugin portal refuses a skill upload whose agents/openai.yaml has
+	@# no interface.short_description, although its docs call the field optional.
+	@fail=0; \
+	for f in skills/*/agents/openai.yaml; do \
+	  [ -e "$$f" ] || continue; \
+	  grep -qE '^  short_description: *"?[^" ]' "$$f" || { echo "  x $$f has no interface.short_description"; fail=1; }; \
+	done; \
+	if [ $$fail -eq 0 ]; then echo "  ok  every openai.yaml has a short_description"; else exit 1; fi
 	@# Eval JSON is hand-authored and hand-reviewed, so it must stay readable. A
 	@# python json.dumps without ensure_ascii=False silently rewrites every em dash
 	@# and accent as a \uXXXX escape, which is unreviewable prose.
