@@ -39,28 +39,40 @@ Every request the skill makes identifies itself as coming from this skill, which
 
 ## Installation
 
-The quickest way is to ask your AI assistant to do it. Send it this:
+The quickest way is to ask your AI assistant: *"Install the OWID skill hosted at
+https://github.com/owid/skills/"*. Claude Code and Codex can do it themselves; in
+the Claude and ChatGPT apps, your assistant can walk you through the current menus.
 
-> Install the OWID skill hosted at https://github.com/owid/skills/
+What each app needs:
 
-Claude Code and Codex can carry that out themselves. The Claude and ChatGPT apps
-will read [INSTALL.md](INSTALL.md) and walk you through it.
-
-To do it by hand:
-
-| Your app | How you install it |
+| Your app | How |
 |---|---|
-| [Claude app](INSTALL.md#claude-app-web-and-desktop) | in the app, in a few clicks |
-| [ChatGPT app](INSTALL.md#chatgpt-app) | in the app, in a few clicks |
-| [Claude Code](INSTALL.md#claude-code) | two commands, at Claude Code's own prompt |
-| [Codex](INSTALL.md#codex) | two commands, in a terminal |
-| [Anything else](INSTALL.md#other-agents-gemini-cli-cursor-copilot-) | one command in a terminal |
+| Claude app (paid plan) | In the plugin settings, add a marketplace from `owid/skills`, then install **Our World in Data** |
+| ChatGPT app | In the plugin settings, add a marketplace from `owid/skills`, then install **Our World in Data** |
+| Claude Code | `/plugin marketplace add owid/skills`, then `/plugin install owid@owid-skills` |
+| Codex | `codex plugin marketplace add owid/skills`, then `codex plugin add owid@owid-skills` |
+| Anything else | `npx skills add owid/skills`, or copy the [`skills/owid/`](skills/owid/) folder into your agent's skills directory |
 
-None of them needs an Our World in Data account, and nothing on our side costs
-anything. [INSTALL.md](INSTALL.md) also covers how to
-[check it worked](INSTALL.md#check-it-worked) and how to
-[keep it up to date](INSTALL.md#keeping-the-skill-up-to-date); the [FAQ](FAQ.md)
-covers what to do when it doesn't behave.
+None of them needs an Our World in Data account or a GitHub account. Start a new
+chat afterwards: plugins only apply to conversations that begin after installing.
+
+**Check it worked.** In a new chat, ask:
+
+> Use the Our World in Data skill to fetch the data behind this chart:
+> https://ourworldindata.org/grapher/child-mortality — the complete time series
+> for Uganda, and the source the chart relies on.
+
+A working install returns the whole series for Uganda (about seventy yearly
+figures, starting in the 1950s) and names **Gapminder and the UN Inter-agency
+Group for Child Mortality Estimation** as the source, not "Our World in Data". An
+assistant without the skill will say so; one that has it but didn't fetch anything
+will summarise or invent the numbers. If that happens, see the [FAQ](FAQ.md).
+
+**Updating.** There are no version numbers: we change the skill in place. Update it
+where you installed it: reinstall it in the apps, run `claude plugin update
+owid@owid-skills` in Claude Code (or turn on auto-update for the `owid-skills`
+marketplace in `/plugin`), `codex plugin marketplace upgrade owid-skills` in Codex,
+or `npx skills update` for the `skills` CLI.
 
 ## License
 
