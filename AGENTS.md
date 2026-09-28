@@ -15,6 +15,7 @@ routes better than several narrow ones competing for the same prompt.
 
 ```
 FAQ.md                            # common user and contributor questions
+INSTALL.md                        # per-app install, check-it-worked and update steps
 Makefile                          # entry points: make validate / lint / install / test / triggers / behaviour
 skills/owid/SKILL.md              # the workflow and the rules (~150 lines, always loaded)
 skills/owid/references/*.md       # one file per endpoint or topic, read when needed
