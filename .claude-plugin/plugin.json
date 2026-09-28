@@ -1,5 +1,6 @@
 {
     "name": "owid",
+    "displayName": "Our World in Data",
     "description": "Agent skills for working with Our World in Data: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. No API key.",
     "author": {
         "name": "Our World in Data",
