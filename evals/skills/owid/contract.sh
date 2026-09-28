@@ -36,10 +36,12 @@ fi
 http_status "hitsPerPage above 100 is rejected with 400" "$API?q=energy&hitsPerPage=101" 400
 http_status "an unknown type is rejected with 400" "$API?q=energy&type=writing" 400
 if fetch "$API?q=energy&resultType=writing&hitsPerPage=3" "$WORK/search-resulttype.json"; then
-    # The skill warns that resultType is silently ignored. If the API ever
-    # starts honouring it, that warning becomes wrong.
+    # The skill warns that resultType is ignored. If the API ever starts
+    # honouring it, that warning becomes wrong.
     jq_true "resultType is ignored: the response is still a chart search" \
         "$WORK/search-resulttype.json" '[.results[].type] | unique | inside(["chart", "explorerView", "multiDimView"])'
+    jq_true "an ignored parameter is named in warnings" \
+        "$WORK/search-resulttype.json" '.warnings | type == "array" and any(test("resultType"))'
 fi
 
 section "Search API: chart hit shape"
@@ -144,6 +146,7 @@ doc_contains "the reference lists every documented parameter" "$SEARCH_REF" '`pa
 doc_contains "the reference warns that resultType is not a parameter" "$SEARCH_REF" 'resultType'
 doc_contains "the search reference points at /api/search" "$SEARCH_REF" 'ourworldindata\.org/api/search'
 doc_contains "the search reference documents the closestMatches fallback" "$SEARCH_REF" 'closestMatches'
+doc_contains "the search reference documents the warnings field" "$SEARCH_REF" '`warnings`'
 
 # ---------------------------------------------------------------------------
 section "Chart data API: metadata"
@@ -455,6 +458,7 @@ if fetch "$API?q=life+expectancy&hitsPerPage=5" "$WORK/tag-plain-search.json" &&
     fetch "$API?q=life+expectancy&hitsPerPage=5&utm_source=owid-skills" "$WORK/tag-tagged-search.json"; then
     jq_eq "search returns the same hits with the tag" "$WORK/tag-tagged-search.json" \
         '[.results[].slug] | join(",")' "$(jq -r '[.results[].slug] | join(",")' "$WORK/tag-plain-search.json")"
+    none_match "search does not warn about the tag" "$WORK/tag-tagged-search.json" '.' 'has("warnings")'
 fi
 
 finish
