@@ -1,0 +1,9 @@
+---
+description: 'Ported from evals.json; see the graders for what a good answer does.'
+tags: [behaviour, ported, webfetch-ok]
+allowed_tools: [WebFetch, Skill, Read, Glob, Grep]
+max_turns: 20
+timeout_seconds: 300
+---
+
+Is this number consistent with Our World in Data? 'Global life expectancy in 2023 was 73.3 years.'
