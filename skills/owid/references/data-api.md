@@ -335,7 +335,7 @@ month. Read `titleLong` before you assume what a second column is.
 
 ### Text and accents
 
-Everything comes back as UTF-8. Two things follow:
+Everything comes back as UTF-8, with a few things to watch for:
 
 - **The metadata and the readme contain real non-ASCII characters** — en dashes
   and curly quotes in the citation lines, `©` in the licence. Pass them through
