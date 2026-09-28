@@ -11,11 +11,20 @@
     "repository": "https://github.com/owid/skills",
     "license": "Apache-2.0",
     "keywords": [
+        "owid",
+        "our-world-in-data",
+        "open-data",
         "data",
-        "charts",
         "statistics",
+        "charts",
         "research",
-        "our-world-in-data"
+        "fact-checking",
+        "global-development",
+        "climate",
+        "health",
+        "energy",
+        "population",
+        "poverty"
     ],
     "extensions": {
         "com.openai": {
