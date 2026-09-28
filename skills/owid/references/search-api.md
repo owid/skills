@@ -23,7 +23,7 @@ paging deeper.
 | Parameter | Applies to | Values | Default | Notes |
 |---|---|---|---|---|
 | `q` | both | free text | `""` | Keyword search. An empty query returns a browse list in the index's own order, which is not documented — do not describe it to the user as the most popular charts. |
-| `type` | both | `charts`, `pages` | `charts` | Anything else is a 400. Note: `resultType` is **not** a parameter here and is silently ignored. |
+| `type` | both | `charts`, `pages` | `charts` | Anything else is a 400. Note: `resultType` is **not** a parameter here. It is ignored, and `warnings` in the response names it and points you to `type`. |
 | `page` | both | 0..1000 | `0` | 0-indexed. |
 | `hitsPerPage` | both | 1..100 | `20` | Over 100 is a 400. |
 | `countries` | charts | entity names joined with `~` | | Keep only charts with data for these countries, e.g. `countries=Kenya~Chad`. It removes hits, it does not reorder them. Names as OWID spells them, **not** ISO codes — a code or a misspelling gives a 200 with `nbHits: 0`, which looks exactly like "no chart covers this"; check the spelling against `availableEntities` on an unfiltered search. Note this is `countries` here and `country` on the data endpoint, which does take codes. |
@@ -34,7 +34,8 @@ paging deeper.
 ## What a chart search returns
 
 The envelope holds `query`, `results`, `nbHits`, `page`, `nbPages` and
-`hitsPerPage`, plus `closestMatches` when the query had to be relaxed.
+`hitsPerPage`, plus `closestMatches` when the query had to be relaxed and
+`warnings` when the request carried a parameter the API does not read.
 
 Each hit:
 
@@ -64,7 +65,7 @@ image unless the user asked for those, or said where they are going.
 A different envelope: `query`, `results`, `nbHits`, and then `offset` and
 `length` where the chart search has `page` and `nbPages`. There is no `nbPages`
 to page against, so keep going until `offset + length >= nbHits`.
-`closestMatches` appears here too.
+`closestMatches` and `warnings` appear here too.
 
 Each hit:
 
@@ -155,3 +156,11 @@ empty; a query where only some of the words match comes back with a few loosely
 related hits and `closestMatches: true` (a boolean, not a list). Read it, and
 judge the titles rather than `nbHits` — on a relaxed response `nbHits` counts
 only what came back, and paging further gets you nothing.
+
+**A misspelt parameter is ignored, not rejected.** A parameter the API does not
+read still gets a 200, with that parameter dropped, so `topic=Malaria` for
+`topics=Malaria` quietly searches every topic. Such a response carries
+`warnings`, an array of strings naming what was ignored and listing the valid
+parameters; check for it whenever a filter seems to have done nothing. `utm_*`
+tags are ignored without a warning, so the tag from the skill's instructions
+never shows up there.
