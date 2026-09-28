@@ -52,8 +52,8 @@ https://ourworldindata.org/grapher/life-expectancy.metadata.json
 ### The metadata fields
 
 Three things at the top level: `chart`, describing the chart as a whole,
-`columns`, one entry per indicator, and `dateDownloaded`. Multi-dimensional
-charts add `activeFilters`, echoing the dimensions you asked for.
+`columns`, one entry per indicator, and `dateDownloaded`. Any chart adds
+`activeFilters` when you pass filters, echoing what was applied.
 
 `columns` is keyed by the **indicator's own title**, which on most charts is not
 the CSV header — the chart renames its columns for display. `life-expectancy`
