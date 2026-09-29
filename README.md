@@ -1,8 +1,6 @@
 # AI skill for Our World in Data
 
-**An agent skill for working with [Our World in Data](https://ourworldindata.org).** It teaches your AI assistant to find our charts and articles, pull the numbers behind them, put a chart into a page or a slide, and credit whoever produced the data.
-
-It works with the Claude and ChatGPT apps, Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot and others.
+**An agent skill for working with [Our World in Data](https://ourworldindata.org).** It teaches your AI assistant to find our charts and articles, pull the numbers behind them, put a chart into a page or a slide, and credit whoever produced the data. It works with the Claude and ChatGPT apps, Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot and others.
 
 Our World in Data publishes thousands of charts and hundreds of articles on global problems: poverty, health, energy, climate, education, and more. This skill teaches assistants how to use that content properly: how to find the right chart, how to get the numbers behind it, what the data does and does not mean, and how to credit the people who collected it.
 
@@ -39,9 +37,11 @@ Every request the skill makes identifies itself as coming from this skill, which
 
 ## Installation
 
-The quickest way is to ask your AI assistant: *"Install the OWID skill hosted at
-https://github.com/owid/skills/"*. Claude Code and Codex can do it themselves; in
-the Claude and ChatGPT apps, your assistant can walk you through the current menus.
+The quickest way is to ask your AI assistant: 
+
+> Install the Our World in Data skill hosted at https://github.com/owid/skills/
+
+Claude Code and Codex can do it themselves; in the Claude and ChatGPT apps, your assistant can walk you through the current menus.
 
 What each app needs:
 
