@@ -76,4 +76,6 @@ or `npx skills update` for the `skills` CLI.
 
 ## License
 
-[Apache-2.0](LICENSE)
+[Creative Commons BY 4.0](LICENSE) — the same terms as the rest of Our World in
+Data's own work. Use it anywhere, change it, ship it inside your own project;
+just credit Our World in Data.
