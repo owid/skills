@@ -80,22 +80,10 @@ separate skill is warranted:
 
 Plugins here are intentionally **versionless**: `.claude-plugin/marketplace.json`, `.claude-plugin/plugin.json`, `plugin.json` and the plugin entries carry no `version` field, so every commit to `main` is a new release and update mechanisms pick it up automatically. Do not add version fields back — `version` is optional in the Agent Plugins schema, hosts that need one fall back to `1.0.0`, and `make validate` warning about the missing version is the convention working, not a defect to fix.
 
-The plugin is also submitted to both public directories, which treat releases
-differently:
+The plugin is also submitted to both public directories, which treat releases differently:
 
-- **Claude's plugin directory** tracks `main` and scans each new commit, so a
-  merge reaches it like any other install route. The listing is read from
-  `.claude-plugin/plugin.json` and the README.
-- **OpenAI's Plugins Directory** (ChatGPT and Codex) is a snapshot. Each update
-  is a new upload through the portal at platform.openai.com/plugins, with release
-  notes and another review; nothing in this repo triggers it. Resubmit when the
-  skill changes meaningfully, not after every merge. `make
-  zip-openai` builds the upload: the Agent Plugins layout, with the `version`
-  and 30-character subtitle the portal requires added to the copy only, so the
-  repo stays versionless. Submitting for the OWID organization needs the Apps
-  Management Write role. The portal also requires
-  `interface.short_description` in the skill's `agents/openai.yaml`, which
-  `make validate` checks.
+- **Claude's plugin directory** tracks `main` and scans each new commit, so a merge reaches it like any other install route. The listing is read from `.claude-plugin/plugin.json` and the README.
+- **OpenAI's Plugins Directory** (ChatGPT and Codex) is a snapshot. Each update is a new upload through the portal at platform.openai.com/plugins, with release notes and another review; nothing in this repo triggers it. Resubmit when the skill changes meaningfully, not after every merge. `make zip-openai` builds the upload: the Agent Plugins layout, with the `version` and 30-character subtitle the portal requires added to the copy only, so the repo stays versionless. Submitting for the OWID organization needs the Apps Management Write role. The portal also requires `interface.short_description` in the skill's `agents/openai.yaml`, which `make validate` checks.
 
 ## Testing
 
