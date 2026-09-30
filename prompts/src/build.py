@@ -6,12 +6,14 @@
 one array, one object per prompt."""
 
 import json
+import re
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).parent.parent
 GENERATOR = "claude-sonnet-5-5"
+MENTIONS_OWID = re.compile(r"\bowid\b|our ?world ?in ?data|ourworldindata", re.I)
 
 personas = {p["id"]: p["name"] for p in yaml.safe_load((ROOT / "src/personas.yaml").read_text())}
 situations = {s["id"]: s["situation"] for s in yaml.safe_load((ROOT / "src/situations.yaml").read_text())}
@@ -28,6 +30,8 @@ if missing := set(tuples) - set(written):
 
 
 def entry(t, w):
+    # The writer is asked to mention OWID or not; record what the text actually does.
+    register = {**t["register"], "mentions_owid": bool(MENTIONS_OWID.search(w["prompt"]))}
     return {
         "id": t["id"],
         "prompt": w["prompt"],
@@ -42,7 +46,7 @@ def entry(t, w):
             "surface": t["surface"],
             "topic": t.get("topic"),
             "geography": t.get("geography"),
-            "register": t["register"],
+            "register": register,
         },
         "provenance": {"kind": "synthetic", "generator": GENERATOR},
     }

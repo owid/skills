@@ -14,7 +14,7 @@ English.
 
 ```json
 {
-  "id": "E4-040",
+  "id": "E4-L3",
   "prompt": "which countries are losing the most trees right now? for a quiz round",
   "attachment": null,
   "need": "The countries with the largest recent annual net forest loss or deforestation (in hectares or as a rate), ranked, with the year.",
@@ -54,9 +54,15 @@ English.
   table they refer to, when they bring their own data.
 - **`need`** says in plain words what would satisfy them. It is the answer key
   a grader checks a response against.
+- **`id`** is the situation plus the leak level (`E4-L3`), or the control
+  situation plus a number (`X5-1`). It doesn't change when situations are
+  added or reordered, so consumers can key their expectations by it.
 - **`tags`** are the dimensions the prompt was generated from. Filter on them
   to pick the slice a tool should handle, for example:
   `jq '[.[] | select(.tags.surface == "chat" and .tags.intent != "join-own-data")]' prompts.json`.
+  The `register` tags record what the writer was asked for (tone, a typo,
+  pasted material, length), and the text follows them loosely.
+  `mentions_owid` is the exception: `build.py` sets it from the text itself.
 - **`leak`** is how closely the wording names the metric. At `L0` the prompt
   uses the metric's official name. At `L1` it uses a lay synonym. At `L2` it
   describes the need. At `L3` the metric has to be inferred from context. Low
@@ -81,9 +87,13 @@ by `id`.
 | Join into the library | `src/build.py` → `prompts.json` | deterministic |
 | Reading page | `src/view.py` → `prompts.html` | deterministic |
 
-Topics come from OWID's list of topic tags (`src/topics.json`). Countries
-come from OWID's continent classification, limited to present-day countries
-with more than a million people (`src/countries.csv`).
+Topics are OWID's topic tags: the `tags` rows that have a topic-page slug,
+from `https://datasette-public.owid.io/owid?sql=select name, slug from tags where slug is not null`
+(`src/topics.json`). Countries are the entities in OWID's
+[continent classification](https://ourworldindata.org/grapher/continents-according-to-our-world-in-data)
+whose latest [population](https://ourworldindata.org/grapher/population) is
+at least a million, minus historical entities such as the USSR
+(`src/countries.csv`).
 
 The prompts are written blind so they come from the person's need, not from
 OWID's chart titles. A writer that can see the titles copies their wording,

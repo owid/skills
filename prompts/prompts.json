@@ -1,6 +1,6 @@
 [
   {
-    "id": "J1-001",
+    "id": "J1-L0",
     "prompt": "is it true depression rates in honduras have gone up since 2010? need the prevalence of depressive disorders",
     "attachment": null,
     "need": "Prevalence of depressive disorders (share of population) in Honduras over 2010 to the latest year, to check the premise that it rose; state whether it actually did.",
@@ -38,7 +38,7 @@
     }
   },
   {
-    "id": "J1-002",
+    "id": "J1-L1",
     "prompt": "checking a line in my piece - wilfires burned more area in Lithuania than Denmark and Estonia in 2019, per owid?? whats the burned area figure for each",
     "attachment": null,
     "need": "Area burned by wildfires in 2019 for Denmark, Lithuania and Estonia, with source and caveats (satellite-derived estimates, differences in country size), to check the claim that Lithuania's was highest.",
@@ -78,7 +78,7 @@
     }
   },
   {
-    "id": "J1-003",
+    "id": "J1-L2",
     "prompt": "which countries have the worst flu burden right now, need it for a health piece",
     "attachment": null,
     "need": "Latest ranking of countries by influenza burden (cases, hospitalisations or deaths, ideally per capita), with caveats about surveillance and reporting differences.",
@@ -113,7 +113,7 @@
     }
   },
   {
-    "id": "J1-004",
+    "id": "J1-L3",
     "prompt": "Dear assistant, I am drafting a piece that contrasts the Palestinian territories and Bangladesh, and my draft says that Palestinians produce and mishandle far more household waste per person than Bangladeshis do. Before I publish, can you tell me whether that is supported by the data? I am also unsure how much of the waste in each place is actually collected and managed properly, since our editor says that is the real story here, and I need a source I can cite. I can share the paragraph if useful.",
     "attachment": null,
     "need": "Municipal solid waste generated per person and the share that is collected/properly managed (vs dumped or burned) in Palestine and Bangladesh, latest year, with source; check the premise that Palestinians generate much more waste than Bangladeshis.",
@@ -143,7 +143,7 @@
         "typo": false,
         "pasted_material": false,
         "length": "long, with context",
-        "mentions_owid": true
+        "mentions_owid": false
       }
     },
     "provenance": {
@@ -152,7 +152,7 @@
     }
   },
   {
-    "id": "J2-005",
+    "id": "J2-L0",
     "prompt": "owid chart for public spending on educaton in ecuador over the years? for newsletter",
     "attachment": null,
     "need": "A chart of Ecuador's government expenditure on education (% of GDP) over time, to link or embed.",
@@ -190,7 +190,7 @@
     }
   },
   {
-    "id": "J2-006",
+    "id": "J2-L1",
     "prompt": "working on a piece about fishing in the Pacific. looking for something to embed showing how sustainably Australia and Papua New Guinea are fishing, like how much of their fish stocks are being taken faster than they can recover. would be great if the two were on the same chart. I've got a lot of charts about global fish already so want one specific to these two if it exists",
     "attachment": null,
     "need": "A chart comparing Australia and Papua New Guinea on the share of fish stocks that are overexploited/unsustainably fished, latest data, suitable to embed; may not exist for these two countries specifically.",
@@ -229,7 +229,7 @@
     }
   },
   {
-    "id": "J2-007",
+    "id": "J2-L2",
     "prompt": "need a chart for a story on jobs in africa, something that shows how it's changed the last few decades. our readers aren't experts so nothing too technical",
     "attachment": null,
     "need": "A chart of a work/employment indicator for Africa over several decades (e.g. employment or unemployment rate, or employment by sector), simple enough for lay readers.",
@@ -265,7 +265,7 @@
     }
   },
   {
-    "id": "J2-008",
+    "id": "J2-L3",
     "prompt": "putting together a newsletter on whether the world is getting more dangerous. anything i can embed that shows where terror attacks kill the most people at the moment? map would be nice",
     "attachment": null,
     "need": "A map or chart of deaths from terrorism by country, latest year available, to embed.",
@@ -300,7 +300,7 @@
     }
   },
   {
-    "id": "J3-009",
+    "id": "J3-L0",
     "prompt": "underlying data + csv for share of population with access to electricity, worldwide, latest year",
     "attachment": null,
     "need": "Download of the country-level share of population with access to electricity (latest year, ideally full time series) plus source and licence.",
@@ -335,7 +335,7 @@
     }
   },
   {
-    "id": "J3-010",
+    "id": "J3-L1",
     "prompt": "rebuilding the nuclear warhead stockpile chart in our style, need the data for NZ Australia and PNG since 1950 and who to credit. draft line: \"Neither Australia nor New Zealand has ever held a single nuclear warhead\"",
     "attachment": null,
     "need": "Nuclear warhead stockpile time series (since 1950) for New Zealand, Australia and Papua New Guinea (all zero or absent), with the data source, its licence and how to credit it.",
@@ -375,7 +375,7 @@
     }
   },
   {
-    "id": "J3-011",
+    "id": "J3-L2",
     "prompt": "hi, our design team is remaking the asia energy chart and I need the numbers. the one about how much of the power comes from the green sources, by country across asia. csv is fine but I also need to know how to credit it and whether we can republish. latest year is enough, dont need the whole history. the chart is on owid btw and has the countries as bars sorted highest to lowest",
     "attachment": null,
     "need": "Country-level share of electricity (or primary energy) from renewables for Asian countries, latest year, as downloadable data, plus source, licence and citation requirements for republishing in a redesigned chart.",
@@ -411,7 +411,7 @@
     }
   },
   {
-    "id": "J3-012",
+    "id": "J3-L3",
     "prompt": "remaking a chart of how european health has changed over the decades in our house style, what data underlies it and what's the licence",
     "attachment": null,
     "need": "Underlying data for a long-run health indicator chart (e.g. life expectancy or child mortality) for European countries, with source, licence and citation; the specific chart is ambiguous, so identify the likely one.",
@@ -447,7 +447,7 @@
     }
   },
   {
-    "id": "J4-013",
+    "id": "J4-L0",
     "prompt": "how many satellites have south american countries launched since 2000? \"Latin America has barely entered the space race\" is my opener",
     "attachment": null,
     "need": "Number of satellites launched by or registered to South American countries per year since 2000, with the trend, to contextualise the claim.",
@@ -483,7 +483,7 @@
     }
   },
   {
-    "id": "J4-014",
+    "id": "J4-L1",
     "prompt": "writing about women's earnings in algeria. my notes say women there earn about the same as men now - narrowing to almost equal. whats the actual gap?",
     "attachment": null,
     "need": "Gender pay gap or women's earnings relative to men's in Algeria, latest available and over time; the premise that the gap has nearly closed should be checked (likely not true, and data may be sparse).",
@@ -521,7 +521,7 @@
     }
   },
   {
-    "id": "J4-015",
+    "id": "J4-L2",
     "prompt": "background for a story: hiv infections in north america have been climbing every year since the 90s right? need new infection numbers, us and canada. spelling of the thing - incidance",
     "attachment": null,
     "need": "HIV new infection (incidence) numbers for the US and Canada from the 1990s to now; premise of steady rise should be checked (they have generally fallen or plateaued).",
@@ -557,7 +557,7 @@
     }
   },
   {
-    "id": "J4-016",
+    "id": "J4-L3",
     "prompt": "Working on a feature about Nicaragua and why fewer people seem to be getting married there. Draft para: \"Young Nicaraguans are turning away from the altar, and the country's family structure is shifting.\" I honestly don't know what numbers exist for this, I just want to know what has happened in the last 30-40 years and whether the story holds up. Divorces too if anyone counts them. A couple of colleagues think it's mostly about migration but I'm not sure",
     "attachment": null,
     "need": "Marriage rate and divorce rate in Nicaragua over the last 30-40 years (crude marriage rate, marriages per 1,000 people, or share married), to test whether the marriage decline story holds.",
@@ -595,7 +595,7 @@
     }
   },
   {
-    "id": "J5-017",
+    "id": "J5-L0",
     "prompt": "my editor wants a methodology caveat on this line: \"The Netherlands is one of the brightest countries on Earth at night.\" what does the night light data measure and what are the caveats? owid has a chart on it",
     "attachment": null,
     "need": "Explanation of what satellite nighttime light data (radiance or light per capita) measures for the Netherlands, its source, latest values and caveats (sensor, cloud cover, area vs per person, bright greenhouses).",
@@ -633,7 +633,7 @@
     }
   },
   {
-    "id": "J5-018",
+    "id": "J5-L1",
     "prompt": "editor asking me to caveat the alchohol number in my piece: \"the average person worldwide drank 5.5 litres of pure alcohol in 2019\". where does that come from and is it per drinker or per everyone",
     "attachment": null,
     "need": "Global alcohol consumption in litres of pure alcohol per capita (age 15+) for 2019, its source (WHO), and caveats such as it including non-drinkers, being based on sales plus estimates of unrecorded alcohol.",
@@ -668,7 +668,7 @@
     }
   },
   {
-    "id": "J5-019",
+    "id": "J5-L2",
     "prompt": "the number im using is \"about 287,000 women died in pregnancy or childbirth in 2020\". need a line on how solid that is - Are those actual counts or modelled? this is from a WHO press release i think",
     "attachment": null,
     "need": "Global maternal deaths in 2020 (about 287,000, UN MMEIG estimate), with explanation that they are modelled estimates with uncertainty intervals and how maternal mortality is defined, plus a citation.",
@@ -703,7 +703,7 @@
     }
   },
   {
-    "id": "J5-020",
+    "id": "J5-L3",
     "prompt": "Our editor has asked for a methodology note on Uruguay's covid figures for 2021. It looks as if the deaths are much lower than in neighbouring countrys and we want to explain whether that is real or a counting difference.",
     "attachment": null,
     "need": "Uruguay's COVID-19 deaths in 2021 (confirmed deaths and excess mortality, per capita) compared with neighbours, and caveats about testing, reporting and how confirmed deaths differ from excess mortality.",
@@ -741,7 +741,7 @@
     }
   },
   {
-    "id": "J6-021",
+    "id": "J6-L0",
     "prompt": "Kindly find a chart showing how much mining output Papua New Guinea gets from metals compared with Australis, most recent data. Looking for a story on the two neighbours.",
     "attachment": null,
     "need": "A chart comparing Papua New Guinea and Australia on metal/mineral production (e.g. gold, copper mine production), latest year.",
@@ -780,7 +780,7 @@
     }
   },
   {
-    "id": "J6-022",
+    "id": "J6-L1",
     "prompt": "story idea: which asian countries have gotten more unequal in income and which less, over the past 30 yrs? here's my hunch from the notes, \"China and India are now the most unequal big economies in Asia, ahead of Indonesia\". can u rank them? need something like gini or top 10% share",
     "attachment": null,
     "need": "Income inequality (Gini or top 10% income share) over the past ~30 years for Asian countries with a ranking of who became more or less unequal, including China, India and Indonesia, to test the hunch.",
@@ -816,7 +816,7 @@
     }
   },
   {
-    "id": "J6-023",
+    "id": "J6-L2",
     "prompt": "Which of Mauritius, South Africa and Leberia has the best-educated population when it comes to reading and writing?",
     "attachment": null,
     "need": "The most recent adult (15+) literacy rate for Mauritius, South Africa and Liberia, ranked, with the year of each figure.",
@@ -856,7 +856,7 @@
     }
   },
   {
-    "id": "J6-024",
+    "id": "J6-L3",
     "prompt": "doing a piece on whether governments in africa are getting less crooked. anything that shows how the corruption picture across african countrys has moved over the last 20 yrs or so? something i can link to",
     "attachment": null,
     "need": "A chart (ideally linkable) of a corruption perception or control-of-corruption index over roughly the last 20 years for African countries or the African region.",
@@ -892,7 +892,7 @@
     }
   },
   {
-    "id": "E1-025",
+    "id": "E1-L0",
     "prompt": "I am preparing a slide for my Year 10 geography class. Do you have a map of malaria death rates per 100,000 people, by country, for the most recent year? I would like one that shows the wold at a glance.",
     "attachment": null,
     "need": "A world map of the malaria death rate per 100,000 people by country for the latest available year, from Our World in Data.",
@@ -918,7 +918,7 @@
         "typo": true,
         "pasted_material": false,
         "length": "a few sentences",
-        "mentions_owid": true
+        "mentions_owid": false
       }
     },
     "provenance": {
@@ -927,7 +927,7 @@
     }
   },
   {
-    "id": "E1-026",
+    "id": "E1-L1",
     "prompt": "owid have a chart of how many people in south amrica get lockjaw over the years? for class",
     "attachment": null,
     "need": "A chart of tetanus cases or deaths (rate or count) over time for South American countries or the region.",
@@ -963,7 +963,7 @@
     }
   },
   {
-    "id": "E1-027",
+    "id": "E1-L2",
     "prompt": "need a chart for my slide on indonesia. my textbook says \"Lead exposure remains a significant public health concern in Southeast Asia.\" is it still a big problem there and has it got better since like 1990",
     "attachment": null,
     "need": "A chart of the burden of lead exposure in Indonesia over time since about 1990, e.g. deaths or DALYs attributed to lead exposure per 100,000, or blood lead levels.",
@@ -1001,7 +1001,7 @@
     }
   },
   {
-    "id": "E1-028",
+    "id": "E1-L3",
     "prompt": "for psych class i need a world map to go next to this line in our textbook: \"Every year, hundreds of thousands of people take their own lives.\" think owid has one, want the newest year. was looking at https://ourworldindata.org/suicide but couldnt tell which chart",
     "attachment": null,
     "need": "A world map of the suicide death rate per 100,000 people by country for the most recent available year.",
@@ -1036,7 +1036,7 @@
     }
   },
   {
-    "id": "E2-029",
+    "id": "E2-L0",
     "prompt": "net migration rate unted states 2015 per 1000 people?",
     "attachment": null,
     "need": "The net migration rate of the United States in 2015, per 1,000 population, with the source.",
@@ -1074,7 +1074,7 @@
     }
   },
   {
-    "id": "E2-030",
+    "id": "E2-L1",
     "prompt": "how many calories does the average person in the world get per day, and whats a source my teacher would accept",
     "attachment": null,
     "need": "The latest global average daily food supply in kilocalories per person, with a citable source and a note on what food supply measures versus actual intake.",
@@ -1109,7 +1109,7 @@
     }
   },
   {
-    "id": "E2-031",
+    "id": "E2-L2",
     "prompt": "writing about papau new guinea and science for my essay. how much do they spend on research compared to their economy? owid has something on it i think but idk if its reliable or how to cite it, and is the number old",
     "attachment": null,
     "need": "Papua New Guinea's most recent R&D expenditure as a share of GDP, with its year, source and data-quality caveats, and how to cite it.",
@@ -1147,7 +1147,7 @@
     }
   },
   {
-    "id": "E2-032",
+    "id": "E2-L3",
     "prompt": "my essay has the sentence \"rich countries give billions in aid every year\" and my teacher wants an actual figure. what was the total for 2019?",
     "attachment": null,
     "need": "Total official development assistance (foreign aid) given by donor countries in 2019, in dollars, with source.",
@@ -1182,7 +1182,7 @@
     }
   },
   {
-    "id": "E3-033",
+    "id": "E3-L0",
     "prompt": "someone told me pm2.5 concentrations in kosovo keep going up every year, is that what owid shows?",
     "attachment": null,
     "need": "Annual mean PM2.5 concentration in Kosovo over time. The premise that it rises every year should be checked against the data; availability for Kosovo may be limited.",
@@ -1220,7 +1220,7 @@
     }
   },
   {
-    "id": "E3-034",
+    "id": "E3-L1",
     "prompt": "saw this tweet \"the world now spends over $10 trillion a year on its militaries\" is that real? whats the latest number",
     "attachment": null,
     "need": "Latest total world military expenditure in dollars (roughly a few trillion), with year and source; the tweet's figure should be checked against it.",
@@ -1255,7 +1255,7 @@
     }
   },
   {
-    "id": "E3-035",
+    "id": "E3-L2",
     "prompt": "my dad says chile has always had way more drug problems than peru or venezuala. is that true? and uruguey legalised weed, has use gone up compared to the others since about 2000",
     "attachment": null,
     "need": "Prevalence of illicit drug use (or drug use disorders) over time from about 2000 for Uruguay, Peru, Venezuela and Chile, compared across countries.",
@@ -1296,7 +1296,7 @@
     }
   },
   {
-    "id": "E3-036",
+    "id": "E3-L3",
     "prompt": "forum post: \"almost half of North Macedonia lives in poverty\". what % is it now",
     "attachment": null,
     "need": "The latest share of North Macedonia's population living below a poverty line (national or international), with the year and definition. The forum claim should be checked.",
@@ -1334,7 +1334,7 @@
     }
   },
   {
-    "id": "E4-037",
+    "id": "E4-L0",
     "prompt": "owid mpox confirmed cases per million by country in oceania 2022-2024 for a quiz, which had the most",
     "attachment": null,
     "need": "Confirmed mpox cases per million people for Oceanian countries over 2022 to 2024 and which country had the highest.",
@@ -1370,7 +1370,7 @@
     }
   },
   {
-    "id": "E4-038",
+    "id": "E4-L1",
     "prompt": "making a quiz on which foods are worst for the planet. i have this list:\nbeef\ncheese\npork\nchicken\ntofu\nrice\nneed the greenhouse gas emissions per kg for each so the kids can rank them. csv or table is fine",
     "attachment": null,
     "need": "Greenhouse gas emissions per kilogram of food product (kg CO2-equivalent) for beef, cheese, pork, chicken, tofu and rice, global averages, in tabular form.",
@@ -1405,7 +1405,7 @@
     }
   },
   {
-    "id": "E4-039",
+    "id": "E4-L2",
     "prompt": "want data on how many kids in asian countries finish school over the years, for a class activity. spreadsheet is fine",
     "attachment": null,
     "need": "Country-level data for Asia over time on school completion (e.g. primary or secondary completion rate or years of schooling), downloadable as a table.",
@@ -1441,7 +1441,7 @@
     }
   },
   {
-    "id": "E4-040",
+    "id": "E4-L3",
     "prompt": "which countries are losing the most trees right now? for a quiz round",
     "attachment": null,
     "need": "The countries with the largest recent annual net forest loss or deforestation (in hectares or as a rate), ranked, with the year.",
@@ -1476,7 +1476,7 @@
     }
   },
   {
-    "id": "E5-041",
+    "id": "E5-L0",
     "prompt": "owid gdp per capita el salvador over time chart? homework",
     "attachment": null,
     "need": "A chart of El Salvador's GDP per capita over time, from Our World in Data.",
@@ -1514,7 +1514,7 @@
     }
   },
   {
-    "id": "E5-042",
+    "id": "E5-L1",
     "prompt": "hw: \"how has a disease changed over time in your country?\" picking burkino faso, mali, gambia, malawi - which disease has been almost got rid of there",
     "attachment": null,
     "need": "Trends over time in the burden of a disease that has been largely eliminated or sharply reduced in Burkina Faso, Mali, Gambia and Malawi (e.g. polio, guinea worm, measles, trachoma), with cases or deaths over time.",
@@ -1555,7 +1555,7 @@
     }
   },
   {
-    "id": "E5-043",
+    "id": "E5-L2",
     "prompt": "Hi, I'm doing a school project on how medicine has changed and my teacher said to pick three countries close to each other, so I chose Haiti, Mexico and Canada. I want to explain how much people there have been taking antibiotics over the years and whether the drug resistance thing is the same problem in all three. I don't need every detail, I just need to understand the story and have a graph or two to show. Is there anything like that? owid maybe?",
     "attachment": null,
     "need": "Trends over time in antibiotic consumption and antibiotic resistance (e.g. defined daily doses per 1,000 people, resistant infection burden) for Haiti, Mexico and Canada, with charts and a plain-language explanation; data availability differs by country.",
@@ -1595,7 +1595,7 @@
     }
   },
   {
-    "id": "E5-044",
+    "id": "E5-L3",
     "prompt": "Assignment 2: \"Show how access to modern medicine in your country has changed since 1990. Include one graph.\"\n\nim doing Togoo. is there a graph that fits this",
     "attachment": null,
     "need": "A chart for Togo since about 1990 showing access to modern medicine, e.g. vaccination coverage, physicians per 1,000 people or life expectancy.",
@@ -1633,7 +1633,7 @@
     }
   },
   {
-    "id": "E6-045",
+    "id": "E6-L0",
     "prompt": "can you make a chart of coal, oil and gas use worldwide from 1900 to now? my teacher wants to see how fosil fuel consumption changed. total energy from each in terawatt-hours is fine",
     "attachment": null,
     "need": "Line or stacked chart of global primary energy consumption from coal, oil and gas (TWh), from 1900 (or earliest available) to the latest year.",
@@ -1668,7 +1668,7 @@
     }
   },
   {
-    "id": "E6-046",
+    "id": "E6-L1",
     "prompt": "is it true europe basically got rid of those tropical worm diseases like river blindness and elephantiasis a long time ago?",
     "attachment": null,
     "need": "Whether neglected tropical diseases (e.g. river blindness, lymphatic filariasis) have been eliminated in Europe; premise should be checked, with trend/status of NTD burden or elimination in Europe.",
@@ -1704,7 +1704,7 @@
     }
   },
   {
-    "id": "E6-047",
+    "id": "E6-L2",
     "prompt": "my friend says south american women are still having like 5 kids on average, is that still true? owid has this stuff right",
     "attachment": null,
     "need": "Total fertility rate for South America (and key countries) over time; the belief of ~5 children per woman should be checked (it has fallen to roughly 2 or below in most countries).",
@@ -1740,7 +1740,7 @@
     }
   },
   {
-    "id": "E6-048",
+    "id": "E6-L3",
     "prompt": "hey owid, im looking for something showing whether farms around the world are getting bigger or smaller over the decades. doing a school project on where food comes from and cant figure out what to search",
     "attachment": null,
     "need": "Chart or data on average farm size (hectares per farm) worldwide over time, and the trend by region/income group.",
@@ -1775,7 +1775,7 @@
     }
   },
   {
-    "id": "A1-049",
+    "id": "A1-L0",
     "prompt": "working on a comparison of homelessnes in the Philippines vs Taiwan for a policy memo. i have a notebook w/ pandas already set up for country-level stuff, so ideally something i can pull in as a csv. what are the latest figures for number or share of people experiencing homelessness in each, and are the definitions even comparable? i suspect not, Taiwan probably counts differently. would like to know before i put them in the same table",
     "attachment": null,
     "need": "Latest national homelessness counts or rates for the Philippines and Taiwan, with the definitions each uses and whether they are comparable; ideally in a downloadable format.",
@@ -1814,7 +1814,7 @@
     }
   },
   {
-    "id": "A1-050",
+    "id": "A1-L1",
     "prompt": "I need the energy mix of the Pacific island countries and Australia and New Zealand over the last few decades, i.e. the share of electricity or primary energy from each source. Is there a dataset covering all of Oceania?",
     "attachment": null,
     "need": "Time series of the share of each energy source (fossil, nuclear, renewables, by type) in primary energy or electricity for Oceania countries, multi-decade, as a dataset.",
@@ -1850,7 +1850,7 @@
     }
   },
   {
-    "id": "A1-051",
+    "id": "A1-L2",
     "prompt": "need latest energy use per capita for georgia, israel, kyrgystan and iraq, my sheet uses EG.USE.PCAP.KG.OE",
     "attachment": null,
     "need": "Latest per-capita primary energy consumption (kg of oil equivalent, or kWh) for Georgia, Israel, Kyrgyzstan and Iraq, comparable to the World Bank indicator EG.USE.PCAP.KG.OE.",
@@ -1891,7 +1891,7 @@
     }
   },
   {
-    "id": "A1-052",
+    "id": "A1-L3",
     "prompt": "For a comparison of the US, Canada and Mexico I would like to see how the average dietry make-up has shifted since 1990 - i.e. what share of calories come from meat, dairy, sugars, cereals and so on. Owid probably has the FAO balance sheets in some form?",
     "attachment": null,
     "need": "Time series since 1990 of daily per-capita calorie supply broken down by food group (or share of calories from each) for USA, Canada and Mexico.",
@@ -1927,7 +1927,7 @@
     }
   },
   {
-    "id": "A2-053",
+    "id": "A2-L0",
     "prompt": "building a panel for a paper. need national avg life satisfaction (cantril ladder, 0-10) for every country and year available, plus the source so i can cite it. csv or api is fine",
     "attachment": null,
     "need": "Country-year data of average life satisfaction (Cantril ladder score, 0-10), all countries and years available, with source and citation.",
@@ -1962,7 +1962,7 @@
     }
   },
   {
-    "id": "A2-054",
+    "id": "A2-L1",
     "prompt": "I am assembling a country-year panel for African countries and need a measure of household air pollution from cooking with solid fuels. Ideally both the share of population using polluting fuels for cooking and the resulting death rate, from 1990 onwards. I plan to merge it with GDP per capita and urbanisation in R and run a fixed-effects model. Could you point me to the series, tell me what units and coverage they have, and say whether there are gaps for smaller countries?",
     "attachment": null,
     "need": "African country-year data from 1990 onward on share of population using solid fuels for cooking and deaths (rate) attributed to household air pollution, with units, coverage and gaps.",
@@ -1998,7 +1998,7 @@
     }
   },
   {
-    "id": "A2-055",
+    "id": "A2-L2",
     "prompt": "writing a python script that loops over european countries and downloads the % of pop with safe drinking water for each year. whats the easiest way to get that in one go",
     "attachment": null,
     "need": "Country-year data for European countries on share of population using safely managed drinking water services, and a programmatic bulk way to fetch it.",
@@ -2034,7 +2034,7 @@
     }
   },
   {
-    "id": "A2-056",
+    "id": "A2-L3",
     "prompt": "working on a country panel, need some biodiversity measure per country over time. owid has like the living planet index or red list index or smth?? i cant tell which one exists by country. this is what i have so far: country,year,gdp_pc / Kenya,2000,1240 / Kenya,2005,1410",
     "attachment": null,
     "need": "A country-level (or at least regional) time series of biodiversity, such as the Red List Index or Living Planet Index, over time, with clarity on which are available by country.",
@@ -2069,7 +2069,7 @@
     }
   },
   {
-    "id": "A3-057",
+    "id": "A3-L0",
     "prompt": "need books published per year in peru broken down by category if possible (fiction, textbooks etc). owid has this?",
     "attachment": null,
     "need": "Number of book titles published per year in Peru over time, with breakdown by category if available.",
@@ -2107,7 +2107,7 @@
     }
   },
   {
-    "id": "A3-058",
+    "id": "A3-L1",
     "prompt": "co2 emissions split by sector for new zealand vs papua new guinea, latest year?",
     "attachment": null,
     "need": "Latest-year CO2 or greenhouse gas emissions by sector (energy, agriculture, land use, etc.) for New Zealand and Papua New Guinea.",
@@ -2146,7 +2146,7 @@
     }
   },
   {
-    "id": "A3-059",
+    "id": "A3-L2",
     "prompt": "how do i get government spending split by category (health, education, defense) for all countries, latest year?",
     "attachment": null,
     "need": "Latest-year government expenditure by function (health, education, military) for all countries, e.g. as a share of GDP or of total spending.",
@@ -2181,7 +2181,7 @@
     }
   },
   {
-    "id": "A3-060",
+    "id": "A3-L3",
     "prompt": "I need the annual smallpox case counts for Angola, disaggregated by age group, up to eradication.",
     "attachment": null,
     "need": "Annual smallpox cases in Angola by age group before eradication in 1980; likely not available by age; check what exists.",
@@ -2219,7 +2219,7 @@
     }
   },
   {
-    "id": "A4-061",
+    "id": "A4-L0",
     "prompt": "whats the best way to pull average hours per day people spend on sleeping eating working etc per country, latest, for a dashbaord",
     "attachment": null,
     "need": "Latest country-level time-use data (average hours per day on sleep, paid work, leisure, etc.) and a programmatic way to get it.",
@@ -2254,7 +2254,7 @@
     }
   },
   {
-    "id": "A4-062",
+    "id": "A4-L1",
     "prompt": "building a small app that tracks cancer death rates for colombia and uruguay over time, what owid endpoint or csv url should i pull so it stays updated",
     "attachment": null,
     "need": "Time series of cancer death rates (age-standardised) for Colombia and Uruguay, with a stable programmatic URL or endpoint to fetch it.",
@@ -2293,7 +2293,7 @@
     }
   },
   {
-    "id": "A4-063",
+    "id": "A4-L2",
     "prompt": "for my dashboard i want to show how bosnia and denmark compare on freshwater withdrawals vs how much they have, owid dataset ok?",
     "attachment": null,
     "need": "Time series of freshwater withdrawals as a share of available resources (water stress) for Bosnia and Herzegovina and Denmark, with a fetchable dataset.",
@@ -2332,7 +2332,7 @@
     }
   },
   {
-    "id": "A4-064",
+    "id": "A4-L3",
     "prompt": "which owid datset do i use for how much of each countrys electricty comes from nuclear, latest. need it to auto refresh in my app",
     "attachment": null,
     "need": "Latest share of electricity generated from nuclear power by country, and a dataset/endpoint that refreshes automatically.",
@@ -2358,7 +2358,7 @@
         "typo": true,
         "pasted_material": false,
         "length": "one line",
-        "mentions_owid": false
+        "mentions_owid": true
       }
     },
     "provenance": {
@@ -2367,7 +2367,7 @@
     }
   },
   {
-    "id": "A5-065",
+    "id": "A5-L0",
     "prompt": "whats the global temp anomaly for 2023, i see 1.2 in one place and 1.45 in another",
     "attachment": null,
     "need": "Global mean temperature anomaly for 2023 and why sources differ (different baselines, e.g. 1850-1900 preindustrial vs 1951-1980 or 1991-2020, and datasets).",
@@ -2402,7 +2402,7 @@
     }
   },
   {
-    "id": "A5-066",
+    "id": "A5-L1",
     "prompt": "Dear team, I am reviewing figures on violence against children in Saudi Arabia for a report and I have found conflicting numbers between UNICEF survey estimates and figures quoted on Our World in Data. Could you tell me which indicator definition each source uses (physical punishment, violent discipline, any form of violence), the survey year, and how much I should trust the latest figure? The report goes to a donor next week and we must state the limitations clearly.",
     "attachment": null,
     "need": "Latest data on violence against children in Saudi Arabia (e.g. violent discipline or physical punishment prevalence), definitions and survey years by source, and limitations of the figure.",
@@ -2440,7 +2440,7 @@
     }
   },
   {
-    "id": "A5-067",
+    "id": "A5-L2",
     "prompt": "owid has biofuels as a tiny slice of global energy but another source I saw makes it look way bigger, what explains the gap?",
     "attachment": null,
     "need": "Explanation of why estimates of bioenergy's share of global energy/primary energy differ (traditional biomass included or not, substitution vs direct method, primary vs final energy), with the latest OWID figure and its definition.",
@@ -2475,7 +2475,7 @@
     }
   },
   {
-    "id": "A5-068",
+    "id": "A5-L3",
     "prompt": "ok so I'm in a repo replicating a paper's table and stuck on one cell. the paper says australia's plastic number for 2019 is around 2 kg per person and my script that pulls the owid data gives me something like 100+ for the same year. same country same year so one of us is measuring something different. I think theirs might be stuff that actually ends up in the ocean and mine is total waste generated but not sure which one is which or whether owid even has the ocean one for australia. can you help me work out which metric is which",
     "attachment": null,
     "need": "Clarify the difference between plastic waste generated per person (~100+ kg for Australia, 2019) and mismanaged plastic waste or plastic leaking to the ocean per person (~ around 2 kg or less), give the Australia 2019 figures for each with definitions and sources, and say which the paper likely used.",
@@ -2513,7 +2513,7 @@
     }
   },
   {
-    "id": "A6-069",
+    "id": "A6-L0",
     "prompt": "need the numbers behind this fig from a paper 'Age-standardized CVD mortality per 100,000 in 2019 was highest in Trinidad and Tobago and Honduras vs Jamaica and the USA' for those 4 countries",
     "attachment": null,
     "need": "Age-standardized death rate from cardiovascular diseases per 100,000 people, 2019, for Honduras, Trinidad and Tobago, Jamaica and the United States.",
@@ -2554,7 +2554,7 @@
     }
   },
   {
-    "id": "A6-070",
+    "id": "A6-L1",
     "prompt": "redo the global DALYs by cause trend in my notebook, 1990 to latest, stacked by broad cause group",
     "attachment": null,
     "need": "Time series of global disease burden (DALYs, disability-adjusted life years) by broad cause group (communicable, non-communicable, injuries), 1990 to the latest year, in a form usable in a notebook, plus code to stack-plot it.",
@@ -2589,7 +2589,7 @@
     }
   },
   {
-    "id": "A6-071",
+    "id": "A6-L2",
     "prompt": "I am trying to reproduce, in a Python script, a chart showing how many people travel abroad each year worldwide, including the collapse in 2020 and the recovery afterwards. Could you help me obtain the underlying yearly series and plot it?",
     "attachment": null,
     "need": "Worldwide international tourist arrivals per year (long time series through the latest year, including the 2020 collapse and recovery), as data with source, plus plotting code.",
@@ -2624,7 +2624,7 @@
     }
   },
   {
-    "id": "A6-072",
+    "id": "A6-L3",
     "prompt": "trying to recreate fig 3 from a paper on the Haiti vs US gap in kids' survival. their y-axis just says 'deaths per 1,000' and my numbers from a different source dont match theirs at all for Haiti. I have the four countries US, Mexico, Haiti, Nicaragua for 2015, where can I get the same year values so I can see which one is off",
     "attachment": null,
     "need": "Under-five (or possibly infant) mortality rate per 1,000 live births for the United States, Mexico, Haiti and Nicaragua in 2015, with the definition and source, so the user can check which indicator the paper used.",
@@ -2665,7 +2665,7 @@
     }
   },
   {
-    "id": "D1-073",
+    "id": "D1-L0",
     "prompt": "I have programme results per country for south amerika, how do i divide by number of people without safely managed drinking water? owid has that i think",
     "attachment": {
       "format": "csv",
@@ -2704,7 +2704,7 @@
     }
   },
   {
-    "id": "D1-074",
+    "id": "D1-L1",
     "prompt": "hey, I run data for a small road safety ngo. attached is our csv of helmet + safety training kits we handed out in india and south korea last year (2019 rows, sorry its a bit messy, some rows say S. Korea and one has Repuplic of Korea). want to see it relative to how many people actualy die in road acidents in each so we can say how much we're covering. can you join that on and give me kits per road death",
     "attachment": {
       "format": "csv",
@@ -2746,7 +2746,7 @@
     }
   },
   {
-    "id": "D1-075",
+    "id": "D1-L2",
     "prompt": "we train people in digital skills in australia, png and new zealand and I've got the totals per country. how do I get that per person, and would be good to know how many people there are online already in each",
     "attachment": {
       "format": "csv",
@@ -2789,7 +2789,7 @@
     }
   },
   {
-    "id": "D1-076",
+    "id": "D1-L3",
     "prompt": "Attached is our polio vaccine doses tally for European countries in 2022; please express each as a proportion of the children who would need them.",
     "attachment": {
       "format": "csv",
@@ -2828,7 +2828,7 @@
     }
   },
   {
-    "id": "D2-077",
+    "id": "D2-L0",
     "prompt": "does owid have anemia in women by country? want to scatter it against our survey scores in python, latest year",
     "attachment": {
       "format": "csv",
@@ -2866,7 +2866,7 @@
     }
   },
   {
-    "id": "D2-078",
+    "id": "D2-L1",
     "prompt": "joining my afrobarometer-style csv (country, trust_score) with owid's share of people living in cities, 2020, african countries only",
     "attachment": {
       "format": "csv",
@@ -2905,7 +2905,7 @@
     }
   },
   {
-    "id": "D2-079",
+    "id": "D2-L2",
     "prompt": "my csv has a country score for how easy it is to reach a clinic (survey from 2019 or so). I want to see if it lines up with kids dying of lung infections. any way to pull country data for that and merge?",
     "attachment": {
       "format": "csv",
@@ -2943,7 +2943,7 @@
     }
   },
   {
-    "id": "D2-080",
+    "id": "D2-L3",
     "prompt": "we surveyed people in about 30 european countries on how hard it is for them to afford food (1-5 score, 2021) and I want to see if the scores match what food actually costs there. does owid have something on cost of eating by country I can put against it? not sure how to join it either",
     "attachment": {
       "format": "csv",
@@ -2982,7 +2982,7 @@
     }
   },
   {
-    "id": "D3-081",
+    "id": "D3-L0",
     "prompt": "hi, we sell battery storage in asia and i want to see if our sales follow how much solar is in each countrys electrcity mix over time. sales by year (units): Vietnm 2018 120, 2019 480, 2020 1400, 2021 1100, India 2018 300, 2019 350, 2020 500, 2021 900, Japan 2018 900, 2019 1100, 2020 1300, 2021 1500. i think owid has share of electricity from solar by country, can u get it 2018-2021 and put it next to these? our finance team uses this sheet for the board pack so the country names are whatever they typed",
     "attachment": {
       "format": "csv",
@@ -3021,7 +3021,7 @@
     }
   },
   {
-    "id": "D3-082",
+    "id": "D3-L1",
     "prompt": "we sell home air purifiers and I have units sold last year for chile, uruguay, ecuador and paraguay. is there country data on how bad the air is outside so I can see if we're doing better where pollution is worse? csv is in the folder",
     "attachment": {
       "format": "csv",
@@ -3065,7 +3065,7 @@
     }
   },
   {
-    "id": "D3-083",
+    "id": "D3-L2",
     "prompt": "got hearing aid sales by country, want to see if we sell more where people live longer, latest year",
     "attachment": {
       "format": "csv",
@@ -3103,7 +3103,7 @@
     }
   },
   {
-    "id": "D3-084",
+    "id": "D3-L3",
     "prompt": "I do finance for a small exporter, we ship cocoa from cote d'ivoire and copper from zambia. I have our export revenue per year 2010-2022 for both (usd, pasted in the sheet) and my boss wants to know how big we are compared to each country's overall exports and whether we grew faster than the country did. the sheet has the years as columns for one country and rows for the other which is annoying. can you help me line them up against national numbers",
     "attachment": {
       "format": "csv",
@@ -3145,7 +3145,7 @@
     }
   },
   {
-    "id": "D4-085",
+    "id": "D4-L0",
     "prompt": "my csv has messy country names, need to match to health spending per person in ppp dollars, latest year",
     "attachment": {
       "format": "csv",
@@ -3183,7 +3183,7 @@
     }
   },
   {
-    "id": "D4-086",
+    "id": "D4-L1",
     "prompt": "have a sheet with crop tonnage for north america, some rows are countries and some are regional totals, how do I match it to owid's crop production for 2020",
     "attachment": {
       "format": "csv",
@@ -3222,7 +3222,7 @@
     }
   },
   {
-    "id": "D4-087",
+    "id": "D4-L2",
     "prompt": "here's the top of my sheet, want to add what share of each country is muslim / christian / unaffiliated, around 2010, and owid must have this?\nCountry | Population\nTurkiye | 72m\nPhilippines | 94m\nCzech Rep. | 10.5m\nIndonesia | 240m",
     "attachment": {
       "format": "csv",
@@ -3260,7 +3260,7 @@
     }
   },
   {
-    "id": "D4-088",
+    "id": "D4-L3",
     "prompt": "how do i line up my oceania sheet (Aotearoa, Fiji Islands, PNG, etc) against how much beef and milk each country produces",
     "attachment": {
       "format": "csv",
@@ -3299,7 +3299,7 @@
     }
   },
   {
-    "id": "D5-089",
+    "id": "D5-L0",
     "prompt": "doing the annual report for our animal welfare charity and want a section on scale. can you rank land animals vs fish etc by how many are slaughtered for meat each year worldwide, and how that changed since 1961? think owid has something like animals slaughtered for meat",
     "attachment": null,
     "need": "Number of farmed animals slaughtered for meat per year worldwide, by animal type (chickens, pigs, cattle, sheep, fish if available), ranked, as a time series from 1961 to the latest year.",
@@ -3334,7 +3334,7 @@
     }
   },
   {
-    "id": "D5-090",
+    "id": "D5-L1",
     "prompt": "i have clinic_screening.csv in this folder w/ our obesity numbers for the colombia programme by year. can you check it against how many adults are severely overweight nationally in colombia (latest owid figure) and put them in one table for the report?",
     "attachment": {
       "format": "csv",
@@ -3375,7 +3375,7 @@
     }
   },
   {
-    "id": "D5-091",
+    "id": "D5-L2",
     "prompt": "annual report section on civic space: is the world more or less democratic than 20 years ago? want to pull it from owid into my notebook",
     "attachment": null,
     "need": "Global trend over roughly the last 20+ years in democracy, for example the number of countries or share of people living in democracies, autocracies and other regime types, with data downloadable for a notebook.",
@@ -3410,7 +3410,7 @@
     }
   },
   {
-    "id": "D5-092",
+    "id": "D5-L3",
     "prompt": "writing our annual report for the stop smoking clinic in muscat. these are our 6 month follow up numbers, how do they compare with the country overall?\n\nyear, enrolled, still_smoking\n2021, 310, 118\n2022, 402, 141\n2023, 528, 172",
     "attachment": {
       "format": "csv",
@@ -3451,7 +3451,7 @@
     }
   },
   {
-    "id": "D6-093",
+    "id": "D6-L0",
     "prompt": "our lab in Mexcio has seen TB cases go up in our state 2015-2019 and im trying to understand if thats just the national pattern. whats the tuberculosis incidence rate per 100,000 for Mexico since 2000 and did it rise or fall?",
     "attachment": null,
     "need": "Tuberculosis incidence rate per 100,000 people in Mexico as a time series from 2000 to the latest year, with the direction of the national trend, especially 2015 to 2019.",
@@ -3489,7 +3489,7 @@
     }
   },
   {
-    "id": "D6-094",
+    "id": "D6-L1",
     "prompt": "got hospital_gastro.csv from our health service, admissions for gastro per 100k in one australian region 2010-2019. first rows:\n2010,141\n2011,138\n2012,152\nwant to line it up against the national trend in deaths from stomach bugs and see if we follow it",
     "attachment": {
       "format": "csv",
@@ -3530,7 +3530,7 @@
     }
   },
   {
-    "id": "D6-095",
+    "id": "D6-L2",
     "prompt": "parish register for my village in Latvia has deaths 1944: 41, 1945: 39, 1946: 88, 1947: 52 - does that match the national hunger years?",
     "attachment": null,
     "need": "Historical famine or food-crisis mortality context for Latvia in the mid-1940s, i.e. whether 1946-47 shows up as a hunger or excess-mortality peak nationally, compared with the village's death counts.",
@@ -3568,7 +3568,7 @@
     }
   },
   {
-    "id": "D6-096",
+    "id": "D6-L3",
     "prompt": "angola_hh_survey.csv has our household counts per year 2000-2020, does it follow the national trend on owid?",
     "attachment": {
       "format": "csv",
@@ -3609,7 +3609,7 @@
     }
   },
   {
-    "id": "X1-001",
+    "id": "X1-1",
     "prompt": "whats bitcion trading at right now",
     "attachment": null,
     "need": "The current live Bitcoin price, which requires real-time market data; country-level public statistics do not answer this.",
@@ -3642,7 +3642,7 @@
     }
   },
   {
-    "id": "X1-002",
+    "id": "X1-2",
     "prompt": "need the euro to turkish lira rate for today and whether its a good time to convert. sending my cousin money for his wedding this weekend",
     "attachment": null,
     "need": "Today's live EUR/TRY exchange rate and short-term timing advice, which requires real-time market data; country-level public statistics do not answer this.",
@@ -3675,7 +3675,7 @@
     }
   },
   {
-    "id": "X2-001",
+    "id": "X2-1",
     "prompt": "I have been reading Our World in Data articles on health outcomes and became curious about the statistics behind the headline comparisons. In a Python script I am writing, I have two groups with unequal sample sizes (n=212 and n=87) and a binary outcome for each. Could you explain how to compute a 95% confidence interval for the difference in proportions, which method is preferable when the proportions are near zero, and how to implement it with scipy or statsmodels? I do not have any real dataset yet, this is only to understand the method.",
     "attachment": null,
     "need": "An explanation of confidence intervals for a difference in two proportions (Wald vs Newcombe/Wilson methods) with Python code; no real-world country data is involved.",
@@ -3708,7 +3708,7 @@
     }
   },
   {
-    "id": "X2-002",
+    "id": "X2-2",
     "prompt": "wich test should i use, mann whitney or t-test?? group A: 4,7,9,12,30 group B: 3,5,6,8,9",
     "attachment": null,
     "need": "Advice on choosing between a Mann-Whitney U test and a t-test for two small skewed samples; a pure statistical-method question with no country-level data.",
@@ -3741,7 +3741,7 @@
     }
   },
   {
-    "id": "X3-001",
+    "id": "X3-1",
     "prompt": "how many people live in kreuzberg in berlin and whats the average rent there now? thinking about moving. also is it safer than neukolln",
     "attachment": null,
     "need": "Population, average rent and crime comparison for specific Berlin neighbourhoods, which needs city or local data rather than country-level statistics.",
@@ -3774,7 +3774,7 @@
     }
   },
   {
-    "id": "X3-002",
+    "id": "X3-2",
     "prompt": "can u find how many employees Shopfiy had each year and their revenue since 2015 and save as csv in this repo. need it for the deck",
     "attachment": null,
     "need": "Shopify's annual headcount and revenue since 2015, which is company financial data from filings, not country-level public statistics.",
@@ -3807,7 +3807,7 @@
     }
   },
   {
-    "id": "X4-001",
+    "id": "X4-1",
     "prompt": "Good morning. I am travelling to Delhi tomorrow and have mild asthma. Could you tell me what the air quality is in the city at this moment, and whether it is advisable to be outdoors this afternoon? If the PM2.5 reading is high, I would like to know which districts are currently the worst affected so that I can plan my route accordingly.",
     "attachment": null,
     "need": "Live PM2.5 and air quality readings for Delhi and its districts right now, which requires real-time sensor data; annual country-level statistics do not answer this.",
@@ -3840,7 +3840,7 @@
     }
   },
   {
-    "id": "X4-002",
+    "id": "X4-2",
     "prompt": "does owid have this weeks covid cases for Germny? need the current numbers for today's meeting",
     "attachment": null,
     "need": "This week's current COVID-19 case counts for Germany, which requires real-time surveillance reporting; an annual or historical country dataset would not answer it.",
@@ -3873,7 +3873,7 @@
     }
   },
   {
-    "id": "X5-001",
+    "id": "X5-1",
     "prompt": "my monthly spending: rent 1200, food 450, transport 90, subs 60, fun 200. where can i cut",
     "attachment": null,
     "need": "Personal budgeting advice on the user's own monthly expenses; no country-level public data is involved.",
@@ -3906,7 +3906,7 @@
     }
   },
   {
-    "id": "X5-002",
+    "id": "X5-2",
     "prompt": "saw owid charts and now i wanna chart my own weekly running km, how do i make it look like theirs",
     "attachment": null,
     "need": "Help styling a chart of the user's own personal running data; no country-level public statistics are needed.",

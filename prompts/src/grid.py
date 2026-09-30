@@ -75,16 +75,16 @@ def pick_register():
 
 
 rows = []
-n = 0
 for s in main:
     # Every situation gets every leak level; the situation's other allowed
     # values are cycled (in shuffled order) so each appears before any repeats.
     cyc = {k: Cycle(s[k]) for k in ("intents", "freshness", "geography")}
     surf = Cycle(personas[s["persona"]]["surfaces"])
     for leak in LEAK:
-        n += 1
         rows.append({
-            "id": f"{s['id']}-{n:03d}",
+            # Situation x leak level is unique, so the id stays put when
+            # situations are added or reordered.
+            "id": f"{s['id']}-{leak}",
             "persona": s["persona"],
             "situation": s["id"],
             "intent": cyc["intents"].next(),
@@ -99,7 +99,7 @@ for s in main:
 for s in controls:
     for k in range(2):
         rows.append({
-            "id": f"{s['id']}-{k + 1:03d}",
+            "id": f"{s['id']}-{k + 1}",
             "persona": "X",
             "situation": s["id"],
             "intent": "out-of-scope",
