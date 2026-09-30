@@ -1,0 +1,162 @@
+country,code,region
+Algeria,DZA,Africa
+Angola,AGO,Africa
+Benin,BEN,Africa
+Botswana,BWA,Africa
+Burkina Faso,BFA,Africa
+Burundi,BDI,Africa
+Cameroon,CMR,Africa
+Central African Republic,CAF,Africa
+Chad,TCD,Africa
+Congo,COG,Africa
+Cote d'Ivoire,CIV,Africa
+Democratic Republic of Congo,COD,Africa
+Djibouti,DJI,Africa
+Egypt,EGY,Africa
+Equatorial Guinea,GNQ,Africa
+Eritrea,ERI,Africa
+Eswatini,SWZ,Africa
+Ethiopia,ETH,Africa
+Gabon,GAB,Africa
+Gambia,GMB,Africa
+Ghana,GHA,Africa
+Guinea,GIN,Africa
+Guinea-Bissau,GNB,Africa
+Kenya,KEN,Africa
+Lesotho,LSO,Africa
+Liberia,LBR,Africa
+Libya,LBY,Africa
+Madagascar,MDG,Africa
+Malawi,MWI,Africa
+Mali,MLI,Africa
+Mauritania,MRT,Africa
+Mauritius,MUS,Africa
+Morocco,MAR,Africa
+Mozambique,MOZ,Africa
+Namibia,NAM,Africa
+Niger,NER,Africa
+Nigeria,NGA,Africa
+Rwanda,RWA,Africa
+Senegal,SEN,Africa
+Sierra Leone,SLE,Africa
+Somalia,SOM,Africa
+South Africa,ZAF,Africa
+South Sudan,SSD,Africa
+Sudan,SDN,Africa
+Tanzania,TZA,Africa
+Togo,TGO,Africa
+Tunisia,TUN,Africa
+Uganda,UGA,Africa
+Zambia,ZMB,Africa
+Zimbabwe,ZWE,Africa
+Afghanistan,AFG,Asia
+Armenia,ARM,Asia
+Azerbaijan,AZE,Asia
+Bahrain,BHR,Asia
+Bangladesh,BGD,Asia
+Cambodia,KHM,Asia
+China,CHN,Asia
+East Timor,TLS,Asia
+Georgia,GEO,Asia
+Hong Kong,HKG,Asia
+India,IND,Asia
+Indonesia,IDN,Asia
+Iran,IRN,Asia
+Iraq,IRQ,Asia
+Israel,ISR,Asia
+Japan,JPN,Asia
+Jordan,JOR,Asia
+Kazakhstan,KAZ,Asia
+Kuwait,KWT,Asia
+Kyrgyzstan,KGZ,Asia
+Laos,LAO,Asia
+Lebanon,LBN,Asia
+Malaysia,MYS,Asia
+Mongolia,MNG,Asia
+Myanmar,MMR,Asia
+Nepal,NPL,Asia
+North Korea,PRK,Asia
+Oman,OMN,Asia
+Pakistan,PAK,Asia
+Palestine,PSE,Asia
+Philippines,PHL,Asia
+Qatar,QAT,Asia
+Saudi Arabia,SAU,Asia
+Singapore,SGP,Asia
+South Korea,KOR,Asia
+Sri Lanka,LKA,Asia
+Syria,SYR,Asia
+Taiwan,TWN,Asia
+Tajikistan,TJK,Asia
+Thailand,THA,Asia
+Turkey,TUR,Asia
+Turkmenistan,TKM,Asia
+United Arab Emirates,ARE,Asia
+Uzbekistan,UZB,Asia
+Vietnam,VNM,Asia
+Yemen,YEM,Asia
+Albania,ALB,Europe
+Austria,AUT,Europe
+Belarus,BLR,Europe
+Belgium,BEL,Europe
+Bosnia and Herzegovina,BIH,Europe
+Bulgaria,BGR,Europe
+Croatia,HRV,Europe
+Cyprus,CYP,Europe
+Czechia,CZE,Europe
+Denmark,DNK,Europe
+Estonia,EST,Europe
+Finland,FIN,Europe
+France,FRA,Europe
+Germany,DEU,Europe
+Greece,GRC,Europe
+Hungary,HUN,Europe
+Ireland,IRL,Europe
+Italy,ITA,Europe
+Kosovo,OWID_KOS,Europe
+Latvia,LVA,Europe
+Lithuania,LTU,Europe
+Moldova,MDA,Europe
+Netherlands,NLD,Europe
+North Macedonia,MKD,Europe
+Norway,NOR,Europe
+Poland,POL,Europe
+Portugal,PRT,Europe
+Romania,ROU,Europe
+Russia,RUS,Europe
+Serbia,SRB,Europe
+Slovakia,SVK,Europe
+Slovenia,SVN,Europe
+Spain,ESP,Europe
+Sweden,SWE,Europe
+Switzerland,CHE,Europe
+Ukraine,UKR,Europe
+United Kingdom,GBR,Europe
+Canada,CAN,North America
+Costa Rica,CRI,North America
+Cuba,CUB,North America
+Dominican Republic,DOM,North America
+El Salvador,SLV,North America
+Guatemala,GTM,North America
+Haiti,HTI,North America
+Honduras,HND,North America
+Jamaica,JAM,North America
+Mexico,MEX,North America
+Nicaragua,NIC,North America
+Panama,PAN,North America
+Puerto Rico,PRI,North America
+Trinidad and Tobago,TTO,North America
+United States,USA,North America
+Australia,AUS,Oceania
+New Zealand,NZL,Oceania
+Papua New Guinea,PNG,Oceania
+Argentina,ARG,South America
+Bolivia,BOL,South America
+Brazil,BRA,South America
+Chile,CHL,South America
+Colombia,COL,South America
+Ecuador,ECU,South America
+Paraguay,PRY,South America
+Peru,PER,South America
+Uruguay,URY,South America
+Venezuela,VEN,South America

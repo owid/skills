@@ -124,7 +124,7 @@ lint: ## Lint the harness: shellcheck for shell, ruff for Python
 	    --external-sources --source-path=evals/lib \
 	    evals/lib/assert.sh evals/skills/*/contract.sh evals/run-contract-tests.sh && \
 	  uvx --quiet ruff check --select E,F,W,UP --line-length 130 \
-	    evals/run-trigger-eval.py && \
+	    evals/run-trigger-eval.py prompts/src/*.py && \
 	  echo "  ok  shell and python lint clean"; \
 	else echo "  ~ uv not found - skipping lint"; fi
 
