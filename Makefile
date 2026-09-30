@@ -5,7 +5,7 @@
 
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help validate lint test triggers behaviour install zip clean
+.PHONY: help validate lint test triggers behaviour install zip zip-openai clean
 
 # The Agent Skills spec's own reference validator. Pinned to 0.1.x because
 # skills-ref is pre-1.0, where a minor bump may change behaviour. Note the
@@ -25,6 +25,12 @@ PLUGIN_SCHEMA := https://agent-plugins.org/schemas/1.0.0/plugin.schema.json
 # Where `make zip` writes the archive the Claude app uploads. Downloads by
 # default, because that dialog is a file picker.
 ZIP ?= $(HOME)/Downloads/owid-plugin.zip
+
+# `make zip-openai` writes the upload for OpenAI's Plugins Directory. The portal
+# wants a version the repo does not carry; set a new one when you resubmit.
+OPENAI_ZIP ?= $(HOME)/Downloads/owid-openai-plugin.zip
+OPENAI_VERSION ?= 1.0.0
+OPENAI_SUBTITLE ?= Research & data for progress
 
 help: ## List the available targets
 	@grep -hE '^[a-z][a-z-]*:.*## ' $(MAKEFILE_LIST) \
@@ -219,6 +225,26 @@ zip: ## Package the plugin as an archive the Claude app can upload (ZIP=<path>)
 	  echo "  ok  $$out" && \
 	  echo "      Customize > Plugins > + > Upload a plugin. Turn the installed owid" && \
 	  echo "      plugin off first, or both answer the same prompts."
+
+zip-openai: ## Package the plugin for OpenAI's Plugins Directory portal (OPENAI_ZIP=<path>)
+	@# The portal takes the Agent Plugins layout: plugin.json at the root, skills/,
+	@# and the images the manifest names. It differs from what the repo serves in
+	@# two ways, patched into the copy only: it requires a version, which the repo
+	@# leaves out on purpose (see AGENTS.md, Versioning), and it caps the subtitle
+	@# at 30 characters, which the manifest's shortDescription far exceeds.
+	@case "$(OPENAI_ZIP)" in /*) out="$(OPENAI_ZIP)";; *) out="$$PWD/$(OPENAI_ZIP)";; esac; \
+	  stage=$$(mktemp -d) && \
+	  mkdir -p "$$(dirname "$$out")" && \
+	  cp -R skills assets "$$stage/" && \
+	  jq --arg v "$(OPENAI_VERSION)" --arg s "$(OPENAI_SUBTITLE)" \
+	    '.version = $$v | .extensions["com.openai"].interface.shortDescription = $$s' \
+	    plugin.json > "$$stage/plugin.json" && \
+	  rm -f "$$out" && \
+	  (cd "$$stage" && zip -qr "$$out" . -x '*.DS_Store') && \
+	  rm -rf "$$stage" && \
+	  [ -f "$$out" ] || { echo "  x zip produced nothing at $$out"; exit 1; }; \
+	  echo "  ok  $$out (version $(OPENAI_VERSION))" && \
+	  echo "      platform.openai.com/plugins > Upload new or existing plugin."
 
 clean: ## Delete eval run outputs (evals/results/)
 	@rm -rf evals/results

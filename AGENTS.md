@@ -89,10 +89,13 @@ differently:
 - **OpenAI's Plugins Directory** (ChatGPT and Codex) is a snapshot. Each update
   is a new upload through the portal at platform.openai.com/plugins, with release
   notes and another review; nothing in this repo triggers it. Resubmit when the
-  skill changes meaningfully, not after every merge. The skill upload is
-  `skills/owid/` zipped with `owid/` at the top, and the portal requires
-  `interface.short_description` in its `agents/openai.yaml`, which `make
-  validate` checks.
+  skill changes meaningfully, not after every merge. `make
+  zip-openai` builds the upload: the Agent Plugins layout, with the `version`
+  and 30-character subtitle the portal requires added to the copy only, so the
+  repo stays versionless. Submitting for the OWID organization needs the Apps
+  Management Write role. The portal also requires
+  `interface.short_description` in the skill's `agents/openai.yaml`, which
+  `make validate` checks.
 
 ## Testing
 
