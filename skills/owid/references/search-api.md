@@ -18,6 +18,12 @@ the user's: "death rate from malaria" rather than "people who died from malaria"
 always on the first page; if the top hits are wrong, change a term rather than
 paging deeper.
 
+Put only the indicator in `q`. Every word has to match something in a chart, so a word no chart is about narrows the results to the few that happen to contain it, and the response does not say so: `democracy` finds the democracy indices, while `democracy statistics` returns charts on schooling and earnings, and `life expectancy 2020` returns a handful of hits out of more than a hundred. Neither sets `closestMatches`, and a padded query can still report hundreds of hits with the wrong charts on top. So:
+
+- **Leave out years.** Charts cover a range of years and are not described by them; choose the years on the data endpoint with `time=`.
+- **Leave out words like data, statistics, metrics, indicators, rates and trends.** They describe every chart and name none.
+- **Put countries in `countries=`, not in `q`.** A country name in `q` usually does no harm, but `countries=` actually filters, and it does not touch the ranking.
+
 ## Parameters
 
 | Parameter | Applies to | Values | Default | Notes |
