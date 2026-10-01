@@ -30,7 +30,6 @@ ZIP ?= $(HOME)/Downloads/owid-plugin.zip
 # wants a version the repo does not carry; set a new one when you resubmit.
 OPENAI_ZIP ?= $(HOME)/Downloads/owid-openai-plugin.zip
 OPENAI_VERSION ?= 1.0.0
-OPENAI_SUBTITLE ?= Research & data for progress
 
 help: ## List the available targets
 	@grep -hE '^[a-z][a-z-]*:.*## ' $(MAKEFILE_LIST) \
@@ -228,16 +227,15 @@ zip: ## Package the plugin as an archive the Claude app can upload (ZIP=<path>)
 
 zip-openai: ## Package the plugin for OpenAI's Plugins Directory portal (OPENAI_ZIP=<path>)
 	@# The portal takes the Agent Plugins layout: plugin.json at the root, skills/,
-	@# and the images the manifest names. It differs from what the repo serves in
-	@# two ways, patched into the copy only: it requires a version, which the repo
-	@# leaves out on purpose (see AGENTS.md, Versioning), and it caps the subtitle
-	@# at 30 characters, which the manifest's shortDescription far exceeds.
+	@# and the images the manifest names. It also requires a version, which
+	@# the repo leaves out on purpose (see AGENTS.md, Versioning), so only the copy
+	@# gets one.
 	@case "$(OPENAI_ZIP)" in /*) out="$(OPENAI_ZIP)";; *) out="$$PWD/$(OPENAI_ZIP)";; esac; \
 	  stage=$$(mktemp -d) && \
 	  mkdir -p "$$(dirname "$$out")" && \
 	  cp -R skills assets "$$stage/" && \
-	  jq --arg v "$(OPENAI_VERSION)" --arg s "$(OPENAI_SUBTITLE)" \
-	    '.version = $$v | .extensions["com.openai"].interface.shortDescription = $$s' \
+	  jq --arg v "$(OPENAI_VERSION)" \
+	    '.version = $$v' \
 	    plugin.json > "$$stage/plugin.json" && \
 	  rm -f "$$out" && \
 	  (cd "$$stage" && zip -qr "$$out" . -x '*.DS_Store') && \

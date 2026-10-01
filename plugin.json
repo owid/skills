@@ -30,7 +30,7 @@
         "com.openai": {
             "interface": {
                 "displayName": "Our World in Data",
-                "shortDescription": "Agent skills for working with Our World in Data: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. No API key.",
+                "shortDescription": "Research & data for progress",
                 "developerName": "Our World in Data",
                 "category": "Education & Research",
                 "capabilities": [
@@ -45,7 +45,10 @@
                 ],
                 "brandColor": "#002147",
                 "composerIcon": "./assets/icon.png",
-                "logo": "./assets/logo.png"
+                "logo": "./assets/logo.png",
+                "longDescription": "Ask about the state of the world and get answers grounded in Our World in Data's published research: the numbers come straight from the data behind its charts, the organisation that produced them is named, and you get a link to the chart to check it yourself.\n\nOur World in Data covers poverty, health, population, energy, climate, food, education, democracy, war and more, for most countries in the world and often over decades or centuries.\n\nUse it to:\n- find the right chart or article on a topic\n- get the actual figures behind a chart, for the countries and years you need\n- check a number or a claim against the data\n- understand what a chart measures, and where its data comes from\n- embed a chart in a web page, or get an image of it for a slide\n\nIt only uses what Our World in Data has published, from public pages on ourworldindata.org, so it can't answer questions its data doesn't cover. No account needed. Most of the data comes from other organisations, such as the UN and the World Bank; the plugin credits them, and their licences apply when you republish.",
+                "supportURL": "https://github.com/owid/skills/issues",
+                "termsOfServiceURL": "https://github.com/owid/skills/blob/main/LICENSE"
             }
         }
     }
