@@ -102,6 +102,13 @@ validate: ## Check spec conformance, both plugin manifests and marketplace regis
 	  grep -qE '^  short_description: *"?[^" ]' "$$f" || { echo "  x $$f has no interface.short_description"; fail=1; }; \
 	done; \
 	if [ $$fail -eq 0 ]; then echo "  ok  every openai.yaml has a short_description"; else exit 1; fi
+	@# Claude's directory and OpenAI's list the same plugin from different
+	@# manifests, so each copy of the description and links has to match.
+	@d=$$( { jq -r '.description' .claude-plugin/plugin.json plugin.json; \
+	  jq -r '.metadata.description, .plugins[].description' .claude-plugin/marketplace.json; } | sort -u | wc -l); \
+	l=$$(jq -c '[.homepage, .author, .license, .keywords]' .claude-plugin/plugin.json plugin.json | sort -u | wc -l); \
+	if [ $$d -eq 1 ] && [ $$l -eq 1 ]; then echo "  ok  the Claude and OpenAI manifests describe the plugin alike"; \
+	else echo "  x the manifests disagree: compare description, homepage, author, license, keywords"; exit 1; fi
 	@# Eval JSON is hand-authored and hand-reviewed, so it must stay readable. A
 	@# python json.dumps without ensure_ascii=False silently rewrites every em dash
 	@# and accent as a \uXXXX escape, which is unreviewable prose.
