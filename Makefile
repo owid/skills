@@ -5,7 +5,7 @@
 
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help validate lint test triggers behaviour install zip clean
+.PHONY: help validate lint test triggers behaviour install zip zip-openai clean
 
 # The Agent Skills spec's own reference validator. Pinned to 0.1.x because
 # skills-ref is pre-1.0, where a minor bump may change behaviour. Note the
@@ -25,6 +25,11 @@ PLUGIN_SCHEMA := https://agent-plugins.org/schemas/1.0.0/plugin.schema.json
 # Where `make zip` writes the archive the Claude app uploads. Downloads by
 # default, because that dialog is a file picker.
 ZIP ?= $(HOME)/Downloads/owid-plugin.zip
+
+# `make zip-openai` writes the upload for OpenAI's Plugins Directory. The portal
+# wants a version the repo does not carry; set a new one when you resubmit.
+OPENAI_ZIP ?= $(HOME)/Downloads/owid-openai-plugin.zip
+OPENAI_VERSION ?= 1.0.0
 
 help: ## List the available targets
 	@grep -hE '^[a-z][a-z-]*:.*## ' $(MAKEFILE_LIST) \
@@ -97,6 +102,13 @@ validate: ## Check spec conformance, both plugin manifests and marketplace regis
 	  grep -qE '^  short_description: *"?[^" ]' "$$f" || { echo "  x $$f has no interface.short_description"; fail=1; }; \
 	done; \
 	if [ $$fail -eq 0 ]; then echo "  ok  every openai.yaml has a short_description"; else exit 1; fi
+	@# Claude's directory and OpenAI's list the same plugin from different
+	@# manifests, so each copy of the description and links has to match.
+	@d=$$( { jq -r '.description' .claude-plugin/plugin.json plugin.json; \
+	  jq -r '.metadata.description, .plugins[].description' .claude-plugin/marketplace.json; } | sort -u | wc -l); \
+	l=$$(jq -c '[.homepage, .author, .license, .keywords]' .claude-plugin/plugin.json plugin.json | sort -u | wc -l); \
+	if [ $$d -eq 1 ] && [ $$l -eq 1 ]; then echo "  ok  the Claude and OpenAI manifests describe the plugin alike"; \
+	else echo "  x the manifests disagree: compare description, homepage, author, license, keywords"; exit 1; fi
 	@# Eval JSON is hand-authored and hand-reviewed, so it must stay readable. A
 	@# python json.dumps without ensure_ascii=False silently rewrites every em dash
 	@# and accent as a \uXXXX escape, which is unreviewable prose.
@@ -219,6 +231,25 @@ zip: ## Package the plugin as an archive the Claude app can upload (ZIP=<path>)
 	  echo "  ok  $$out" && \
 	  echo "      Customize > Plugins > + > Upload a plugin. Turn the installed owid" && \
 	  echo "      plugin off first, or both answer the same prompts."
+
+zip-openai: ## Package the plugin for OpenAI's Plugins Directory portal (OPENAI_ZIP=<path>)
+	@# The portal takes the Agent Plugins layout: plugin.json at the root, skills/,
+	@# and the images the manifest names. It also requires a version, which
+	@# the repo leaves out on purpose (see AGENTS.md, Versioning), so only the copy
+	@# gets one.
+	@case "$(OPENAI_ZIP)" in /*) out="$(OPENAI_ZIP)";; *) out="$$PWD/$(OPENAI_ZIP)";; esac; \
+	  stage=$$(mktemp -d) && \
+	  mkdir -p "$$(dirname "$$out")" && \
+	  cp -R skills assets "$$stage/" && \
+	  jq --arg v "$(OPENAI_VERSION)" \
+	    '.version = $$v' \
+	    plugin.json > "$$stage/plugin.json" && \
+	  rm -f "$$out" && \
+	  (cd "$$stage" && zip -qr "$$out" . -x '*.DS_Store') && \
+	  rm -rf "$$stage" && \
+	  [ -f "$$out" ] || { echo "  x zip produced nothing at $$out"; exit 1; }; \
+	  echo "  ok  $$out (version $(OPENAI_VERSION))" && \
+	  echo "      platform.openai.com/plugins > Upload new or existing plugin."
 
 clean: ## Delete eval run outputs (evals/results/)
 	@rm -rf evals/results
