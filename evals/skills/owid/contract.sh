@@ -241,6 +241,39 @@ else
     skip "map-default chart checks" "$MDIM returned HTTP $code; pick another map-default chart"
 fi
 
+section "Chart data API: the server-filtered request for agents that cannot run code"
+# data-api.md gives this exact URL as the one to read when the agent can only
+# read a response, so it has to come back as the few rows it promises, and the
+# same request without tab=chart has to show the trap it warns about.
+GDP="$GRAPHER/gdp-per-capita-worldbank.csv"
+GDP_PARAMS="csvType=filtered&useColumnShortNames=true&tab=chart&country=KEN&time=2020..2024"
+doc_contains "data-api.md gives the server-filtered request" "$DATA_REF" "gdp-per-capita-worldbank\.csv\?$GDP_PARAMS"
+if fetch "$GDP?$GDP_PARAMS" "$WORK/gdp-ken.csv"; then
+    csv_column_set "the documented request returns Kenya only" "$WORK/gdp-ken.csv" code "KEN"
+    csv_column_set "the documented request returns 2020 to 2024 only" "$WORK/gdp-ken.csv" year "2020 2021 2022 2023 2024"
+fi
+if fetch "$GDP?${GDP_PARAMS/&tab=chart/}" "$WORK/gdp-notab.csv"; then
+    ok "without tab=chart the same request returns every country, as the doc says" \
+        test "$(csv_column "$WORK/gdp-notab.csv" code | sort -u | wc -l | tr -d ' ')" -gt 100
+fi
+
+section "Behaviour evals: pinned figures still match the data"
+# answers-with-latest-year grades the reported figure with a pinned regex.
+# Checking it against the live CSV makes a data revision fail here, loudly,
+# instead of quietly failing every behaviour run.
+SOM_URL="$GRAPHER/number-of-child-deaths-igme.csv?csvType=filtered&useColumnShortNames=true&tab=chart&country=SOM&time=2024"
+if fetch "$SOM_URL" "$WORK/child-som.csv"; then
+    som_value=$(tail -n 1 "$WORK/child-som.csv" | awk -F, '{print $NF}')
+    value_pattern=$(sed -n "s/^pattern: '\(.*\)'$/\1/p" "$EVAL_DIR/answers-with-latest-year/graders/reports-the-value.md")
+    note "Somalia under-five deaths, 2024: $som_value"
+    if [[ -n "$value_pattern" ]] && printf '%s' "$som_value" | grep -Eq "^($value_pattern)$"; then
+        _pass "the reports-the-value grader matches the live figure"
+    else
+        _fail "the reports-the-value grader matches the live figure" \
+            "live value is $som_value; update the pattern in answers-with-latest-year/graders/reports-the-value.md (now '$value_pattern')"
+    fi
+fi
+
 section "Chart data API: daily charts, projections, explorers"
 if fetch "$GRAPHER/daily-cases-covid-region.csv?csvType=filtered&time=2021-01-01..2021-01-31" "$WORK/daily.csv"; then
     csv_has_columns "the third column is Day rather than Year" "$WORK/daily.csv" day
