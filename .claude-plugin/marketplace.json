@@ -1,7 +1,7 @@
 {
     "name": "owid-skills",
     "metadata": {
-        "description": "Ask about the state of the world and get answers grounded in Our World in Data's published research: the numbers come straight from the data behind its charts, the organisation that produced them is named, and you get a link to the chart to check it yourself."
+        "description": "Agent skills for working with Our World in Data: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. No API key."
     },
     "owner": {
         "name": "Our World in Data",
@@ -10,7 +10,7 @@
     "plugins": [
         {
             "name": "owid",
-            "description": "Ask about the state of the world and get answers grounded in Our World in Data's published research: the numbers come straight from the data behind its charts, the organisation that produced them is named, and you get a link to the chart to check it yourself.",
+            "description": "Agent skills for working with Our World in Data: search published charts, explorers and articles, fetch the data and metadata behind them, embed charts, and cite the original sources. No API key.",
             "source": "./",
             "license": "CC-BY-4.0",
             "skills": [
