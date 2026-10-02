@@ -164,15 +164,15 @@ Start from what the user gave you:
 When you do filter, `?csvType=filtered&useColumnShortNames=true` plus explicit
 `country=` and `time=` is the base to start from.
 
-**If you can only read the response, not run code over it, do not ask for the whole CSV.** A fetch that hands you the file as text, or a summary of it, misreads a table of thousands of rows without saying so: asked for one country's figure for one year, agents reading a full CSV that way have reported anything from 58,768 to 105,831 for what is a single number in the file. Filter on the server, even when the user asked for no particular view, and read the few rows that come back:
+**If you can only read the response, not run code over it, do not fetch the whole CSV.** Read that way, a table of thousands of rows gets misread without warning; one figure has come back as anything from 58,768 to 105,831. Filter on the server instead, even when the user asked for no particular view:
 
 ```
 https://ourworldindata.org/grapher/gdp-per-capita-worldbank.csv?csvType=filtered&useColumnShortNames=true&tab=chart&country=KEN&time=2020..2024
 ```
 
-- **Add `tab=chart`.** This chart opens on its map, and a map view ignores `country=`: without `tab=chart` the same request returns every country. With it you get Kenya's five rows, and nothing else.
-- **Check that only the entities and years you asked for came back.** If every country did, the chart has no chart tab (see [Silent failures](#silent-failures)). That is still one row per country for a single year, short enough to find yours in; ask for each year you need separately.
-- **Read the row you report exactly**, digit for digit, rather than from a summary of the table.
+- **Add `tab=chart`.** This chart opens on its map, which ignores `country=` and returns every country.
+- **Check that only the rows you asked for came back.** If every country did, the chart has no chart tab and returns one year per request, so ask for each year separately.
+- **Report the row as it reads**, not from a summary.
 
 ### Charts that will not give you their data
 
@@ -377,8 +377,7 @@ Each of these returns a 200 and a plausible-looking file. Nothing tells you that
 what came back is not what you asked for.
 
 - **If you need named countries over time, use `csvType=full` and filter the rows
-  yourself** — when you can run code over the file. When you can only read it,
-  filter on the server as in [How much data to ask for](#how-much-data-to-ask-for).
+  yourself** — if you can run code; otherwise see [How much data to ask for](#how-much-data-to-ask-for).
   `filtered` is not a filter: it copies whatever view the chart opens
   in, and any view that is not a line or bar-over-time throws `country=` away and
   collapses you to a single time point. Maps do it, and so do scatter, Marimekko
