@@ -99,6 +99,36 @@ if fetch "$API?q=zzzzqqqx+not+a+real+topic&hitsPerPage=5" "$EMPTY"; then
     jq_eq "a relaxed response is a single page" "$EMPTY" '.nbPages' 1
 fi
 
+section "Search API: words that are not the indicator narrow the search silently"
+# A year or a filler word has to match too, so it shrinks the result set to the
+# few charts that happen to contain it, without setting closestMatches. Compare
+# hit counts against the bare query rather than pinning numbers, which drift.
+CLEAN="$WORK/search-clean.json"
+YEAR="$WORK/search-year.json"
+FILLER="$WORK/search-filler.json"
+if fetch "$API?q=life+expectancy&hitsPerPage=5" "$CLEAN" &&
+    fetch "$API?q=life+expectancy+2020&hitsPerPage=5" "$YEAR"; then
+    clean_hits=$(jq -r '.nbHits' "$CLEAN")
+    year_hits=$(jq -r '.nbHits' "$YEAR")
+    note "life expectancy: $clean_hits hits; life expectancy 2020: $year_hits hits"
+    if [[ "$clean_hits" =~ ^[0-9]+$ && "$year_hits" =~ ^[0-9]+$ ]] && ((year_hits * 5 < clean_hits)); then
+        _pass "a year in q cuts the hits to under a fifth"
+    else
+        _fail "a year in q cuts the hits to under a fifth" "$year_hits vs $clean_hits"
+    fi
+    jq_true "the year-padded response is not flagged with closestMatches" "$YEAR" '.closestMatches != true'
+fi
+BARE="$WORK/search-bare.json"
+if fetch "$API?q=democracy&hitsPerPage=5" "$BARE" &&
+    fetch "$API?q=democracy+statistics&hitsPerPage=5" "$FILLER"; then
+    bare_top=$(jq -r '.results[0].url' "$BARE")
+    note "democracy: $(jq -r '.nbHits' "$BARE") hits, top $bare_top; democracy statistics: $(jq -r '.nbHits' "$FILLER") hits"
+    none_match "a filler word pushes the bare query's top chart out of the top five" "$FILLER" \
+        '.results[]' ".url == \"$bare_top\""
+    jq_true "the filler-padded response is not flagged with closestMatches" "$FILLER" '.closestMatches != true'
+    note "democracy statistics top hit: $(jq -r '.results[0].title' "$FILLER")"
+fi
+
 section "Search API: page search"
 PAGES="$WORK/search-pages.json"
 if fetch "$API?q=malaria&type=pages&hitsPerPage=20" "$PAGES"; then
@@ -147,6 +177,8 @@ doc_contains "the reference warns that resultType is not a parameter" "$SEARCH_R
 doc_contains "the search reference points at /api/search" "$SEARCH_REF" 'ourworldindata\.org/api/search'
 doc_contains "the search reference documents the closestMatches fallback" "$SEARCH_REF" 'closestMatches'
 doc_contains "the search reference documents the warnings field" "$SEARCH_REF" '`warnings`'
+doc_contains "the search reference says to keep years out of q" "$SEARCH_REF" 'Leave out years'
+doc_contains "the search reference says to keep filler words out of q" "$SEARCH_REF" 'Leave out words like data'
 
 # ---------------------------------------------------------------------------
 section "Chart data API: metadata"
