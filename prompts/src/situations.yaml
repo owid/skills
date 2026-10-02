@@ -1,0 +1,179 @@
+# Situations: the concrete need a persona is in. Tool-agnostic — they say
+# nothing about which system should answer. `intents`, `freshness` and
+# `geography` list the values that make sense for the situation; the grid
+# script only combines values listed here.
+#
+# intents:   find-chart | number | compare-ranking | explain-trend | get-data |
+#            analyse-in-code | join-own-data | cite-caveat | out-of-scope
+# freshness: fixed-year | latest | over-time | false-premise
+# geography: country | comparison | region | world
+
+- id: J1
+  persona: J
+  situation: Checking a statistic in a draft article before it is published.
+  intents: [number, compare-ranking, cite-caveat]
+  freshness: [latest, fixed-year, false-premise]
+  geography: [country, comparison, world]
+- id: J2
+  persona: J
+  situation: Looking for a chart to link or embed in an article or newsletter.
+  intents: [find-chart]
+  freshness: [latest, over-time]
+  geography: [country, comparison, region, world]
+- id: J3
+  persona: J
+  situation: Remaking a published chart in their outlet's house style, so needs the underlying data, the source and the licence.
+  intents: [get-data, cite-caveat]
+  freshness: [over-time, latest]
+  geography: [comparison, region, world]
+- id: J4
+  persona: J
+  situation: Writing background for a news story and needs context on how something has changed in a place.
+  intents: [explain-trend, number]
+  freshness: [over-time, false-premise]
+  geography: [country, region]
+- id: J5
+  persona: J
+  situation: An editor asked for a caveat or methodology note about a figure they are using.
+  intents: [cite-caveat]
+  freshness: [latest, fixed-year]
+  geography: [country, world]
+- id: J6
+  persona: J
+  situation: Looking for a story angle — how a country compares with its neighbours or peers.
+  intents: [compare-ranking, find-chart]
+  freshness: [latest, over-time]
+  geography: [comparison, region]
+
+- id: E1
+  persona: E
+  situation: A teacher preparing a lesson needs a map or chart for a slide.
+  intents: [find-chart]
+  freshness: [latest, over-time]
+  geography: [world, region, country]
+- id: E2
+  persona: E
+  situation: A student writing an essay needs a number they can quote, with a source their teacher accepts.
+  intents: [number, cite-caveat]
+  freshness: [latest, fixed-year]
+  geography: [country, world]
+- id: E3
+  persona: E
+  situation: Someone heard or read a claim and wonders whether it is true.
+  intents: [number, explain-trend, compare-ranking]
+  freshness: [false-premise, latest, over-time]
+  geography: [country, comparison, world]
+- id: E4
+  persona: E
+  situation: A teacher designing a classroom activity or quiz from real data.
+  intents: [get-data, compare-ranking]
+  freshness: [latest, over-time]
+  geography: [world, region]
+- id: E5
+  persona: E
+  situation: Homework asking how something changed over time in a particular country.
+  intents: [explain-trend, find-chart]
+  freshness: [over-time]
+  geography: [country, comparison]
+- id: E6
+  persona: E
+  situation: A curious reader asking whether the world is getting better or worse at something.
+  intents: [explain-trend, find-chart]
+  freshness: [over-time, false-premise]
+  geography: [world, region]
+
+- id: A1
+  persona: A
+  situation: Writing a policy brief that compares one country with a peer group.
+  intents: [compare-ranking, get-data]
+  freshness: [latest, over-time]
+  geography: [comparison, region]
+- id: A2
+  persona: A
+  situation: Building a country-year panel dataset of several indicators for a statistical analysis.
+  intents: [get-data, analyse-in-code]
+  freshness: [over-time]
+  geography: [world, region]
+- id: A3
+  persona: A
+  situation: Needs a breakdown the headline figures do not show — by sex, age group, income group, or a projection scenario.
+  intents: [get-data, analyse-in-code]
+  freshness: [over-time, latest]
+  geography: [country, comparison, world]
+- id: A4
+  persona: A
+  situation: A developer building a dashboard or app that pulls the data programmatically and needs to keep it updated.
+  intents: [get-data, analyse-in-code]
+  freshness: [latest, over-time]
+  geography: [world, comparison]
+- id: A5
+  persona: A
+  situation: Two sources give different numbers for the same thing and they need to know which definition or source each uses.
+  intents: [cite-caveat, number]
+  freshness: [fixed-year, latest]
+  geography: [country, world]
+- id: A6
+  persona: A
+  situation: Reproducing the numbers behind a published chart in their own notebook or script.
+  intents: [analyse-in-code, get-data]
+  freshness: [over-time, fixed-year]
+  geography: [comparison, world]
+
+- id: D1
+  persona: D
+  situation: An NGO has programme results by country and wants them per person, or per affected person.
+  intents: [join-own-data]
+  freshness: [fixed-year, latest]
+  geography: [comparison, region]
+- id: D2
+  persona: D
+  situation: Has survey scores by country and wants to plot them against income or another country-level indicator.
+  intents: [join-own-data, analyse-in-code]
+  freshness: [fixed-year, latest]
+  geography: [world, region]
+- id: D3
+  persona: D
+  situation: A company has sales or market data by country and wants to compare it with population or income.
+  intents: [join-own-data]
+  freshness: [latest, over-time]
+  geography: [comparison, region, world]
+- id: D4
+  persona: D
+  situation: Has a spreadsheet with messy country names, codes and regional totals and needs to match it to standard country data.
+  intents: [join-own-data]
+  freshness: [fixed-year, latest]
+  geography: [world, region]
+- id: D5
+  persona: D
+  situation: Writing a grant or annual report and wants to show their country's results against the global picture.
+  intents: [join-own-data, compare-ranking]
+  freshness: [latest, over-time]
+  geography: [country, world]
+- id: D6
+  persona: D
+  situation: Has their own time series for one country and wants to see whether it follows the national trend.
+  intents: [join-own-data, explain-trend]
+  freshness: [over-time]
+  geography: [country]
+
+# Controls: real needs that OWID data should not answer. Two prompts each.
+- id: X1
+  persona: X
+  situation: Wants live or very recent market data (stock prices, exchange rates, today's fuel price).
+  intents: [out-of-scope]
+- id: X2
+  persona: X
+  situation: Needs help with statistics as a method (how to compute a confidence interval, which test to use) — no real-world data involved.
+  intents: [out-of-scope]
+- id: X3
+  persona: X
+  situation: Needs data for one city, neighbourhood or company rather than countries.
+  intents: [out-of-scope]
+- id: X4
+  persona: X
+  situation: Wants real-time conditions right now (today's air quality, this week's case counts, current weather).
+  intents: [out-of-scope]
+- id: X5
+  persona: X
+  situation: Wants analysis of their own personal data with no country-level comparison (their budget, fitness tracker, grades).
+  intents: [out-of-scope]
