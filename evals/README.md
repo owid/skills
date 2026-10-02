@@ -321,6 +321,7 @@ skill exists to guarantee:
 |---|---|---|
 | `metadata-fetched` | The metadata (or readme) was fetched before any fact about the data was stated | `tool_used` on a `.metadata.json` or `.readme.md` URL |
 | `names-the-producer` | The original producer or dataset is named, not only "Our World in Data" | `llm` |
+| `reports-the-value` | The number in the reply is the one in the data, digit for digit | `regex` on the reply, on cases that ask for one figure. A judge cannot tell 78,671 from 78,271 without the data, and a fetch that summarises a large CSV produces exactly that kind of near miss. `contract.sh` checks the pattern against the live CSV, so a data revision fails there rather than as a wrong grade |
 | `respects-the-licence` | For non-redistributable data, the reply says the numbers must come from the producer and does not invent them | `llm`, on the `licence-non-redistributable` case |
 | `links-owid-resource` | The reply links to the OWID chart, data page or article the content came from | `regex` on the reply |
 | `no-unrequested-png` | No chart image was downloaded unless the user asked for one | `tool_used` with `max: 0` on `.png`, except where an image is the deliverable |

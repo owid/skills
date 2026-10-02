@@ -164,6 +164,16 @@ Start from what the user gave you:
 When you do filter, `?csvType=filtered&useColumnShortNames=true` plus explicit
 `country=` and `time=` is the base to start from.
 
+**If you can only read the response, not run code over it, do not fetch the whole CSV.** Read that way, a table of thousands of rows gets misread without warning; one figure has come back as anything from 58,768 to 105,831. Filter on the server instead, even when the user asked for no particular view:
+
+```
+https://ourworldindata.org/grapher/gdp-per-capita-worldbank.csv?csvType=filtered&useColumnShortNames=true&tab=chart&country=KEN&time=2020..2024
+```
+
+- **Add `tab=chart`.** This chart opens on its map, which ignores `country=` and returns every country.
+- **Check that only the rows you asked for came back.** If every country did, the chart has no chart tab and returns one year per request, so ask for each year separately.
+- **Report the row as it reads**, not from a summary.
+
 ### Charts that will not give you their data
 
 Where the producer forbids redistribution, `.csv` and `.zip` return **403** with
@@ -367,7 +377,8 @@ Each of these returns a 200 and a plausible-looking file. Nothing tells you that
 what came back is not what you asked for.
 
 - **If you need named countries over time, use `csvType=full` and filter the rows
-  yourself.** `filtered` is not a filter: it copies whatever view the chart opens
+  yourself** — if you can run code; otherwise see [How much data to ask for](#how-much-data-to-ask-for).
+  `filtered` is not a filter: it copies whatever view the chart opens
   in, and any view that is not a line or bar-over-time throws `country=` away and
   collapses you to a single time point. Maps do it, and so do scatter, Marimekko
   and discrete-bar views. `tab=chart` recovers the line view on some of them and does
