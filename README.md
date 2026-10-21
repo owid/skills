@@ -49,7 +49,7 @@ What each app needs:
 |---|---|
 | Claude app (paid plan) | In the plugin settings, add a marketplace from `owid/skills`, then install **Our World in Data** |
 | ChatGPT app | In the plugin settings, add a marketplace from `owid/skills`, then install **Our World in Data** |
-| Claude Code | `/plugin marketplace add owid/skills`, then `/plugin install owid@owid-skills` |
+| Claude Code | `/plugin marketplace add owid/skills`, then `/plugin install owid@owid-skills`, then turn on auto-update for `owid-skills` under **Marketplaces** in `/plugin` |
 | Codex | `codex plugin marketplace add owid/skills`, then `codex plugin add owid@owid-skills` |
 | Anything else | `npx skills add owid/skills`, or copy the [`skills/owid/`](skills/owid/) folder into your agent's skills directory |
 
