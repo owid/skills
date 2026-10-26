@@ -1,9 +1,9 @@
 [
   {
     "id": "J1-L0",
-    "prompt": "is it true depression rates in honduras have gone up since 2010? need the prevalence of depressive disorders",
+    "prompt": "is it true depression rates in honduras have gone down since 2010? need the prevalence of depressive disorders",
     "attachment": null,
-    "need": "Prevalence of depressive disorders (share of population) in Honduras over 2010 to the latest year, to check the premise that it rose; state whether it actually did.",
+    "need": "Prevalence of depressive disorders (share of population) in Honduras from 2010 to the latest year, to check the premise that it fell. It rose, from about 2.5% in 2010 to 3.5% in 2023 (IHME).",
     "persona": {
       "id": "J",
       "name": "Journalist / communicator"
@@ -114,9 +114,9 @@
   },
   {
     "id": "J1-L3",
-    "prompt": "Dear assistant, I am drafting a piece that contrasts the Palestinian territories and Bangladesh, and my draft says that Palestinians produce and mishandle far more household waste per person than Bangladeshis do. Before I publish, can you tell me whether that is supported by the data? I am also unsure how much of the waste in each place is actually collected and managed properly, since our editor says that is the real story here, and I need a source I can cite. I can share the paragraph if useful.",
+    "prompt": "Dear assistant, I am drafting a piece that contrasts the Palestinian territories and Bangladesh, and my draft says that far less of the household waste in the Palestinian territories gets collected than in Bangladesh. Before I publish, can you tell me whether that is supported by the data? I am also unsure how much of the waste in each place is actually managed properly once it is collected, since our editor says that is the real story here, and I need a source I can cite. I can share the paragraph if useful.",
     "attachment": null,
-    "need": "Municipal solid waste generated per person and the share that is collected/properly managed (vs dumped or burned) in Palestine and Bangladesh, latest year, with source; check the premise that Palestinians generate much more waste than Bangladeshis.",
+    "need": "Share of municipal solid waste that is collected, and how it is managed (open dumps, open burning, landfills), in the Palestinian territories and Bangladesh, latest year, with source; check the premise that collection is worse in the Palestinian territories. It is the reverse: about 92% is collected in Palestine against 52% in Bangladesh, and almost half of Bangladesh's waste is burned in the open (World Bank, 2020).",
     "persona": {
       "id": "J",
       "name": "Journalist / communicator"
@@ -486,7 +486,7 @@
     "id": "J4-L1",
     "prompt": "writing about women's earnings in algeria. my notes say women there earn about the same as men now - narrowing to almost equal. whats the actual gap?",
     "attachment": null,
-    "need": "Gender pay gap or women's earnings relative to men's in Algeria, latest available and over time; the premise that the gap has nearly closed should be checked (likely not true, and data may be sparse).",
+    "need": "Gender pay gap or women's earnings relative to men's in Algeria, latest available and over time; check the premise that the gap has nearly closed. It hasn't: OWID has no wage-gap series for Algeria, but women's estimated income (GNI per capita) was about a fifth of men's in 2023 (UNDP).",
     "persona": {
       "id": "J",
       "name": "Journalist / communicator"
@@ -524,7 +524,7 @@
     "id": "J4-L2",
     "prompt": "background for a story: hiv infections in north america have been climbing every year since the 90s right? need new infection numbers, us and canada. spelling of the thing - incidance",
     "attachment": null,
-    "need": "HIV new infection (incidence) numbers for the US and Canada from the 1990s to now; premise of steady rise should be checked (they have generally fallen or plateaued).",
+    "need": "HIV new infections (incidence) for the US and Canada from the 1990s to now; check the premise that they rose every year. They didn't: US new infections were lower in 2023 (about 58,000) than in 1990 (about 69,000) in IHME's estimates, and Canada's fell from about 2,600 in 1990 to 1,900 in 2022 in UNAIDS' estimates, though sources differ on Canada's recent trend.",
     "persona": {
       "id": "J",
       "name": "Journalist / communicator"
@@ -1185,7 +1185,7 @@
     "id": "E3-L0",
     "prompt": "someone told me pm2.5 concentrations in kosovo keep going up every year, is that what owid shows?",
     "attachment": null,
-    "need": "Annual mean PM2.5 concentration in Kosovo over time. The premise that it rises every year should be checked against the data; availability for Kosovo may be limited.",
+    "need": "Annual mean PM2.5 concentration in Kosovo over time; check the premise that it rises every year. It doesn't: population-weighted exposure fell from about 24.5 µg/m³ in 2010 to 15.9 µg/m³ in 2024.",
     "persona": {
       "id": "E",
       "name": "Educator / student"
@@ -1299,7 +1299,7 @@
     "id": "E3-L3",
     "prompt": "forum post: \"almost half of North Macedonia lives in poverty\". what % is it now",
     "attachment": null,
-    "need": "The latest share of North Macedonia's population living below a poverty line (national or international), with the year and definition. The forum claim should be checked.",
+    "need": "The latest share of North Macedonia's population living below a poverty line (national or international), with the year and definition; check the forum claim of almost half. It is about 22% below the national poverty line (2023), and about 4% in extreme poverty (2019).",
     "persona": {
       "id": "E",
       "name": "Educator / student"
@@ -1669,9 +1669,9 @@
   },
   {
     "id": "E6-L1",
-    "prompt": "is it true europe basically got rid of those tropical worm diseases like river blindness and elephantiasis a long time ago?",
+    "prompt": "is it true those tropical worm diseases like river blindness and elephantiasis still infect people in europe?",
     "attachment": null,
-    "need": "Whether neglected tropical diseases (e.g. river blindness, lymphatic filariasis) have been eliminated in Europe; premise should be checked, with trend/status of NTD burden or elimination in Europe.",
+    "need": "Whether neglected tropical diseases such as river blindness (onchocerciasis) and lymphatic filariasis (elephantiasis) still occur in Europe; check the premise that they do. They don't: IHME estimates zero current cases of either in Europe in every year since 1990.",
     "persona": {
       "id": "E",
       "name": "Educator / student"
@@ -1707,7 +1707,7 @@
     "id": "E6-L2",
     "prompt": "my friend says south american women are still having like 5 kids on average, is that still true? owid has this stuff right",
     "attachment": null,
-    "need": "Total fertility rate for South America (and key countries) over time; the belief of ~5 children per woman should be checked (it has fallen to roughly 2 or below in most countries).",
+    "need": "Total fertility rate for South America (and key countries) over time; check the belief of about 5 children per woman. South America's rate was about 1.7 births per woman in 2023.",
     "persona": {
       "id": "E",
       "name": "Educator / student"
