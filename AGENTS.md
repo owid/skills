@@ -25,6 +25,7 @@ assets/                           # the icon and logo the ChatGPT/Codex listing 
 .agents/plugins/                  # repo-scoped catalog: lets ChatGPT/Codex install the repo as-is
 evals/skills/<skill-name>/        # that skill's test cases and fixtures
 evals/                            # shared eval harness + playbook (evals/README.md)
+prompts/                          # tool-agnostic synthetic prompt library (prompts/README.md)
 ```
 
 **Everything under `skills/<skill-name>/` ships to every user.** A skill

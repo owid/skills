@@ -22,3 +22,8 @@ venv/
 # skills/*/evals/ are source and stay committed; everything a run produces
 # (downloaded responses, transcripts, gradings, benchmarks) does not.
 evals/results/
+
+# Prompt-library intermediates — regenerated from prompts/src, see prompts/README.md.
+prompts/tuples.jsonl
+prompts/work/
+prompts/prompts.html

@@ -1,0 +1,57 @@
+# Persona cards: a job to be done, not a biography.
+# A persona earns a card only if it produces prompts that something has to
+# handle differently: what the person brings, where they type, what "done" is.
+# Register details (typos, false premises, pasted URLs) are grid dimensions
+# applied to every card, not separate personas. The cards draw on OWID's own
+# audience research; the first three are the groups OWID prioritises for
+# direct engagement (journalists, policymakers, educators).
+
+- id: J
+  name: Journalist / communicator
+  covers: journalists, data communicators, newsletter and social-media writers
+  job: Get a correct, citable figure or chart into something that will be published, often on a deadline.
+  brings: a claim or sentence from a draft, a chart URL, a story angle
+  surfaces: [chat, agent]
+  literacy: medium
+  done_means: a correct number with its year and source, a chart to link or embed, and the data and licence when they remake a chart
+  voice: busy, direct, sometimes pastes the sentence they are checking
+
+- id: E
+  name: Educator / student
+  covers: secondary and university teachers, students, curious readers
+  job: Understand or teach a topic — a visual for a lesson, a number for an essay, whether a claim they heard is true.
+  brings: a topic, an assignment text, sometimes a wrong premise
+  surfaces: [chat]
+  literacy: low to medium; often not a native English speaker
+  done_means: the right visual or number, explained simply, corrected if the premise is wrong
+  voice: vague about which metric they need, casual, sometimes pastes the assignment
+
+- id: A
+  name: Analyst / researcher
+  covers: policy analysts, think-tank staff, academics, developers building on the data
+  job: Build a comparison or a dataset that others will rely on — a brief, a paper, a dashboard.
+  brings: upstream indicator names or codes (World Bank, UN, ILO), a peer group, a notebook or codebase
+  surfaces: [chat, agent]
+  literacy: high
+  done_means: clean, dataset-level data with units, sources, caveats and a reproducible way to get it again
+  voice: precise about the analysis, not always about which OWID data exists
+
+- id: D
+  name: Brings their own data
+  covers: NGO programme staff, analysts in companies and governments, anyone with a spreadsheet by country
+  job: Put their own table in context — per capita, against income, against a global benchmark.
+  brings: a file (CSV/Excel) with messy country names, codes, aggregate rows, odd years
+  surfaces: [chat, agent]
+  literacy: medium
+  done_means: a joined table or chart, with dropped or mismatched rows explained
+  voice: describes their file loosely ("attached is our...", "I have a sheet with...")
+
+- id: X
+  name: Out of scope (control)
+  covers: anyone using statistics vocabulary for something OWID data should not answer
+  job: A real need that belongs elsewhere — used to catch tools that answer everything with OWID.
+  brings: varies
+  surfaces: [chat, agent]
+  literacy: any
+  done_means: an answer that does not force OWID data into it
+  voice: ordinary
