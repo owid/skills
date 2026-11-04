@@ -25,6 +25,9 @@ PLUGIN_SCHEMA := https://agent-plugins.org/schemas/1.0.0/plugin.schema.json
 # Where `make zip` writes the archive the Claude app uploads. Downloads by
 # default, because that dialog is a file picker.
 ZIP ?= $(HOME)/Downloads/owid-plugin.zip
+# Info-ZIP reads $ZIP from the environment as extra arguments, and make exports
+# a ZIP given on the command line, so keep it out of every recipe's environment.
+unexport ZIP
 
 # `make zip-openai` writes the upload for OpenAI's Plugins Directory. The portal
 # wants a version the repo does not carry; set a new one when you resubmit.
@@ -219,7 +222,7 @@ zip: ## Package the plugin as an archive the Claude app can upload (ZIP=<path>)
 	@# way to try a branch in the Claude app, whose marketplaces serve main.
 	@# ZIP has to be absolute: the zip runs from the staging directory, so a
 	@# relative path would be written there and deleted with it, while we print ok.
-	@case "$(ZIP)" in /*) out="$(ZIP)";; *) out="$$PWD/$(ZIP)";; esac; \
+	@case "$(ZIP)" in /*) out="$(ZIP)";; *) out="$(CURDIR)/$(ZIP)";; esac; \
 	  stage=$$(mktemp -d) && \
 	  mkdir -p "$$stage/.claude-plugin" "$$(dirname "$$out")" && \
 	  cp .claude-plugin/plugin.json "$$stage/.claude-plugin/" && \
@@ -237,7 +240,7 @@ zip-openai: ## Package the plugin for OpenAI's Plugins Directory portal (OPENAI_
 	@# and the images the manifest names. It also requires a version, which
 	@# the repo leaves out on purpose (see AGENTS.md, Versioning), so only the copy
 	@# gets one.
-	@case "$(OPENAI_ZIP)" in /*) out="$(OPENAI_ZIP)";; *) out="$$PWD/$(OPENAI_ZIP)";; esac; \
+	@case "$(OPENAI_ZIP)" in /*) out="$(OPENAI_ZIP)";; *) out="$(CURDIR)/$(OPENAI_ZIP)";; esac; \
 	  stage=$$(mktemp -d) && \
 	  mkdir -p "$$(dirname "$$out")" && \
 	  cp -R skills assets "$$stage/" && \
