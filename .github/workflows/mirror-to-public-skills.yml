@@ -36,9 +36,10 @@ jobs:
     timeout-minutes: 10
     steps:
       # Full history: the sync is a real merge of this repo into the mirror.
-      # A "Not Found" here almost always means MIRROR_SYNC_TOKEN, not the repo:
-      # it is unset or expired, owned by a personal account rather than the owid
-      # org, still awaiting org approval, or not scoped to public-skills. (No
+      # "Input required and not supplied: token" means MIRROR_SYNC_TOKEN is not
+      # set. A "Not Found" almost always means the token, not the repo: it is
+      # expired, owned by a personal account rather than the owid org, still
+      # awaiting org approval, or not scoped to public-skills. (No
       # friendlier pre-check with curl: Claude's plugin directory scans this
       # file and holds the plugin for review when a token sits beside a URL.)
       - name: Check out the mirror

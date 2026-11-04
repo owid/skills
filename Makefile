@@ -25,6 +25,9 @@ PLUGIN_SCHEMA := https://agent-plugins.org/schemas/1.0.0/plugin.schema.json
 # Where `make zip` writes the archive the Claude app uploads. Downloads by
 # default, because that dialog is a file picker.
 ZIP ?= $(HOME)/Downloads/owid-plugin.zip
+# Info-ZIP reads $ZIP from the environment as extra arguments, and make exports
+# a ZIP given on the command line, so keep it out of every recipe's environment.
+unexport ZIP
 
 # `make zip-openai` writes the upload for OpenAI's Plugins Directory. The portal
 # wants a version the repo does not carry; set a new one when you resubmit.
@@ -219,15 +222,13 @@ zip: ## Package the plugin as an archive the Claude app can upload (ZIP=<path>)
 	@# way to try a branch in the Claude app, whose marketplaces serve main.
 	@# ZIP has to be absolute: the zip runs from the staging directory, so a
 	@# relative path would be written there and deleted with it, while we print ok.
-	@# zip itself reads $ZIP from the environment as extra arguments, and make
-	@# exports ZIP=<path> from the command line, hence the env -u.
 	@case "$(ZIP)" in /*) out="$(ZIP)";; *) out="$(CURDIR)/$(ZIP)";; esac; \
 	  stage=$$(mktemp -d) && \
 	  mkdir -p "$$stage/.claude-plugin" "$$(dirname "$$out")" && \
 	  cp .claude-plugin/plugin.json "$$stage/.claude-plugin/" && \
 	  cp -R skills "$$stage/skills" && \
 	  rm -f "$$out" && \
-	  (cd "$$stage" && env -u ZIP zip -qr "$$out" . -x '*.DS_Store') && \
+	  (cd "$$stage" && zip -qr "$$out" . -x '*.DS_Store') && \
 	  rm -rf "$$stage" && \
 	  [ -f "$$out" ] || { echo "  x zip produced nothing at $$out"; exit 1; }; \
 	  echo "  ok  $$out" && \
