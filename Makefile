@@ -219,13 +219,15 @@ zip: ## Package the plugin as an archive the Claude app can upload (ZIP=<path>)
 	@# way to try a branch in the Claude app, whose marketplaces serve main.
 	@# ZIP has to be absolute: the zip runs from the staging directory, so a
 	@# relative path would be written there and deleted with it, while we print ok.
-	@case "$(ZIP)" in /*) out="$(ZIP)";; *) out="$$PWD/$(ZIP)";; esac; \
+	@# zip itself reads $ZIP from the environment as extra arguments, and make
+	@# exports ZIP=<path> from the command line, hence the env -u.
+	@case "$(ZIP)" in /*) out="$(ZIP)";; *) out="$(CURDIR)/$(ZIP)";; esac; \
 	  stage=$$(mktemp -d) && \
 	  mkdir -p "$$stage/.claude-plugin" "$$(dirname "$$out")" && \
 	  cp .claude-plugin/plugin.json "$$stage/.claude-plugin/" && \
 	  cp -R skills "$$stage/skills" && \
 	  rm -f "$$out" && \
-	  (cd "$$stage" && zip -qr "$$out" . -x '*.DS_Store') && \
+	  (cd "$$stage" && env -u ZIP zip -qr "$$out" . -x '*.DS_Store') && \
 	  rm -rf "$$stage" && \
 	  [ -f "$$out" ] || { echo "  x zip produced nothing at $$out"; exit 1; }; \
 	  echo "  ok  $$out" && \
@@ -237,7 +239,7 @@ zip-openai: ## Package the plugin for OpenAI's Plugins Directory portal (OPENAI_
 	@# and the images the manifest names. It also requires a version, which
 	@# the repo leaves out on purpose (see AGENTS.md, Versioning), so only the copy
 	@# gets one.
-	@case "$(OPENAI_ZIP)" in /*) out="$(OPENAI_ZIP)";; *) out="$$PWD/$(OPENAI_ZIP)";; esac; \
+	@case "$(OPENAI_ZIP)" in /*) out="$(OPENAI_ZIP)";; *) out="$(CURDIR)/$(OPENAI_ZIP)";; esac; \
 	  stage=$$(mktemp -d) && \
 	  mkdir -p "$$(dirname "$$out")" && \
 	  cp -R skills assets "$$stage/" && \
