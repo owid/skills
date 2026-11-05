@@ -7,6 +7,10 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := help
 .PHONY: help validate lint test triggers behaviour install zip zip-openai clean
 
+# The plugin folder: the only part of this repo that ships, and the only part
+# Claude's plugin directory scans. Everything else here is tooling.
+PLUGIN := plugins/owid
+
 # The Agent Skills spec's own reference validator. Pinned to 0.1.x because
 # skills-ref is pre-1.0, where a minor bump may change behaviour. Note the
 # published package's executable is `agentskills`, not `skills-ref` as the spec
@@ -47,32 +51,35 @@ validate: ## Check spec conformance, both plugin manifests and marketplace regis
 	@# Agent-agnostic: these skills are also read by Codex, Gemini CLI, Cursor, ...
 	@if command -v uv >/dev/null 2>&1; then \
 	  fail=0; \
-	  for dir in skills/*/; do \
+	  for dir in $(PLUGIN)/skills/*/; do \
 	    $(SKILLS_REF) validate "$${dir%/}" || fail=1; \
 	  done; \
 	  [ $$fail -eq 0 ] || exit 1; \
 	else echo "  ~ uv not found - skipping spec validation"; fi
 	@# The marketplace manifest is Claude-specific and outside the spec.
-	@if command -v claude >/dev/null 2>&1; then claude plugin validate .; \
+	@# The directory profile runs the subset of the plugin directory's checks the
+	@# CLI knows, on the folder the directory scans.
+	@if command -v claude >/dev/null 2>&1; then \
+	  claude plugin validate . && claude plugin validate --profile directory $(PLUGIN); \
 	else echo "  ~ claude CLI not found - skipping manifest validation"; fi
 	@# plugin.json is what ChatGPT and Codex read, and neither CLI above looks at
 	@# it. Its schema forbids unknown keys, so a typo makes the whole package
 	@# unreadable rather than degrading - worth catching here.
 	@if command -v uv >/dev/null 2>&1; then \
-	  $(CHECK_SCHEMA) --schemafile $(PLUGIN_SCHEMA) plugin.json; \
+	  $(CHECK_SCHEMA) --schemafile $(PLUGIN_SCHEMA) $(PLUGIN)/plugin.json; \
 	else echo "  ~ uv not found - skipping plugin.json validation"; fi
 	@# Eval files must never be referenced from a skill (SKILL.md or anything under
 	@# references/). A reference would pull test prose into the context budget of
 	@# every user who triggers the skill, and it is the one way the evals could
 	@# leak into an agent's context at all.
-	@if grep -rnE '(^|[^a-z-])evals?/|triggers\.json|evals\.json|contract\.sh' skills/ --include='*.md'; then \
+	@if grep -rnE '(^|[^a-z-])evals?/|triggers\.json|evals\.json|contract\.sh' $(PLUGIN)/skills/ --include='*.md'; then \
 	  echo "  x a skill file references eval files - drop the reference or inline the content"; \
 	  exit 1; \
 	else echo "  ok  no skill file references eval files"; fi
 	@# Every markdown link inside a skill must resolve to a file that ships with it,
 	@# otherwise the agent is told to read a reference that does not exist.
 	@fail=0; \
-	for dir in skills/*/; do \
+	for dir in $(PLUGIN)/skills/*/; do \
 	  for f in $$(find "$$dir" -name '*.md'); do \
 	    for link in $$(grep -oE '\]\(([^)#:]+)(#[^)]*)?\)' "$$f" | sed -E 's/^\]\(([^)#]+).*$$/\1/'); do \
 	      case "$$link" in http*|mailto*) continue ;; esac; \
@@ -93,23 +100,23 @@ validate: ## Check spec conformance, both plugin manifests and marketplace regis
 	@# The ChatGPT and Codex listing falls back to a generic icon when an interface
 	@# asset path does not resolve, which looks exactly like never having set one.
 	@fail=0; \
-	for path in $$(grep -oE '"\./assets/[^"]+"' plugin.json | tr -d '"'); do \
-	  if [ ! -e "$$path" ]; then echo "  x plugin.json references $$path, which does not exist"; fail=1; fi; \
+	for path in $$(grep -oE '"\./assets/[^"]+"' $(PLUGIN)/plugin.json | tr -d '"'); do \
+	  if [ ! -e "$(PLUGIN)/$$path" ]; then echo "  x plugin.json references $$path, which does not exist"; fail=1; fi; \
 	done; \
 	if [ $$fail -eq 0 ]; then echo "  ok  plugin.json asset paths resolve"; else exit 1; fi
 	@# OpenAI's plugin portal refuses a skill upload whose agents/openai.yaml has
 	@# no interface.short_description, although its docs call the field optional.
 	@fail=0; \
-	for f in skills/*/agents/openai.yaml; do \
+	for f in $(PLUGIN)/skills/*/agents/openai.yaml; do \
 	  [ -e "$$f" ] || continue; \
 	  grep -qE '^  short_description: *"?[^" ]' "$$f" || { echo "  x $$f has no interface.short_description"; fail=1; }; \
 	done; \
 	if [ $$fail -eq 0 ]; then echo "  ok  every openai.yaml has a short_description"; else exit 1; fi
 	@# Claude's directory and OpenAI's list the same plugin from different
 	@# manifests, so each copy of the description and links has to match.
-	@d=$$( { jq -r '.description' .claude-plugin/plugin.json plugin.json; \
+	@d=$$( { jq -r '.description' $(PLUGIN)/.claude-plugin/plugin.json $(PLUGIN)/plugin.json; \
 	  jq -r '.metadata.description, .plugins[].description' .claude-plugin/marketplace.json; } | sort -u | wc -l); \
-	l=$$(jq -c '[.homepage, .author, .license, .keywords]' .claude-plugin/plugin.json plugin.json | sort -u | wc -l); \
+	l=$$(jq -c '[.homepage, .author, .license, .keywords]' $(PLUGIN)/.claude-plugin/plugin.json $(PLUGIN)/plugin.json | sort -u | wc -l); \
 	if [ $$d -eq 1 ] && [ $$l -eq 1 ]; then echo "  ok  the Claude and OpenAI manifests describe the plugin alike"; \
 	else echo "  x the manifests disagree: compare description, homepage, author, license, keywords"; exit 1; fi
 	@# Eval JSON is hand-authored and hand-reviewed, so it must stay readable. A
@@ -122,7 +129,7 @@ validate: ## Check spec conformance, both plugin manifests and marketplace regis
 	@# Registration: none of the validators above knows about marketplace.json, and an
 	@# unregistered skill is installable by neither route.
 	@fail=0; \
-	for dir in skills/*/; do \
+	for dir in $(PLUGIN)/skills/*/; do \
 	  name=$$(basename "$$dir"); \
 	  if ! grep -q "\"./skills/$$name\"" .claude-plugin/marketplace.json; then \
 	    echo "  x $$name: not registered in .claude-plugin/marketplace.json"; fail=1; \
@@ -167,10 +174,21 @@ behaviour: ## Behaviour evals: what does the plugin change about what Claude doe
 	@# --keep-temp keeps each run's trace.jsonl (its tool calls and final reply) at
 	@# the tracePath in aggregate-result.json. The HTML report shows only verdicts,
 	@# and reading why a grader failed needs the reply it failed on.
-	@claude plugin eval . -j $(JOBS) \
+	@# The CLI reads cases only from inside the plugin folder, and refuses a link
+	@# out of it, while evals/ stays outside so the directory never scans it. So
+	@# each run evaluates a throwaway copy of the plugin with evals/ copied in, and
+	@# writes its results back here. --trust-plugin answers the CLI's trust prompt,
+	@# which would otherwise ask about every new temporary copy: the copy is always
+	@# this worktree's own code.
+	@stage=$$(mktemp -d); trap 'rm -rf "$$stage"' EXIT; \
+	  out="$(CURDIR)/evals/results/$$(date +%Y-%m-%dT%H-%M-%S)"; \
+	  cp -R $(PLUGIN)/. "$$stage/" && \
+	  rsync -a --exclude results evals/ "$$stage/evals/" && \
+	  claude plugin eval "$$stage" -j $(JOBS) \
 	  $(if $(CASE),--case $(CASE),) $(if $(TAG),--tag $(TAG),) $(if $(RUNS),--runs $(RUNS),) \
 	  $(if $(JUDGE),--judge-model $(JUDGE),) $(if $(MODEL),--model $(MODEL),) \
-	  --allow-tools "WebFetch(domain:ourworldindata.org)" --keep-temp --no-publish
+	  --allow-tools "WebFetch(domain:ourworldindata.org)" --keep-temp --no-publish \
+	  --trust-plugin --output-dir "$$out" --report "$$out/report.html"
 
 install: ## Install this worktree as a plugin for Claude Code, Codex and the ChatGPT app
 	@# Both CLIs read a local marketplace live, so both halves get this worktree,
@@ -225,8 +243,8 @@ zip: ## Package the plugin as an archive the Claude app can upload (ZIP=<path>)
 	@case "$(ZIP)" in /*) out="$(ZIP)";; *) out="$(CURDIR)/$(ZIP)";; esac; \
 	  stage=$$(mktemp -d) && \
 	  mkdir -p "$$stage/.claude-plugin" "$$(dirname "$$out")" && \
-	  cp .claude-plugin/plugin.json "$$stage/.claude-plugin/" && \
-	  cp -R skills "$$stage/skills" && \
+	  cp $(PLUGIN)/.claude-plugin/plugin.json "$$stage/.claude-plugin/" && \
+	  cp -R $(PLUGIN)/skills "$$stage/skills" && \
 	  rm -f "$$out" && \
 	  (cd "$$stage" && zip -qr "$$out" . -x '*.DS_Store') && \
 	  rm -rf "$$stage" && \
@@ -243,10 +261,10 @@ zip-openai: ## Package the plugin for OpenAI's Plugins Directory portal (OPENAI_
 	@case "$(OPENAI_ZIP)" in /*) out="$(OPENAI_ZIP)";; *) out="$(CURDIR)/$(OPENAI_ZIP)";; esac; \
 	  stage=$$(mktemp -d) && \
 	  mkdir -p "$$(dirname "$$out")" && \
-	  cp -R skills assets "$$stage/" && \
+	  cp -R $(PLUGIN)/skills $(PLUGIN)/assets "$$stage/" && \
 	  jq --arg v "$(OPENAI_VERSION)" \
 	    '.version = $$v' \
-	    plugin.json > "$$stage/plugin.json" && \
+	    $(PLUGIN)/plugin.json > "$$stage/plugin.json" && \
 	  rm -f "$$out" && \
 	  (cd "$$stage" && zip -qr "$$out" . -x '*.DS_Store') && \
 	  rm -rf "$$stage" && \

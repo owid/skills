@@ -28,7 +28,7 @@ evals/
 ├── run-contract-tests.sh               # layer 1 runner
 ├── run-trigger-eval.py                 # layer 2 runner
 ├── results/                            # gitignored — every run writes here
-└── skills/<skill>/                     # mirrors skills/, one directory per skill
+└── skills/<skill>/                     # mirrors plugins/owid/skills/, one per skill
     ├── contract.sh                     # layer 1
     ├── triggers.json                   # layer 2
     ├── evals.json                      # layer 3, hand-run legacy format
@@ -37,8 +37,8 @@ evals/
     │   └── graders/<name>.md           # one grader per file
     └── fixtures/                       # input files a case needs
 
-skills/<skill>/SKILL.md                 # the skill
-skills/<skill>/references/*.md          # the reference files it tells the agent to read
+plugins/owid/skills/<skill>/SKILL.md    # the skill
+plugins/owid/skills/<skill>/references/  # the reference files it tells the agent to read
 ```
 
 Everything directly under `evals/` is harness; everything under `evals/skills/` is
@@ -47,12 +47,12 @@ per-skill input, named exactly as the skill it tests. The runners glob
 
 ## Why evals live here and not inside the skill directory
 
-`skills/<skill>/` contains only what ships to users, on purpose. A skill
+`plugins/owid/skills/<skill>/` contains only what ships to users, on purpose. A skill
 directory is the unit of distribution, and it is copied **recursively** into
 users' projects. The [`skills` CLI](https://github.com/vercel-labs/skills) that
 the README recommends for Codex, Gemini CLI and Cursor excludes only
 `metadata.json`, `.git`, `__pycache__` and `__pypackages__` — there is no ignore
-file and no opt-out. So anything under `skills/<skill>/` lands in someone else's
+file and no opt-out. So anything under a skill directory lands in someone else's
 repo.
 
 That matters less for tokens than for confusion. Fixture CSVs are realistic by
@@ -356,9 +356,15 @@ you want a Bash-granting case, expect to debug the sandbox first.
 
 ### Gotchas
 
+- **Run behaviour evals through `make behaviour`, not `claude plugin eval` directly.**
+  The CLI reads cases only from inside the plugin folder and refuses a link out
+  of it, while `evals/` has to stay outside `plugins/owid/` so Claude's plugin
+  directory never scans it. The make target evaluates a temporary copy of the
+  plugin with `evals/` copied in, and writes results back to `evals/results/`.
+
 - **The plugin must resolve.** `claude plugin eval` reports which plugin it
   loaded; if it says `none resolved`, the cases run against plain Claude Code and
-  every Δ is meaningless. `.claude-plugin/plugin.json` is what makes it resolve
+  every Δ is meaningless. `plugins/owid/.claude-plugin/plugin.json` is what makes it resolve
   as `owid`, which is also why that file has to exist even though
   `marketplace.json` already describes the same plugin.
 - **`claude plugin validate` warns that the plugin has no version.** That is the

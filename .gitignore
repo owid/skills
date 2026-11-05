@@ -19,7 +19,7 @@ venv/
 .skill_id
 
 # Eval outputs — see evals/README.md. Test cases and fixtures under
-# skills/*/evals/ are source and stay committed; everything a run produces
+# evals/skills/ are source and stay committed; everything a run produces
 # (downloaded responses, transcripts, gradings, benchmarks) does not.
 evals/results/
 

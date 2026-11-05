@@ -1,9 +1,11 @@
 # Repository guide for agents
 
-This repository publishes **agent skills for working with Our World in Data** (see [README.md](README.md)). The repo root is itself a plugin named `owid` that bundles every skill under `skills/`, packaged two ways so one commit serves both ecosystems:
+This repository publishes **agent skills for working with Our World in Data** (see [README.md](README.md)). The folder `plugins/owid/` is a plugin named `owid` that bundles every skill under its `skills/`, with a manifest for each ecosystem so one commit serves both:
 
-- `.claude-plugin/marketplace.json` — Claude Code's marketplace format.
-- `plugin.json` — the vendor-neutral [Agent Plugins](https://agent-plugins.org/) format, which ChatGPT and Codex read.
+- `plugins/owid/.claude-plugin/plugin.json` — Claude's plugin manifest, listed from `.claude-plugin/marketplace.json` at the root.
+- `plugins/owid/plugin.json` — the vendor-neutral [Agent Plugins](https://agent-plugins.org/) format, which ChatGPT and Codex read, listed from `.agents/plugins/marketplace.json`.
+
+**Only `plugins/owid/` ships, and it is all Claude's plugin directory scans.** Everything else at the root (the Makefile, evals, workflows, prompts) is tooling. Keep it out of the plugin folder: the directory's automatic checks read every file in it, and a test script or CI job there gets held for review as if users ran it. That is why `plugins/owid/` is a subfolder rather than the repo root. The repository root's `README.md` is the one the directory listing shows, since the plugin folder has none of its own.
 
 Today there is one skill, `owid`, structured as a short `SKILL.md` plus a
 `references/` directory the agent reads on demand. That is deliberate: the
@@ -16,19 +18,20 @@ routes better than several narrow ones competing for the same prompt.
 ```
 FAQ.md                            # common user and contributor questions
 Makefile                          # entry points: make validate / lint / install / test / triggers / behaviour
-skills/owid/SKILL.md              # the workflow and the rules (~150 lines, always loaded)
-skills/owid/references/*.md       # one file per endpoint or topic, read when needed
-.claude-plugin/marketplace.json   # Claude Code marketplace + plugin definition
-.claude-plugin/plugin.json        # the plugin's own Claude manifest; `claude plugin eval` needs it
-plugin.json                       # Agent Plugins manifest (ChatGPT, Codex)
-assets/                           # the icon and logo the ChatGPT/Codex listing shows
-.agents/plugins/                  # repo-scoped catalog: lets ChatGPT/Codex install the repo as-is
+.claude-plugin/marketplace.json   # Claude Code marketplace: points at plugins/owid
+.agents/plugins/                  # repo-scoped catalog: lets ChatGPT/Codex install from the repo
+plugins/owid/                     # the plugin: everything that ships, and nothing else
+├── skills/owid/SKILL.md          # the workflow and the rules (~150 lines, always loaded)
+├── skills/owid/references/*.md   # one file per endpoint or topic, read when needed
+├── .claude-plugin/plugin.json    # the plugin's Claude manifest; `claude plugin eval` needs it
+├── plugin.json                   # Agent Plugins manifest (ChatGPT, Codex)
+└── assets/                       # the icon and logo the ChatGPT/Codex listing shows
 evals/skills/<skill-name>/        # that skill's test cases and fixtures
 evals/                            # shared eval harness + playbook (evals/README.md)
 prompts/                          # tool-agnostic synthetic prompt library (prompts/README.md)
 ```
 
-**Everything under `skills/<skill-name>/` ships to every user.** A skill
+**Everything under `plugins/owid/skills/<skill-name>/` ships to every user.** A skill
 directory is copied recursively into users' projects by the cross-agent
 installer, which has no ignore mechanism. Put only `SKILL.md` and the
 `references/`, `scripts/` or `assets/` the skill genuinely needs there. Evals
@@ -73,17 +76,17 @@ Prefer extending `owid` with a reference over adding a sibling skill: two
 skills with overlapping triggers steal each other's traffic. If a genuinely
 separate skill is warranted:
 
-1. Create `skills/<skill-name>/SKILL.md` with YAML frontmatter. The `name` field **must** match the directory name.
-2. **Register it** in the `skills` array of the `owid` plugin in `.claude-plugin/marketplace.json`. Without this it is not installable via the marketplace. `plugin.json` needs no edit — the Agent Plugins format discovers everything under `skills/`, and a `skills` declaration there is ignored for packages that have a root manifest.
+1. Create `plugins/owid/skills/<skill-name>/SKILL.md` with YAML frontmatter. The `name` field **must** match the directory name.
+2. **Register it** in the `skills` array of the `owid` plugin in `.claude-plugin/marketplace.json` (paths there are relative to `plugins/owid/`). Without this it is not installable via the marketplace. `plugins/owid/plugin.json` needs no edit — the Agent Plugins format discovers everything under the plugin's `skills/`, and a `skills` declaration there is ignored for packages that have a root manifest.
 3. Add `evals/skills/<skill-name>/` with at least a `contract.sh` and a `triggers.json`, and add `expected_skill` negatives to the sibling's `triggers.json` so misrouting is measured.
 
 ## Versioning
 
-Plugins here are intentionally **versionless**: `.claude-plugin/marketplace.json`, `.claude-plugin/plugin.json`, `plugin.json` and the plugin entries carry no `version` field, so every commit to `main` is a new release and update mechanisms pick it up automatically. Do not add version fields back — `version` is optional in the Agent Plugins schema, hosts that need one fall back to `1.0.0`, and `make validate` warning about the missing version is the convention working, not a defect to fix.
+Plugins here are intentionally **versionless**: `.claude-plugin/marketplace.json`, `plugins/owid/.claude-plugin/plugin.json`, `plugins/owid/plugin.json` and the plugin entries carry no `version` field, so every commit to `main` is a new release and update mechanisms pick it up automatically. Do not add version fields back — `version` is optional in the Agent Plugins schema, hosts that need one fall back to `1.0.0`, and `make validate` warning about the missing version is the convention working, not a defect to fix.
 
 The plugin is also submitted to both public directories, which treat releases differently:
 
-- **Claude's plugin directory** tracks `main` and scans each new commit, so a merge reaches it like any other install route. The listing is read from `.claude-plugin/plugin.json` and the README.
+- **Claude's plugin directory** tracks `main` and scans each new commit, so a merge reaches it like any other install route. The submission's plugin path is `plugins/owid`, so the directory reads and scans only that folder. The listing is read from `plugins/owid/.claude-plugin/plugin.json` and the root README. `make validate` runs the subset of the directory's checks that `claude plugin validate --profile directory` knows; the directory also runs a safety scan and policy review that only it can, which is why a finding can still appear after a merge.
 - **OpenAI's Plugins Directory** (ChatGPT and Codex) is a snapshot. Each update is a new upload through the portal at platform.openai.com/plugins, with release notes and another review; nothing in this repo triggers it. Resubmit when the skill changes meaningfully, not after every merge. `make zip-openai` builds the upload: the Agent Plugins layout, with the `version` the portal requires added to the copy only, so the repo stays versionless. The listing text and links come from `extensions.com.openai.interface` in `plugin.json`, whose `shortDescription` is the 30-character subtitle. Submitting for the OWID organization needs the Apps Management Write role. The portal also requires `interface.short_description` in the skill's `agents/openai.yaml`, which `make validate` checks.
 
 ## Testing
@@ -94,18 +97,19 @@ Run `make` for the full list. The two you need most:
   `skills-ref`, the reference validator the [Agent Skills
   spec](https://agentskills.io/specification) recommends (agent-agnostic, so it
   covers Codex/Gemini/Cursor users too); the Claude marketplace manifest via
-  `claude plugin validate`; `plugin.json` against the published Agent Plugins
+  `claude plugin validate`, and the plugin folder against the plugin
+  directory's profile; `plugin.json` against the published Agent Plugins
   schema, which no CLI here looks at; that every skill is registered in
   `.claude-plugin/marketplace.json` and that no skill file references eval
   files, which none of the validators knows about; and that every relative link
-  inside `skills/` resolves. Run the make target rather than any single CLI —
+  inside the plugin's `skills/` resolves. Run the make target rather than any single CLI —
   none of them subsumes another.
 - `make test` — the contract tests. These check that the OWID endpoints and
   response shapes the skill documents still match what the API returns, which
   is the way this skill is most likely to break. This is what CI runs.
 
 For a single session without installing anything, load the plugin directly:
-`claude --debug --plugin-dir .`
+`claude --debug --plugin-dir plugins/owid`
 
 `make install` installs it properly, into Claude Code and into Codex - which is
 also where the ChatGPT desktop app looks. Both CLIs take a local marketplace and

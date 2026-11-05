@@ -24,7 +24,7 @@ it on its own when your question is about our charts or data.
 The skill is a short set of notes your assistant reads when it needs them: how to
 search our site, how to fetch the data and sources behind a chart, and how to put
 a chart into a page or a slide. You can read them in
-[`skills/owid/`](skills/owid/) if you're curious.
+[`plugins/owid/skills/owid/`](plugins/owid/skills/owid/) if you're curious.
 
 It runs no code of its own and needs no API key or account. Your assistant reads
 public pages and data files on ourworldindata.org, and nothing else.
@@ -51,7 +51,7 @@ What each app needs:
 | ChatGPT app | In the plugin settings, add a marketplace from `owid/skills`, then install **Our World in Data** |
 | Claude Code | `/plugin marketplace add owid/skills`, then `/plugin install owid@owid-skills`, then turn on auto-update for `owid-skills` under **Marketplaces** in `/plugin` |
 | Codex | `codex plugin marketplace add owid/skills`, then `codex plugin add owid@owid-skills` |
-| Anything else | `npx skills add owid/skills`, or copy the [`skills/owid/`](skills/owid/) folder into your agent's skills directory |
+| Anything else | `npx skills add owid/skills`, or copy the [`plugins/owid/skills/owid/`](plugins/owid/skills/owid/) folder into your agent's skills directory |
 
 None of them needs an Our World in Data account or a GitHub account. Start a new
 chat afterwards: plugins only apply to conversations that begin after installing.
