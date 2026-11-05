@@ -75,6 +75,21 @@ fetch() {
     return 1
 }
 
+# status_of <url> [outfile] — GET the url, save the body, print the HTTP
+# status (000 if no response came back). Asserts nothing: for a check that
+# should skip, not fail, when its example URL goes away.
+status_of() {
+    local url="$1" out="${2:-/dev/null}" code
+    # No --retry here: curl counts a 5xx as a transient failure and retries it,
+    # and on some curl versions exhausting the retries exits non-zero, which
+    # hid the status behind a 000. A check that expects a 500 must see the 500.
+    code=$(curl -sS -L --max-time 90 \
+        -H 'User-Agent: owid-skills contract tests (tech@ourworldindata.org)' \
+        -o "$out" -w '%{http_code}' "$url" 2>/dev/null)
+    [[ "$code" =~ ^[0-9]{3}$ ]] || code="000"
+    printf '%s' "$code"
+}
+
 # ok <name> <cmd...> — the command exits 0.
 ok() {
     local name="$1"
@@ -378,14 +393,8 @@ skill_md_table_covers() {
 # this HTTP status. For the cases fetch cannot express: an endpoint that must
 # reject bad input, or a success whose body you do not need.
 http_status() {
-    local name="$1" url="$2" expected="$3" out="${4:-/dev/null}" code
-    # No --retry here: curl counts a 5xx as a transient failure and retries it,
-    # and on some curl versions exhausting the retries exits non-zero, which
-    # hid the status behind a 000. A check that expects a 500 must see the 500.
-    code=$(curl -sS -L --max-time 90 \
-        -H 'User-Agent: owid-skills contract tests (tech@ourworldindata.org)' \
-        -o "$out" -w '%{http_code}' "$url" 2>/dev/null)
-    [[ "$code" =~ ^[0-9]{3}$ ]] || code="000"
+    local name="$1" url="$2" expected="$3" code
+    code=$(status_of "$url" "${4:-/dev/null}")
     if [[ "$code" == "$expected" ]]; then
         _pass "$name"
     else

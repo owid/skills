@@ -106,6 +106,7 @@ with nested quoting, the helper is missing and worth adding.
 |---|---|
 | `fetch <url> <out>` | GET, assert 200, save the body. Returns non-zero so you can guard |
 | `http_status <name> <url> <code> [out]` | the url returns exactly this status; for endpoints that must reject bad input |
+| `status_of <url> [out]` | print the status without asserting; for a check that should skip when its example URL goes away |
 | `content_type <name> <url> <ere>` | the response's Content-Type matches; for images and archives whose body you don't need |
 | `all_match <name> <file> <selector> <predicate>` | every selected element satisfies the predicate |
 | `none_match <name> <file> <selector> <predicate>` | no selected element satisfies it |

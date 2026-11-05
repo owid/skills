@@ -257,8 +257,7 @@ section "Chart data API: map-default charts need tab= for country filters"
 # map-default charts in general, not about this slug.
 MDIM="$GRAPHER/religious-composition"
 MDIM_PARAMS="indicator=share&religion=any_religion&csvType=filtered&country=USA~GBR&time=2020"
-code=$(curl -sS -L --max-time 90 -H 'User-Agent: owid-skills contract tests (tech@ourworldindata.org)' \
-    -o "$WORK/mdim-notab.csv" -w '%{http_code}' "$MDIM.csv?$MDIM_PARAMS" 2>/dev/null) || code="000"
+code=$(status_of "$MDIM.csv?$MDIM_PARAMS" "$WORK/mdim-notab.csv")
 if [[ "$code" == "200" ]]; then
     ok "on a map-default chart, country= alone is ignored (many rows come back)" \
         test "$(csv_column "$WORK/mdim-notab.csv" Code | sort -u | wc -l | tr -d ' ')" -gt 10
@@ -514,10 +513,8 @@ if fetch "$GRAPHER/life-expectancy.metadata.json" "$WORK/tag-plain-meta.json" &&
     # gains the tag and an empty activeFilters appears. The data and its
     # description must not change.
     META_SAME='del(.activeFilters, .chart.originalChartUrl)'
-    jq -S "$META_SAME" "$WORK/tag-plain-meta.json" >"$WORK/tag-plain-meta.norm.json"
-    jq -S "$META_SAME" "$WORK/tag-tagged-meta.json" >"$WORK/tag-tagged-meta.norm.json"
     ok "chart metadata is identical with the tag, bar the echoed URL" \
-        cmp "$WORK/tag-plain-meta.norm.json" "$WORK/tag-tagged-meta.norm.json"
+        cmp <(jq -S "$META_SAME" "$WORK/tag-plain-meta.json") <(jq -S "$META_SAME" "$WORK/tag-tagged-meta.json")
 fi
 if fetch "$API?q=life+expectancy&hitsPerPage=5" "$WORK/tag-plain-search.json" &&
     fetch "$API?q=life+expectancy&hitsPerPage=5&utm_source=owid-skills" "$WORK/tag-tagged-search.json"; then
