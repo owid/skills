@@ -75,6 +75,17 @@ fetch() {
     return 1
 }
 
+# status_of <url> <outfile> — GET the url, save the body, print the HTTP
+# status (000 if curl failed). Asserts nothing: for a check that should skip,
+# not fail, when its example URL goes away.
+status_of() {
+    local code
+    code=$(curl -sS -L --max-time 90 \
+        -H 'User-Agent: owid-skills contract tests (tech@ourworldindata.org)' \
+        -o "$2" -w '%{http_code}' "$1" 2>/dev/null) || code="000"
+    printf '%s' "$code"
+}
+
 # ok <name> <cmd...> — the command exits 0.
 ok() {
     local name="$1"
