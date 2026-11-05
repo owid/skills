@@ -346,8 +346,8 @@ fi
 content_type ".svg returns an svg" "$CHART.svg?tab=map&time=2020" '^image/svg'
 content_type ".readme.md returns markdown" "$CHART.readme.md" '^text/markdown'
 content_type ".zip returns an archive" "$CHART.zip?csvType=filtered&country=USA" '^application/zip'
-if fetch "$CHART.config.json" "$WORK/config.json"; then
-    has_keys ".config.json is a grapher config with slug and title" "$WORK/config.json" "." slug title
+if fetch "$CHART.config.json" "$WORK/grapher-config.json"; then
+    has_keys ".config.json is a grapher config with slug and title" "$WORK/grapher-config.json" "." slug title
 fi
 
 section "Chart data API: filters are silently ignored without csvType=filtered"
