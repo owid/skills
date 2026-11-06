@@ -89,7 +89,7 @@ validate: ## Check spec conformance, both plugin manifests and marketplace regis
 	    done; \
 	  done; \
 	done; \
-	if [ $$fail -eq 0 ]; then echo "  ok  every relative link inside skills/ resolves"; else exit 1; fi
+	if [ $$fail -eq 0 ]; then echo "  ok  every relative link inside $(PLUGIN)/skills/ resolves"; else exit 1; fi
 	@# `strict: false` makes the marketplace entry the whole definition, which
 	@# conflicts with the plugin.json that ships beside it: Claude Code then refuses
 	@# to load the plugin at install time. Neither validator above catches it.
@@ -180,10 +180,10 @@ behaviour: ## Behaviour evals: what does the plugin change about what Claude doe
 	@# writes its results back here. --trust-plugin answers the CLI's trust prompt,
 	@# which would otherwise ask about every new temporary copy: the copy is always
 	@# this worktree's own code.
-	@stage=$$(mktemp -d); trap 'rm -rf "$$stage"' EXIT; \
+	@stage=$$(mktemp -d) || exit 1; trap 'rm -rf "$$stage"' EXIT; \
 	  out="$(CURDIR)/evals/results/$$(date +%Y-%m-%dT%H-%M-%S)"; \
 	  cp -R $(PLUGIN)/. "$$stage/" && \
-	  rsync -a --exclude results evals/ "$$stage/evals/" && \
+	  rsync -a --exclude /results evals/ "$$stage/evals/" && \
 	  claude plugin eval "$$stage" -j $(JOBS) \
 	  $(if $(CASE),--case $(CASE),) $(if $(TAG),--tag $(TAG),) $(if $(RUNS),--runs $(RUNS),) \
 	  $(if $(JUDGE),--judge-model $(JUDGE),) $(if $(MODEL),--model $(MODEL),) \

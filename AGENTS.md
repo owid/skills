@@ -87,7 +87,7 @@ Plugins here are intentionally **versionless**: `.claude-plugin/marketplace.json
 The plugin is also submitted to both public directories, which treat releases differently:
 
 - **Claude's plugin directory** tracks `main` and scans each new commit, so a merge reaches it like any other install route. The submission's plugin path is `plugins/owid`, so the directory reads and scans only that folder. The listing is read from `plugins/owid/.claude-plugin/plugin.json` and the root README. `make validate` runs the subset of the directory's checks that `claude plugin validate --profile directory` knows; the directory also runs a safety scan and policy review that only it can, which is why a finding can still appear after a merge.
-- **OpenAI's Plugins Directory** (ChatGPT and Codex) is a snapshot. Each update is a new upload through the portal at platform.openai.com/plugins, with release notes and another review; nothing in this repo triggers it. Resubmit when the skill changes meaningfully, not after every merge. `make zip-openai` builds the upload: the Agent Plugins layout, with the `version` the portal requires added to the copy only, so the repo stays versionless. The listing text and links come from `extensions.com.openai.interface` in `plugin.json`, whose `shortDescription` is the 30-character subtitle. Submitting for the OWID organization needs the Apps Management Write role. The portal also requires `interface.short_description` in the skill's `agents/openai.yaml`, which `make validate` checks.
+- **OpenAI's Plugins Directory** (ChatGPT and Codex) is a snapshot. Each update is a new upload through the portal at platform.openai.com/plugins, with release notes and another review; nothing in this repo triggers it. Resubmit when the skill changes meaningfully, not after every merge. `make zip-openai` builds the upload: the Agent Plugins layout, with the `version` the portal requires added to the copy only, so the repo stays versionless. The listing text and links come from `extensions.com.openai.interface` in `plugins/owid/plugin.json`, whose `shortDescription` is the 30-character subtitle. Submitting for the OWID organization needs the Apps Management Write role. The portal also requires `interface.short_description` in the skill's `agents/openai.yaml`, which `make validate` checks.
 
 ## Testing
 
@@ -148,7 +148,7 @@ only appears at install time.
 
 For live edits rather than a pushed branch, point a personal marketplace
 (`~/.agents/plugins/marketplace.json`, whose paths are relative to `$HOME`) at a
-worktree.
+worktree's `plugins/owid` folder, not at the worktree root.
 
 ## Evals
 

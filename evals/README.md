@@ -181,7 +181,7 @@ re-measure on the model you actually ship before recording a result.
 the runner exits non-zero only when runs failed (the numbers are untrustworthy),
 or when you opt into a floor with `--min-accuracy`.
 
-Each query runs through `claude -p` with this repo loaded via `--plugin-dir`, the
+Each query runs through `claude -p` with the plugin folder `plugins/owid` loaded via `--plugin-dir`, the
 same situation a real user is in. The runner records *which* skill fired, which
 makes these outcomes possible:
 

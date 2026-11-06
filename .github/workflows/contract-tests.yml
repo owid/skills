@@ -30,7 +30,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       # The claude CLI is absent here, so `make validate` skips the marketplace
-      # manifest check and runs spec conformance plus registration.
+      # manifest and directory-profile checks and runs spec conformance plus registration.
       - name: Validate skills
         run: make validate
 
