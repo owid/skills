@@ -34,9 +34,11 @@ ZIP ?= $(HOME)/Downloads/owid-plugin.zip
 unexport ZIP
 
 # `make zip-openai` writes the upload for OpenAI's Plugins Directory. The portal
-# wants a version the repo does not carry; set a new one when you resubmit.
+# wants a version the repo does not carry. Each submission is tagged
+# openai-<version>, so the default is the patch after the newest such tag.
 OPENAI_ZIP ?= $(HOME)/Downloads/owid-openai-plugin.zip
-OPENAI_VERSION ?= 1.0.0
+OPENAI_LAST := $(shell git tag -l 'openai-*' --sort=-v:refname 2>/dev/null | head -n1 | sed 's/^openai-//')
+OPENAI_VERSION ?= $(if $(OPENAI_LAST),$(shell echo $(OPENAI_LAST) | awk -F. '{print $$1 "." $$2 "." $$3 + 1}'),1.0.0)
 
 help: ## List the available targets
 	@grep -hE '^[a-z][a-z-]*:.*## ' $(MAKEFILE_LIST) \
@@ -270,7 +272,10 @@ zip-openai: ## Package the plugin for OpenAI's Plugins Directory portal (OPENAI_
 	  rm -rf "$$stage" && \
 	  [ -f "$$out" ] || { echo "  x zip produced nothing at $$out"; exit 1; }; \
 	  echo "  ok  $$out (version $(OPENAI_VERSION))" && \
-	  echo "      platform.openai.com/plugins > Upload new or existing plugin."
+	  echo "      platform.openai.com/plugins > Upload new or existing plugin." && \
+	  echo "      Once it is accepted, record the submission, which closes the reminder issue:" && \
+	  echo "      git tag openai-$(OPENAI_VERSION) $$(git rev-parse --short HEAD) && git push origin openai-$(OPENAI_VERSION)"; \
+	  git diff --quiet HEAD -- $(PLUGIN) || echo "  !   $(PLUGIN) has uncommitted changes, so the tag would not match the upload."
 
 clean: ## Delete eval run outputs (evals/results/)
 	@rm -rf evals/results
