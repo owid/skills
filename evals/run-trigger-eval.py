@@ -35,7 +35,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SKILLS_DIR = REPO_ROOT / "skills"
+PLUGIN_DIR = REPO_ROOT / "plugins" / "owid"
+SKILLS_DIR = PLUGIN_DIR / "skills"
 EVALS_DIR = REPO_ROOT / "evals"
 EVAL_SKILLS_DIR = EVALS_DIR / "skills"
 RESULTS_DIR = EVALS_DIR / "results" / "triggers"
@@ -67,7 +68,7 @@ def build_command(query: str, model: str | None, effort: str, max_budget: float 
         "-p",
         query,
         "--plugin-dir",
-        str(REPO_ROOT),
+        str(PLUGIN_DIR),
         "--output-format",
         "stream-json",
         "--verbose",

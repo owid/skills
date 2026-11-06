@@ -21,7 +21,7 @@ for tool in curl jq; do
 done
 
 # Which skills to run: the arguments, or every skill that has a contract.sh.
-# Per-skill inputs live under evals/skills/, mirroring the top-level skills/
+# Per-skill inputs live under evals/skills/, mirroring plugins/owid/skills/
 # directory, so this glob cannot pick up the harness or the results directory.
 skills=()
 if [[ $# -gt 0 ]]; then
@@ -46,15 +46,15 @@ for skill in "${skills[@]}"; do
         failed_skills+=("$skill")
         continue
     fi
-    if [[ ! -f "$REPO_ROOT/skills/$skill/SKILL.md" ]]; then
-        printf '\n\033[31mevals/skills/%s/ has no matching skill at skills/%s/SKILL.md\033[0m\n' "$skill" "$skill" >&2
+    if [[ ! -f "$REPO_ROOT/plugins/owid/skills/$skill/SKILL.md" ]]; then
+        printf '\n\033[31mevals/skills/%s/ has no matching skill at plugins/owid/skills/%s/SKILL.md\033[0m\n' "$skill" "$skill" >&2
         failed_skills+=("$skill")
         continue
     fi
 
     printf '\n\033[1m▶ %s\033[0m\n' "$skill"
     EVAL_DIR="$REPO_ROOT/evals/skills/$skill" \
-        SKILL_DIR="$REPO_ROOT/skills/$skill" \
+        SKILL_DIR="$REPO_ROOT/plugins/owid/skills/$skill" \
         SKILL_NAME="$skill" \
         WORK="$RESULTS/$skill" \
         bash "$contract" || failed_skills+=("$skill")

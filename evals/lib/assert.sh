@@ -19,7 +19,7 @@ set -uo pipefail
 : "${EVAL_DIR:="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"}"
 : "${SKILL_NAME:="$(basename "$EVAL_DIR")"}"
 REPO_ROOT="$(cd "$EVAL_DIR/../../.." && pwd)"
-: "${SKILL_DIR:="$REPO_ROOT/skills/$SKILL_NAME"}"
+: "${SKILL_DIR:="$REPO_ROOT/plugins/owid/skills/$SKILL_NAME"}"
 : "${WORK:="$REPO_ROOT/evals/results/contract/$SKILL_NAME"}"
 SKILL_MD="$SKILL_DIR/SKILL.md"
 mkdir -p "$WORK"

@@ -8,7 +8,7 @@
             "name": "owid",
             "source": {
                 "source": "local",
-                "path": "./"
+                "path": "./plugins/owid"
             },
             "policy": {
                 "installation": "AVAILABLE",
