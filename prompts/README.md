@@ -87,9 +87,11 @@ by `id`.
 | Join into the library | `src/build.py` → `prompts.json` | deterministic |
 | Reading page | `src/view.py` → `prompts.html` | deterministic |
 
-Topics are OWID's topic tags: the `tags` rows that have a topic-page slug,
-from `https://datasette-public.owid.io/owid?sql=select name, slug from tags where slug is not null`
-(`src/topics.json`). Countries are the entities in OWID's
+Topics are OWID's topic pages (`src/topics.json`), as listed by
+`https://ourworldindata.org/api/search?type=topics`, minus the two that aren't
+topics (`teaching` and the French `bonheur-et-satisfaction`). The file keeps
+the topic tag names, so a few read "&" where the API's titles say "and".
+Countries are the entities in OWID's
 [continent classification](https://ourworldindata.org/grapher/continents-according-to-our-world-in-data)
 whose latest [population](https://ourworldindata.org/grapher/population) is
 at least a million, minus historical entities such as the USSR
