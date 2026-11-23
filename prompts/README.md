@@ -88,7 +88,9 @@ by `id`.
 | Reading page | `src/view.py` → `prompts.html` | deterministic |
 
 Topics are OWID's topic tags: the `tags` rows that have a topic-page slug,
-from `https://datasette-public.owid.io/owid?sql=select name, slug from tags where slug is not null`
+selected with `select name, slug from tags where slug is not null` from
+OWID's public database export,
+[`public.duckdb.gz`](https://files.ourworldindata.org/public.duckdb.gz)
 (`src/topics.json`). Countries are the entities in OWID's
 [continent classification](https://ourworldindata.org/grapher/continents-according-to-our-world-in-data)
 whose latest [population](https://ourworldindata.org/grapher/population) is
