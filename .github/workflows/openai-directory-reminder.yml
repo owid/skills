@@ -1,0 +1,102 @@
+name: OpenAI directory reminder
+
+# OpenAI's Plugins Directory (ChatGPT, Codex) serves the snapshot we last
+# uploaded, not main, so a change to the plugin reaches its users only when
+# someone resubmits. This job keeps one issue open while the plugin on main
+# differs from that snapshot, listing what changed, and closes it once the
+# snapshot is current again. It never fails a build: whether a change is worth
+# a resubmission is a judgement call (see AGENTS.md, Versioning).
+#
+# The last submission is the newest `openai-<version>` tag, which marks the
+# commit the uploaded ZIP was built from. `make zip-openai` prints the command
+# that creates it.
+
+on:
+  push:
+    branches: [main]
+    paths: [plugins/owid/**]
+    # Pushing a new submission's tag closes the issue. Path filters don't
+    # apply to tag pushes.
+    tags: [openai-*]
+  workflow_dispatch:
+
+concurrency:
+  group: openai-directory-reminder
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  remind:
+    # owid/public-skills merges this repo, workflows included; only the
+    # upstream should open issues.
+    if: github.repository == 'owid/skills'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # main even on a tag push, which would otherwise check out the tag.
+      # Full history brings the tags.
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Compare main with the last submission
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          label=openai-directory
+          tag=$(git tag -l 'openai-*' --sort=-v:refname | head -n1)
+          if [ -z "$tag" ]; then
+            echo "No openai-* tag, so no submission to compare with."
+            exit 0
+          fi
+
+          # Where the plugin lives at a commit. 1.0.0 predates the move into
+          # plugins/owid (#43); drop the fallback once the newest tag is later.
+          plugin_dir() {
+            if git cat-file -e "$1:plugins/owid/plugin.json" 2>/dev/null; then
+              echo plugins/owid/
+            fi
+          }
+          old=$(plugin_dir "$tag")
+          new=$(plugin_dir HEAD)
+
+          # The ZIP holds skills/, assets/ and plugin.json; compare just those.
+          changed=""
+          for part in skills assets plugin.json; do
+            git diff --quiet "$tag:$old$part" "HEAD:$new$part" || changed="$changed \`$part\`"
+          done
+
+          issue=$(gh issue list --state open --label "$label" --json number --jq '.[0].number // empty')
+
+          if [ -z "$changed" ]; then
+            echo "main matches $tag."
+            if [ -n "$issue" ]; then
+              gh issue close "$issue" --comment "The plugin on \`main\` matches \`$tag\`, the version last submitted to OpenAI's Plugins Directory."
+            fi
+            exit 0
+          fi
+
+          version=${tag#openai-}
+          next="${version%.*}.$(( ${version##*.} + 1 ))"
+          {
+            echo "The plugin on \`main\` differs from \`$tag\`, the version last submitted to OpenAI's Plugins Directory, in$changed. ChatGPT and Codex users who installed from the directory don't have these changes yet. Those who added the \`owid/skills\` marketplace do."
+            echo
+            echo "Commits since \`$tag\` that touch the plugin:"
+            echo
+            git log --format='- %h %s' "$tag..HEAD" -- plugins/owid skills assets plugin.json
+            echo
+            echo "**If users would notice the change, resubmit:** run \`make zip-openai\` on \`main\`, which builds version $next, upload it at platform.openai.com/plugins with release notes, and once it is accepted push the tag the make target prints. That closes this issue."
+            echo
+            echo "**If not**, close this issue. It comes back with the next change to the plugin."
+          } > body.md
+
+          if [ -n "$issue" ]; then
+            gh issue edit "$issue" --body-file body.md
+          else
+            gh label create "$label" --color 10a37f --description "OpenAI's Plugins Directory is behind main" --force
+            gh issue create --title "ChatGPT directory is behind main" --label "$label" --body-file body.md
+          fi
